@@ -163,8 +163,8 @@ export function FeaturedProductCard({
         </div>
       </Link>
 
-      <CardContent className="p-4">
-        <div className="space-y-3">
+      <CardContent className="px-4 pb-4 flex flex-col h-full">
+        <div className="flex-1 space-y-3">
           <div className="flex items-center gap-1 mb-2">
             {[1, 2, 3, 4, 5].map((star) => (
               <Star
@@ -197,7 +197,9 @@ export function FeaturedProductCard({
                 )}
             </div>
           </div>
+        </div>
 
+        <div className="mt-auto space-y-2">
           <Button
             size="sm"
             onClick={handleAddToCart}

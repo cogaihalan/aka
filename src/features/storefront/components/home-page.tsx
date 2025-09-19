@@ -8,43 +8,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Star, Truck, Shield, RotateCcw } from "lucide-react";
+import { ArrowRight, Truck, Shield, RotateCcw } from "lucide-react";
 import Link from "next/link";
 import { FeaturedProductCard } from "@/components/product/featured-product-card";
+import FullWidthBanner from "@/components/full-width-banner";
 
 export default function StorefrontHomePage() {
   return (
     <div className="space-y-12">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-8 md:p-12">
-        <div className="max-w-4xl">
-          <Badge variant="secondary" className="mb-4">
-            New Collection Available
-          </Badge>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Discover Premium Products
-          </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl">
-            Experience quality, style, and innovation with our carefully curated
-            collection of premium products.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Button size="lg" asChild>
-              <Link href="/products">
-                Shop Now
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-            <Button variant="outline" size="lg" asChild>
-              <Link href="/categories">Browse Categories</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Hero Section - Full Width */}
+      <div className="-mx-4 sm:-mx-6 lg:-mx-8">
+        <FullWidthBanner />
+      </div>
+      
+      {/* Rest of content with normal padding */}
+        {/* Features Section */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center space-y-0 pb-2">
             <Truck className="h-6 w-6 text-primary" />

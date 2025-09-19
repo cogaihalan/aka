@@ -8,11 +8,11 @@ function Collapsible({ ...props }: ComponentProps<typeof Root>) {
 }
 
 function CollapsibleTrigger({ ...props }: ComponentProps<typeof Trigger>) {
-  return <CollapsibleTrigger data-slot="collapsible-trigger" {...props} />;
+  return <Trigger data-slot="collapsible-trigger" {...props} />;
 }
 
 function CollapsibleContent({ ...props }: ComponentProps<typeof Content>) {
-  return <CollapsibleContent data-slot="collapsible-content" {...props} />;
+  return <Content data-slot="collapsible-content" {...props} />;
 }
 
 export { Collapsible, CollapsibleTrigger, CollapsibleContent };

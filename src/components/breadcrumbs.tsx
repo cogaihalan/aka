@@ -17,7 +17,7 @@ export function Breadcrumbs() {
   if (items.length === 0) return null;
 
   return (
-    <Breadcrumb className="mb-6">
+    <Breadcrumb className="my-6">
       <BreadcrumbList>
         {/* Home icon link */}
         <BreadcrumbItem>

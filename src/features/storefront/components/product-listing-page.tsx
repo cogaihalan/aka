@@ -1,103 +1,164 @@
-// Updated storefront product listing page with API integration
+// Updated storefront product listing page with layered navigation
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Filter, Grid, List, Search, Loader2 } from "lucide-react";
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { storefrontCatalogBrowserService } from "@/lib/api/services/storefront/catalog-browser";
 import type { Product } from "@/lib/api";
 import { ProductCard } from "@/components/product/product-card";
+import { ProductCardSkeleton } from "@/components/product/product-card-skeleton";
+import { NavigationSidebar, SortControls, MobileNavigation } from "@/components/navigation";
+import { useNavigation } from "@/hooks/use-navigation";
+import { useProductFilters } from "@/hooks/use-product-filters";
+import { MOCK_PRODUCTS } from "@/constants/mock-products";
+import { AnimatedGrid, AnimatedList, LoadingOverlay } from "@/components/ui/animated-container";
 
 export default function ProductListingPage() {
   const { getToken } = useAuth();
+  
+  // Use navigation hook for URL state management
+  const {
+    state,
+    updateFilters,
+    updatePage,
+    resetFilters,
+    getActiveFiltersCount,
+    isLoading,
+    setIsLoading
+  } = useNavigation();
+
+  // View mode is handled separately from navigation state
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [sortBy, setSortBy] = useState("featured");
-  const [searchQuery, setSearchQuery] = useState("");
+
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [pagination, setPagination] = useState({
-    page: 1,
-    limit: 12,
-    total: 0,
-    totalPages: 0,
-    hasNext: false,
-    hasPrev: false,
-  });
+  const [useMockData, setUseMockData] = useState(true); // Toggle for mock data
 
   // Fetch products
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
-      setLoading(true);
+      setIsLoading(true);
       setError(null);
+
+      if (useMockData) {
+        // Use mock data for demonstration
+        setTimeout(() => {
+          setProducts(MOCK_PRODUCTS);
+          setIsLoading(false);
+        }, 500);
+        return;
+      }
 
       const response = await storefrontCatalogBrowserService.getProducts(
         {
-          page: pagination.page,
-          limit: pagination.limit,
-          search: searchQuery || undefined,
-          sortBy: sortBy === "featured" ? undefined : sortBy,
-          sortOrder: sortBy.includes("price-high") ? "desc" : "asc",
+          page: state.page,
+          limit: state.limit,
+          search: state.filters.search || undefined,
+          sortBy: state.filters.sort === "featured" ? undefined : state.filters.sort,
+          sortOrder: state.filters.sort?.includes("price-high") ? "desc" : "asc",
           filters: {
-            // Add any filters here
+            priceRange: state.filters.priceRange,
+            categories: state.filters.categories,
+            ratings: state.filters.ratings,
+            availability: state.filters.availability,
           },
         },
         getToken
       );
 
       setProducts(response.products);
-      setPagination(response.pagination);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch products");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
-  };
+  }, [useMockData, state.page, state.limit, state.filters, getToken]);
 
-  // Search with debounce
+  // Use product filters hook for client-side filtering when using mock data
+  const { filteredProducts, filterCounts, totalProducts, filteredCount } = useProductFilters({
+    products: useMockData ? products : [],
+    filters: state.filters
+  });
+
+  // Fetch products when filters change (for API mode)
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (searchQuery !== undefined) {
-        setPagination((prev) => ({ ...prev, page: 1 }));
-        fetchProducts();
-      }
-    }, 500);
+    if (!useMockData) {
+      fetchProducts();
+    }
+  }, [state.filters, state.page, useMockData, fetchProducts]);
 
-    return () => clearTimeout(timeoutId);
-  }, [searchQuery]);
-
-  // Fetch products when page or sort changes
+  // Load initial products
   useEffect(() => {
     fetchProducts();
-  }, [pagination.page, sortBy]);
+  }, [useMockData, fetchProducts]);
 
-  const handleSearch = (value: string) => {
-    setSearchQuery(value);
-  };
+  // Determine which products to display
+  const displayProducts = useMockData ? filteredProducts : products;
+  const displayCount = useMockData ? filteredCount : products.length;
+  const displayTotal = useMockData ? totalProducts : products.length;
 
-  const handleSortChange = (value: string) => {
-    setSortBy(value);
-  };
+  // Pagination logic
+  const itemsPerPage = state.limit;
+  const totalPages = Math.ceil(displayCount / itemsPerPage);
+  const startIndex = (state.page - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedProducts = displayProducts.slice(startIndex, endIndex);
 
   const handlePageChange = (page: number) => {
-    setPagination((prev) => ({ ...prev, page }));
+    updatePage(page);
   };
 
-  if (loading && products.length === 0) {
+  if (isLoading && products.length === 0) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="space-y-6">
+        {/* Header */}
+        <div>
+          <h1 className="text-3xl font-bold mb-2">All Products</h1>
+          <p className="text-muted-foreground">
+            Discover our complete collection of premium products
+          </p>
+        </div>
+
+        {/* Loading skeleton grid */}
+        <div className="flex gap-6">
+          <div className="hidden lg:block w-80">
+            <div className="space-y-4">
+              <div className="h-10 bg-muted animate-pulse rounded" />
+              <div className="h-32 bg-muted animate-pulse rounded" />
+              <div className="h-24 bg-muted animate-pulse rounded" />
+            </div>
+          </div>
+          
+          <div className="flex-1">
+            <div className="flex items-center justify-between mb-6">
+              <div className="h-6 bg-muted animate-pulse rounded w-32" />
+              <div className="h-10 bg-muted animate-pulse rounded w-24" />
+            </div>
+            
+            <AnimatedGrid className={`grid gap-6 items-stretch ${
+              viewMode === "grid"
+                ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                : "grid-cols-1 lg:grid-cols-2"
+            }`}>
+              {Array.from({ length: 6 }).map((_, index) => (
+                <ProductCardSkeleton
+                  key={index}
+                  variant={viewMode === "list" ? "compact" : "default"}
+                />
+              ))}
+            </AnimatedGrid>
+          </div>
+        </div>
       </div>
     );
   }
@@ -121,136 +182,181 @@ export default function ProductListingPage() {
         <p className="text-muted-foreground">
           Discover our complete collection of premium products
         </p>
-      </div>
-
-      {/* Filters and Search */}
-      <div className="flex flex-col lg:flex-row gap-4">
-        <div className="flex-1">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Search products..."
-              className="pl-10"
-              value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div className="flex gap-2">
-          <Select value={sortBy} onValueChange={handleSortChange}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="featured">Featured</SelectItem>
-              <SelectItem value="price-low">Price: Low to High</SelectItem>
-              <SelectItem value="price-high">Price: High to Low</SelectItem>
-              <SelectItem value="rating">Rating</SelectItem>
-              <SelectItem value="newest">Newest</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Button variant="outline" size="icon">
-            <Filter className="h-4 w-4" />
+        {/* Mock data toggle for development */}
+        <div className="mt-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setUseMockData(!useMockData)}
+          >
+            {useMockData ? 'Using Mock Data' : 'Using API Data'}
           </Button>
-
-          <div className="flex border rounded-md">
-            <Button
-              variant={viewMode === "grid" ? "default" : "ghost"}
-              size="icon"
-              onClick={() => setViewMode("grid")}
-            >
-              <Grid className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={viewMode === "list" ? "default" : "ghost"}
-              size="icon"
-              onClick={() => setViewMode("list")}
-            >
-              <List className="h-4 w-4" />
-            </Button>
-          </div>
         </div>
       </div>
 
-      {/* Products Grid */}
-      <div
-        className={`grid gap-6 ${
-          viewMode === "grid"
-            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-            : "grid-cols-1"
-        }`}
-      >
-        {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            variant={viewMode === "list" ? "compact" : "default"}
-          />
-        ))}
+      {/* Sort Controls */}
+      <div className="flex items-end lg:items-center justify-between gap-2">
+        <SortControls
+          sortBy={state.filters.sort || 'featured'}
+          viewMode={viewMode}
+          onSortChange={(sort) => updateFilters({ sort })}
+          onViewModeChange={setViewMode}
+          totalProducts={displayTotal}
+          filteredCount={displayCount}
+          currentPageCount={paginatedProducts.length}
+          currentPage={state.page}
+          itemsPerPage={itemsPerPage}
+        />
+        {/* Mobile Navigation */}
+        <MobileNavigation
+          filters={state.filters}
+          onFiltersChange={updateFilters}
+          onResetFilters={resetFilters}
+          filterCounts={filterCounts}
+          activeFiltersCount={getActiveFiltersCount()}
+        />
       </div>
 
-      {/* Loading indicator for pagination */}
-      {loading && products.length > 0 && (
-        <div className="flex justify-center">
-          <Loader2 className="h-6 w-6 animate-spin" />
-        </div>
-      )}
+      {/* Main Content Layout */}
+      <div className="flex gap-6 pb-8 lg:pb-16">
+        {/* Navigation Sidebar */}
+        <NavigationSidebar
+          filters={state.filters}
+          onFiltersChange={updateFilters}
+          onResetFilters={resetFilters}
+          filterCounts={filterCounts}
+          activeFiltersCount={getActiveFiltersCount()}
+          isMobile={false}
+        />
 
-      {/* Pagination */}
-      {pagination.totalPages > 1 && (
-        <div className="flex justify-center">
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={!pagination.hasPrev}
-              onClick={() => handlePageChange(pagination.page - 1)}
+        {/* Products Grid - 3 columns */}
+        <div className="flex-1">
+          <LoadingOverlay isLoading={isLoading && products.length > 0}>
+            <AnimatedGrid
+              className={`grid gap-6 layout-transition items-stretch ${
+                viewMode === "grid"
+                  ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                  : "grid-cols-1 lg:grid-cols-2"
+              }`}
             >
-              Previous
-            </Button>
-
-            {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map(
-              (page) => (
-                <Button
-                  key={page}
-                  variant={page === pagination.page ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handlePageChange(page)}
+              {paginatedProducts.map((product, index) => (
+                <div
+                  key={product.id}
+                  className="animate-fade-in"
+                  style={{ animationDelay: `${index * 50}ms` }}
                 >
-                  {page}
-                </Button>
-              )
-            )}
+                  <ProductCard
+                    product={product}
+                    variant={viewMode === "list" ? "compact" : "default"}
+                  />
+                </div>
+              ))}
+            </AnimatedGrid>
+          </LoadingOverlay>
 
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={!pagination.hasNext}
-              onClick={() => handlePageChange(pagination.page + 1)}
-            >
-              Next
-            </Button>
-          </div>
-        </div>
-      )}
+          {/* Loading indicator for pagination */}
+          {isLoading && products.length > 0 && (
+            <div className="flex justify-center mt-6 animate-fade-in">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span className="text-sm">Loading more products...</span>
+              </div>
+            </div>
+          )}
 
-      {/* No products message */}
-      {!loading && products.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">No products found</p>
-          {searchQuery && (
-            <Button
-              variant="outline"
-              className="mt-4"
-              onClick={() => setSearchQuery("")}
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-8">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => handlePageChange(state.page - 1)}
+                      className={state.page <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+                  
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNumber;
+                    if (totalPages <= 5) {
+                      pageNumber = i + 1;
+                    } else if (state.page <= 3) {
+                      pageNumber = i + 1;
+                    } else if (state.page >= totalPages - 2) {
+                      pageNumber = totalPages - 4 + i;
+                    } else {
+                      pageNumber = state.page - 2 + i;
+                    }
+                    
+                    return (
+                      <PaginationItem key={pageNumber}>
+                        <PaginationLink
+                          onClick={() => handlePageChange(pageNumber)}
+                          isActive={state.page === pageNumber}
+                          className="cursor-pointer"
+                        >
+                          {pageNumber}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  })}
+                  
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => handlePageChange(state.page + 1)}
+                      className={state.page >= totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+
+          {/* Show skeleton cards when no products and no filters applied */}
+          {!isLoading && displayProducts.length === 0 && !(state.filters.search || getActiveFiltersCount() > 0) && (
+            <AnimatedGrid
+              className={`grid gap-6 items-stretch ${
+                viewMode === "grid"
+                  ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                  : "grid-cols-1 lg:grid-cols-2"
+              }`}
             >
-              Clear Search
-            </Button>
+              {Array.from({ length: 6 }).map((_, index) => (
+                <ProductCardSkeleton
+                  key={index}
+                  className="pt-0"
+                  variant={viewMode === "list" ? "compact" : "default"}
+                />
+              ))}
+            </AnimatedGrid>
+          )}
+
+          {/* No products message - only show when filters/search are applied */}
+          {!isLoading && displayProducts.length === 0 && (state.filters.search || getActiveFiltersCount() > 0) && (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No products found matching your criteria</p>
+              <div className="flex flex-col sm:flex-row gap-2 justify-center mt-4">
+                {state.filters.search && (
+                  <Button
+                    variant="outline"
+                    onClick={() => updateFilters({ search: '' })}
+                  >
+                    Clear search
+                  </Button>
+                )}
+                {getActiveFiltersCount() > 0 && (
+                  <Button
+                    variant="outline"
+                    onClick={resetFilters}
+                  >
+                    Clear all filters
+                  </Button>
+                )}
+              </div>
+            </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

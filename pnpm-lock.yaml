@@ -137,6 +137,9 @@ importers:
       eslint-config-next:
         specifier: 15.1.0
         version: 15.1.0(eslint@8.48.0)(typescript@5.7.2)
+      glider-js:
+        specifier: ^1.7.9
+        version: 1.7.9
       input-otp:
         specifier: ^1.4.2
         version: 1.4.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -176,6 +179,9 @@ importers:
       react-dropzone:
         specifier: ^14.3.5
         version: 14.3.8(react@19.0.0)
+      react-glider:
+        specifier: ^5.0.0
+        version: 5.0.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react-hook-form:
         specifier: ^7.54.1
         version: 7.54.2(react@19.0.0)
@@ -2532,6 +2538,9 @@ packages:
   get-tsconfig@4.10.0:
     resolution: {integrity: sha512-kGzZ3LWWQcGIAmg6iWvXn0ei6WDtV26wzHRMwDSzmAbcXrTEXxHy6IehI6/4eT6VRKyMP1eF1VqwrVUmE/LR7A==}
 
+  glider-js@1.7.9:
+    resolution: {integrity: sha512-22r7EZ8cd4HWsM+pvNResu1h9tvJmAlrMBO2CbdJ9mhsYF/UllJEdvq8OuJDBgYcD0aja51vzRb/TbT7BCAaig==}
+
   glob-parent@5.1.2:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
     engines: {node: '>= 6'}
@@ -3274,6 +3283,12 @@ packages:
     engines: {node: '>= 10.13'}
     peerDependencies:
       react: '>= 16.8 || 18.0.0'
+
+  react-glider@5.0.0:
+    resolution: {integrity: sha512-G8XuNInBEG7MRr8kjDN+0fyxRkgyrQiEtok1r4ooaQNqXSvhihu14YdUn/AULbIRl3vCxeZsfSAM46wyyEfz3g==}
+    peerDependencies:
+      react: ^19.0.0
+      react-dom: ^19.0.0
 
   react-hook-form@7.54.2:
     resolution: {integrity: sha512-eHpAUgUjWbZocoQYUHposymRb4ZP6d0uwUnooL2uOybA9/3tPUvoAKqEWK1WaSiTxxOfTpffNZP7QwlnM3/gEg==}
@@ -6206,6 +6221,8 @@ snapshots:
     dependencies:
       resolve-pkg-maps: 1.0.0
 
+  glider-js@1.7.9: {}
+
   glob-parent@5.1.2:
     dependencies:
       is-glob: 4.0.3
@@ -6862,6 +6879,12 @@ snapshots:
       file-selector: 2.1.2
       prop-types: 15.8.1
       react: 19.0.0
+
+  react-glider@5.0.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+    dependencies:
+      glider-js: 1.7.9
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
 
   react-hook-form@7.54.2(react@19.0.0):
     dependencies:

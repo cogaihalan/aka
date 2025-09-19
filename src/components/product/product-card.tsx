@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star, ShoppingCart, Heart, Share2, Eye } from "lucide-react";
+import { ShoppingCart, Heart, Eye } from "lucide-react";
 import { useAddToCart } from "@/hooks/use-add-to-cart";
 import { useCart } from "@/hooks/use-cart";
 import { Product } from "@/lib/api/types";
@@ -16,7 +16,6 @@ interface ProductCardProps {
   product: Product;
   variant?: "default" | "compact" | "featured";
   showWishlist?: boolean;
-  showShare?: boolean;
   className?: string;
 }
 
@@ -24,7 +23,6 @@ export function ProductCard({
   product,
   variant = "default",
   showWishlist = true,
-  showShare = true,
   className,
 }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
@@ -50,40 +48,83 @@ export function ProductCard({
     console.log("Add to wishlist:", product.id);
   };
 
+  const handleQuickView = () => {
+    // TODO: Implement quick view functionality
+    console.log("Quick view:", product.id);
+    // For now, open in new tab
+    window.open(`/products/${product.id}`, "_blank");
+  };
+
   if (variant === "compact") {
     return (
       <Card
-        className={cn("group cursor-pointer", className)}
+        className={cn("group cursor-pointer h-full flex flex-col", className)}
         isProductCard={true}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <Link href={`/products/${product.id}`}>
-          <div className="aspect-square bg-muted rounded-t-lg overflow-hidden">
-            <Image
-              src={product.images?.[0]?.url || "/assets/placeholder-image.jpeg"}
-              alt={product.images?.[0]?.alt || product.name}
-              width={200}
-              height={200}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
-          </div>
-        </Link>
-        <CardContent className="p-3">
-          <div className="space-y-2">
-            <h3 className="font-medium text-sm line-clamp-2 group-hover:text-primary transition-colors">
-              {product.name}
-            </h3>
-            <div className="flex items-center justify-between">
-              <span className="text-lg font-bold">${product.price}</span>
-              <Button
-                size="sm"
-                onClick={handleAddToCart}
-                disabled={isAdding || product.status !== "active"}
-                className="h-8 px-3"
-              >
-                <ShoppingCart className="h-3 w-3" />
-              </Button>
+        <CardContent className="p-3 flex-1 flex flex-col">
+          <div className="flex gap-3 flex-1">
+            {/* Image on the left - smaller */}
+            <Link href={`/products/${product.id}`} className="flex-shrink-0">
+              <div className="w-20 h-20 bg-muted rounded-lg overflow-hidden">
+                <Image
+                  src={product.images?.[0]?.url || "/assets/placeholder-image.jpeg"}
+                  alt={product.images?.[0]?.alt || product.name}
+                  width={80}
+                  height={80}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+            </Link>
+            
+            {/* Content on the right */}
+            <div className="flex-1 flex flex-col justify-between min-w-0">
+              <div className="space-y-1 flex-1">
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
+                    {product.category?.name || "Uncategorized"}
+                  </Badge>
+                </div>
+                <h3 className="font-medium text-sm line-clamp-1 group-hover:text-primary transition-colors">
+                  {product.name}
+                </h3>
+                <p className="text-xs text-muted-foreground line-clamp-2">
+                  {product.description}
+                </p>
+              </div>
+              
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-sm font-bold">${product.price}</span>
+                <div className="flex items-center gap-1">
+                  {showWishlist && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleWishlist}
+                      className="h-7 w-7 hover:bg-red-50 hover:text-red-500 transition-colors"
+                    >
+                      <Heart className="h-3 w-3" />
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleQuickView}
+                    className="h-7 w-7 hover:bg-blue-50 hover:text-blue-500 transition-colors"
+                  >
+                    <Eye className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={handleAddToCart}
+                    disabled={isAdding || product.status !== "active"}
+                    className="h-7 px-2 text-xs"
+                  >
+                    <ShoppingCart className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -95,7 +136,7 @@ export function ProductCard({
     return (
       <Card
         className={cn(
-          "group cursor-pointer relative overflow-hidden",
+          "group cursor-pointer relative overflow-hidden h-full flex flex-col",
           className
         )}
         isProductCard={true}
@@ -145,9 +186,7 @@ export function ProductCard({
                 <Button
                   variant="secondary"
                   size="icon"
-                  onClick={() =>
-                    window.open(`/products/${product.id}`, "_blank")
-                  }
+                  onClick={handleQuickView}
                   className="h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-lg"
                 >
                   <Eye className="h-4 w-4" />
@@ -157,8 +196,8 @@ export function ProductCard({
           </div>
         </Link>
 
-        <CardContent className="p-4">
-          <div className="space-y-3">
+        <CardContent className="px-4 pb-4 flex flex-col h-full">
+          <div className="flex-1 space-y-3">
             <div className="flex items-center justify-between">
               <Badge variant="secondary" className="text-xs">
                 {product.category?.name || "Uncategorized"}
@@ -189,7 +228,9 @@ export function ProductCard({
                   )}
               </div>
             </div>
+          </div>
 
+          <div className="mt-auto space-y-2">
             <div className="flex items-center justify-between">
               <Button
                 size="sm"
@@ -221,7 +262,7 @@ export function ProductCard({
   // Default variant
   return (
     <Card
-      className={cn("group cursor-pointer", className)}
+      className={cn("group cursor-pointer h-full flex flex-col", className)}
       isProductCard={true}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -269,6 +310,7 @@ export function ProductCard({
               <Button
                 variant="secondary"
                 size="icon"
+                onClick={handleQuickView}
                 className="h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-lg"
               >
                 <Eye className="h-4 w-4" />
@@ -278,8 +320,8 @@ export function ProductCard({
         </div>
       </Link>
 
-      <CardContent className="p-4">
-        <div className="space-y-3">
+      <CardContent className="px-4 pb-4 flex flex-col h-full">
+        <div className="flex-1 space-y-3">
           <Badge variant="secondary" className="text-xs">
             {product.category?.name || "Uncategorized"}
           </Badge>
@@ -303,7 +345,9 @@ export function ProductCard({
                 )}
             </div>
           </div>
+        </div>
 
+        <div className="mt-auto space-y-2">
           <div className="flex items-center justify-between">
             <Button
               size="sm"

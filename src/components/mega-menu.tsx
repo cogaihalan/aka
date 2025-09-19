@@ -220,8 +220,8 @@ export function MegaMenu() {
                             className={cn(
                               "w-full flex items-center justify-between p-3 rounded-lg text-left font-medium transition-colors duration-200",
                               activeMobileMenu === menu
-                                ? "text-primary-foreground"
-                                : "text-foreground hover:text-primary-foreground"
+                                ? "text-primary"
+                                : "text-foreground hover:text-primary"
                             )}
                           >
                             {menu}

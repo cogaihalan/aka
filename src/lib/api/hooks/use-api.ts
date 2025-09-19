@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { handleApiError, ErrorHandler } from "@/lib/api/error-handler";
 import type { AppError } from "@/lib/api/error-handler";
 
@@ -253,6 +253,7 @@ export function useSearch<T>(
   const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(
     null
   );
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const executeSearch = useCallback(
     async (searchQuery: string) => {
@@ -283,17 +284,18 @@ export function useSearch<T>(
     (searchQuery: string) => {
       setQuery(searchQuery);
 
-      if (debounceTimer) {
-        clearTimeout(debounceTimer);
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
       }
 
       const timer = setTimeout(() => {
         executeSearch(searchQuery);
       }, debounceMs);
 
+      debounceTimerRef.current = timer;
       setDebounceTimer(timer);
     },
-    [executeSearch, debounceMs, debounceTimer]
+    [executeSearch, debounceMs]
   );
 
   const clear = useCallback(() => {
@@ -301,19 +303,20 @@ export function useSearch<T>(
     setData([]);
     setError(null);
 
-    if (debounceTimer) {
-      clearTimeout(debounceTimer);
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+      debounceTimerRef.current = null;
       setDebounceTimer(null);
     }
-  }, [debounceTimer]);
+  }, []);
 
   useEffect(() => {
     return () => {
-      if (debounceTimer) {
-        clearTimeout(debounceTimer);
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
       }
     };
-  }, [debounceTimer]);
+  }, []);
 
   return {
     data,

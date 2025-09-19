@@ -4,10 +4,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Heart, User, Menu, X } from "lucide-react";
+import { Search, Heart, Menu, X } from "lucide-react";
 import Logo from "@/components/logo";
 import Link from "next/link";
 import { CartIcon } from "@/components/cart";
+import { AuthIcon } from "@/components/auth";
 import { MegaMenu } from "@/components/mega-menu";
 
 export default function StorefrontHeader() {
@@ -15,7 +16,7 @@ export default function StorefrontHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4">
+      <div className="px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Logo size="lg" href="/" />
@@ -58,11 +59,7 @@ export default function StorefrontHeader() {
               <CartIcon />
 
               {/* User Account */}
-              <Button variant="ghost" size="icon" asChild>
-                <Link href="/account">
-                  <User className="h-5 w-5" />
-                </Link>
-              </Button>
+              <AuthIcon />
 
               {/* Mobile Menu Button */}
               <Button

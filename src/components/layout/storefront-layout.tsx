@@ -13,7 +13,7 @@ interface StorefrontLayoutProps {
 function HeaderSkeleton() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
-      <div className="container mx-auto px-4">
+      <div className="px-4">
         <div className="flex h-16 items-center justify-between">
           <div className="h-8 w-32 bg-muted animate-pulse rounded"></div>
           <div className="hidden md:flex items-center space-x-8">
@@ -44,7 +44,7 @@ export default function StorefrontLayout({ children }: StorefrontLayoutProps) {
       <Suspense fallback={<HeaderSkeleton />}>
         <StorefrontHeader />
       </Suspense>
-      <main className="flex-1 container mx-auto px-4 py-6 md:py-10">
+      <main className="flex-1 w-full px-4">
         <Breadcrumbs />
         {children}
       </main>
