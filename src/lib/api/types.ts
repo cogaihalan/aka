@@ -101,8 +101,55 @@ export interface Category {
   image?: string;
   seo: SEO;
   isActive: boolean;
+  sortOrder?: number;
+  includeInMenu: boolean;
+  children?: Category[];
+  productCount?: number;
   createdAt: string;
   updatedAt: string;
+}
+
+// Extended category types for admin management
+export interface CategoryTree extends Category {
+  children: CategoryTree[];
+  productCount: number;
+  isExpanded?: boolean;
+}
+
+export interface CategoryWithProducts extends Category {
+  products: Product[];
+  totalProducts: number;
+}
+
+// Category request types
+export interface CreateCategoryRequest {
+  name: string;
+  slug: string;
+  description?: string;
+  parentId?: number;
+  image?: string;
+  seo?: Partial<SEO>;
+  isActive?: boolean;
+  sortOrder?: number;
+  includeInMenu?: boolean;
+}
+
+export interface UpdateCategoryRequest extends Partial<CreateCategoryRequest> {
+  id: number;
+}
+
+// Category-Product relationship types
+export interface CategoryProduct {
+  categoryId: number;
+  productId: number;
+  position?: number;
+  createdAt: string;
+}
+
+export interface CategoryProductAssignment {
+  categoryId: number;
+  productIds: number[];
+  positions?: Record<number, number>;
 }
 
 export interface Brand {
@@ -374,6 +421,16 @@ export interface OrderListResponse {
 export interface CustomerListResponse {
   customers: Customer[];
   pagination: PaginationResponse;
+}
+
+export interface CategoryListResponse {
+  categories: Category[];
+  pagination: PaginationResponse;
+}
+
+export interface CategoryTreeResponse {
+  categories: CategoryTree[];
+  totalCategories: number;
 }
 
 export interface AnalyticsResponse {

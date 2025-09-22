@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,12 @@ import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Heart, Eye } from "lucide-react";
 import { useAddToCart } from "@/hooks/use-add-to-cart";
 import { useCart } from "@/hooks/use-cart";
+import { useQuickView } from "@/components/providers/quick-view-provider";
+import {
+  useWishlistActions,
+  useIsInWishlist,
+  useWishlistAuthStatus,
+} from "@/stores/wishlist-store";
 import { Product } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +33,7 @@ export function ProductCard({
   className,
 }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const router = useRouter();
   const { addToCart, isAdding, error } = useAddToCart({
     onSuccess: (product, quantity) => {
       console.log(`Added ${quantity} x ${product.name} to cart`);
@@ -36,23 +44,43 @@ export function ProductCard({
   });
 
   const { isInCart, getItemQuantity } = useCart();
+  const { openQuickView } = useQuickView();
+  const {
+    addItem: addToWishlist,
+    removeItem: removeFromWishlist,
+    isInWishlist,
+  } = useWishlistActions();
+  const isAuthenticated = useWishlistAuthStatus();
   const isInCartState = isInCart(product.id);
   const cartQuantity = getItemQuantity(product.id);
+  const isInWishlistState = isInWishlist(product.id);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     addToCart(product, undefined, 1);
   };
 
-  const handleWishlist = () => {
-    // TODO: Implement wishlist functionality
-    console.log("Add to wishlist:", product.id);
+  const handleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isAuthenticated) {
+      router.push("/auth/sign-in");
+      return;
+    }
+
+    if (isInWishlistState) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(product);
+    }
   };
 
-  const handleQuickView = () => {
-    // TODO: Implement quick view functionality
-    console.log("Quick view:", product.id);
-    // For now, open in new tab
-    window.open(`/products/${product.id}`, "_blank");
+  const handleQuickView = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openQuickView(product);
   };
 
   if (variant === "compact") {
@@ -69,7 +97,9 @@ export function ProductCard({
             <Link href={`/products/${product.id}`} className="flex-shrink-0">
               <div className="w-20 h-20 bg-muted rounded-lg overflow-hidden">
                 <Image
-                  src={product.images?.[0]?.url || "/assets/placeholder-image.jpeg"}
+                  src={
+                    product.images?.[0]?.url || "/assets/placeholder-image.jpeg"
+                  }
                   alt={product.images?.[0]?.alt || product.name}
                   width={80}
                   height={80}
@@ -77,7 +107,7 @@ export function ProductCard({
                 />
               </div>
             </Link>
-            
+
             {/* Content on the right */}
             <div className="flex-1 flex flex-col justify-between min-w-0">
               <div className="space-y-1 flex-1">
@@ -86,14 +116,16 @@ export function ProductCard({
                     {product.category?.name || "Uncategorized"}
                   </Badge>
                 </div>
-                <h3 className="font-medium text-sm line-clamp-1 group-hover:text-primary transition-colors">
-                  {product.name}
-                </h3>
+                <Link href={`/products/${product.id}`}>
+                  <h3 className="font-medium text-sm line-clamp-1 group-hover:text-primary transition-colors cursor-pointer">
+                    {product.name}
+                  </h3>
+                </Link>
                 <p className="text-xs text-muted-foreground line-clamp-2">
                   {product.description}
                 </p>
               </div>
-              
+
               <div className="flex items-center justify-between mt-2">
                 <span className="text-sm font-bold">${product.price}</span>
                 <div className="flex items-center gap-1">
@@ -102,9 +134,19 @@ export function ProductCard({
                       variant="ghost"
                       size="icon"
                       onClick={handleWishlist}
-                      className="h-7 w-7 hover:bg-red-50 hover:text-red-500 transition-colors"
+                      className={cn(
+                        "h-7 w-7 transition-colors",
+                        isInWishlistState
+                          ? "bg-red-50 text-red-500 hover:bg-red-100"
+                          : "hover:bg-red-50 hover:text-red-500"
+                      )}
                     >
-                      <Heart className="h-3 w-3" />
+                      <Heart
+                        className={cn(
+                          "h-3 w-3",
+                          isInWishlistState && "fill-current"
+                        )}
+                      />
                     </Button>
                   )}
                   <Button
@@ -170,9 +212,19 @@ export function ProductCard({
                     variant="secondary"
                     size="icon"
                     onClick={handleWishlist}
-                    className="h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-lg"
+                    className={cn(
+                      "h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-lg transition-colors",
+                      isInWishlistState && "bg-red-50 hover:bg-red-100"
+                    )}
                   >
-                    <Heart className="h-4 w-4 text-red-500" />
+                    <Heart
+                      className={cn(
+                        "h-4 w-4",
+                        isInWishlistState
+                          ? "text-red-500 fill-red-500"
+                          : "text-red-500"
+                      )}
+                    />
                   </Button>
                 )}
                 <Button
@@ -209,9 +261,11 @@ export function ProductCard({
               )}
             </div>
 
-            <h3 className="font-semibold line-clamp-2 group-hover:text-primary transition-colors">
-              {product.name}
-            </h3>
+            <Link href={`/products/${product.id}`}>
+              <h3 className="font-semibold line-clamp-2 group-hover:text-primary transition-colors cursor-pointer">
+                {product.name}
+              </h3>
+            </Link>
 
             <p className="text-sm text-muted-foreground line-clamp-2">
               {product.description}
@@ -294,9 +348,19 @@ export function ProductCard({
                   variant="secondary"
                   size="icon"
                   onClick={handleWishlist}
-                  className="h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-lg"
+                  className={cn(
+                    "h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-lg transition-colors",
+                    isInWishlistState && "bg-red-50 hover:bg-red-100"
+                  )}
                 >
-                  <Heart className="h-4 w-4 text-red-500" />
+                  <Heart
+                    className={cn(
+                      "h-4 w-4",
+                      isInWishlistState
+                        ? "text-red-500 fill-red-500"
+                        : "text-red-500"
+                    )}
+                  />
                 </Button>
               )}
               <Button
@@ -326,9 +390,11 @@ export function ProductCard({
             {product.category?.name || "Uncategorized"}
           </Badge>
 
-          <h3 className="font-semibold line-clamp-2 group-hover:text-primary transition-colors">
-            {product.name}
-          </h3>
+          <Link href={`/products/${product.id}`}>
+            <h3 className="font-semibold line-clamp-2 group-hover:text-primary transition-colors cursor-pointer">
+              {product.name}
+            </h3>
+          </Link>
 
           <p className="text-sm text-muted-foreground line-clamp-2">
             {product.description}

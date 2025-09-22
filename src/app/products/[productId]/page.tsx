@@ -11,11 +11,43 @@ export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { productId } = await params;
-  // In a real app, you'd fetch product data here
-  return {
-    title: `Product - AKA Store`,
-    description: "Premium product details and specifications.",
-  };
+
+  // Import the service here to avoid issues with client components
+  const { productDetailService } = await import(
+    "@/lib/api/services/storefront/product-detail"
+  );
+
+  try {
+    const product = await productDetailService.getProductById(
+      parseInt(productId)
+    );
+
+    if (!product) {
+      return {
+        title: "Product Not Found - AKA Store",
+        description: "The requested product could not be found.",
+      };
+    }
+
+    return {
+      title: `${product.name} - AKA Store`,
+      description:
+        product.description ||
+        `Shop ${product.name} at AKA Store. Premium quality products with fast shipping.`,
+      openGraph: {
+        title: `${product.name} - AKA Store`,
+        description:
+          product.description || `Shop ${product.name} at AKA Store.`,
+        images: product.images.length > 0 ? [product.images[0].url] : [],
+      },
+    };
+  } catch (error) {
+    console.error("Error generating metadata:", error);
+    return {
+      title: "Product - AKA Store",
+      description: "Premium product details and specifications.",
+    };
+  }
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {

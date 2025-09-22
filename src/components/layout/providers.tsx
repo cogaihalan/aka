@@ -5,6 +5,8 @@ import { useTheme } from "next-themes";
 import React from "react";
 import { ActiveThemeProvider } from "@/components/active-theme";
 import { CartProvider } from "@/components/providers/cart-provider";
+import { QuickViewProvider } from "@/components/providers/quick-view-provider";
+import { WishlistAuthProvider } from "@/components/providers/wishlist-auth-provider";
 
 export default function Providers({
   activeThemeValue,
@@ -24,7 +26,11 @@ export default function Providers({
             baseTheme: resolvedTheme === "dark" ? dark : undefined,
           }}
         >
-          <CartProvider>{children}</CartProvider>
+          <WishlistAuthProvider>
+            <CartProvider>
+              <QuickViewProvider>{children}</QuickViewProvider>
+            </CartProvider>
+          </WishlistAuthProvider>
         </ClerkProvider>
       </ActiveThemeProvider>
     </>

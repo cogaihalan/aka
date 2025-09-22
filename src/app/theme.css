@@ -105,7 +105,3 @@ body {
     @apply !rounded-none !shadow-none;
   }
 }
-
-.glider-contain, .glider-track {
-  @apply h-full;
-}

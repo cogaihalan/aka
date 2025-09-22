@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -10,9 +11,23 @@ import Link from "next/link";
 import { CartIcon } from "@/components/cart";
 import { AuthIcon } from "@/components/auth";
 import { MegaMenu } from "@/components/mega-menu";
+import {
+  useWishlistItemCount,
+  useWishlistAuthStatus,
+} from "@/stores/wishlist-store";
+import { cn } from "@/lib/utils";
 
 export default function StorefrontHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
+  const wishlistCount = useWishlistItemCount();
+  const isAuthenticated = useWishlistAuthStatus();
+
+  const handleWishlistClick = () => {
+    if (!isAuthenticated) {
+      router.push("/auth/sign-in");
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -43,16 +58,30 @@ export default function StorefrontHeader() {
             {/* Action Buttons */}
             <div className="flex items-center gap-2 md:gap-3">
               {/* Wishlist */}
-              <Button variant="ghost" size="icon" className="relative" asChild>
-                <Link href="/wishlist">
-                  <Heart className="h-5 w-5" />
-                  <Badge
-                    variant="destructive"
-                    className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs"
-                  >
-                    0
-                  </Badge>
-                </Link>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative"
+                onClick={handleWishlistClick}
+                asChild={isAuthenticated}
+              >
+                {isAuthenticated ? (
+                  <Link href="/wishlist">
+                    <Heart className="h-5 w-5" />
+                    {wishlistCount > 0 && (
+                      <Badge
+                        variant="destructive"
+                        className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs"
+                      >
+                        {wishlistCount}
+                      </Badge>
+                    )}
+                  </Link>
+                ) : (
+                  <>
+                    <Heart className="h-5 w-5" />
+                  </>
+                )}
               </Button>
 
               {/* Cart */}

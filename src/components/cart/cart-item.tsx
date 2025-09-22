@@ -40,6 +40,20 @@ export function CartItem({
     }
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    // If the input is empty, don't update quantity (keep current value)
+    if (value === "" || parseInt(value) <= 0) {
+      return;
+    }
+
+    const newQuantity = parseInt(value);
+    if (!isNaN(newQuantity) && newQuantity >= 0) {
+      handleQuantityChange(newQuantity);
+    }
+  };
+
   const handleRemove = async () => {
     setIsUpdating(true);
     try {
@@ -163,10 +177,8 @@ export function CartItem({
               <Input
                 type="number"
                 value={item.quantity}
-                onChange={(e) =>
-                  handleQuantityChange(parseInt(e.target.value) || 0)
-                }
-                className="w-12 h-8 text-center text-sm"
+                onChange={handleInputChange}
+                className="w-12 h-8 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 min="1"
                 max={item.maxQuantity}
                 disabled={isUpdating}
@@ -272,10 +284,8 @@ export function CartItem({
                 <Input
                   type="number"
                   value={item.quantity}
-                  onChange={(e) =>
-                    handleQuantityChange(parseInt(e.target.value) || 0)
-                  }
-                  className="w-16 text-center"
+                  onChange={handleInputChange}
+                  className="w-16 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   min="1"
                   max={item.maxQuantity}
                   disabled={isUpdating}

@@ -1,4 +1,3 @@
-import { auth } from "@clerk/nextjs/server";
 import { isMockMode, getApiBaseUrl } from "@/lib/api/config";
 import type { ApiConfig, ApiResponse, RequestOptions } from "@/lib/api/client";
 
@@ -19,12 +18,26 @@ export class MockApiClient {
   // Get authentication headers (for consistency with real API)
   private async getAuthHeaders(): Promise<Record<string, string>> {
     try {
-      const { getToken } = await auth();
-      const token = await getToken();
+      // In mock mode, we don't need real authentication
+      // This is just for consistency with the real API client
+      if (typeof window !== "undefined") {
+        // Client-side: try to get token from localStorage or cookies
+        const token =
+          localStorage.getItem("auth-token") ||
+          document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("auth-token="))
+            ?.split("=")[1];
 
-      if (token) {
+        if (token) {
+          return {
+            Authorization: `Bearer ${token}`,
+          };
+        }
+      } else {
+        // Server-side: in mock mode, we can skip auth or use a mock token
         return {
-          Authorization: `Bearer ${token}`,
+          "X-Mock-Auth": "true",
         };
       }
     } catch (error) {

@@ -30,6 +30,25 @@ export const navItems: NavItem[] = [
     items: [],
   },
   {
+    title: "Categories",
+    url: "/dashboard/categories",
+    icon: "folder",
+    shortcut: ["c", "c"],
+    isActive: false,
+    items: [
+      {
+        title: "All Categories",
+        url: "/dashboard/categories",
+        shortcut: ["c", "a"],
+      },
+      {
+        title: "Category Tree",
+        url: "/dashboard/categories/tree",
+        shortcut: ["c", "t"],
+      },
+    ],
+  },
+  {
     title: "Kanban",
     url: "/dashboard/kanban",
     icon: "kanban",

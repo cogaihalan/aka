@@ -1,20 +1,23 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { Star, Heart, Share2, Truck, Shield, RotateCcw } from "lucide-react";
-import { useAddToCart } from "@/hooks/use-add-to-cart";
-import { useCart } from "@/hooks/use-cart";
+  useState,
+  useEffect,
+  useMemo,
+  useTransition,
+  useDeferredValue,
+} from "react";
+import { useRouter } from "next/navigation";
+import {
+  ProductImageGallery,
+  ProductInfo,
+  ProductTabs,
+  FeaturedProductSlider,
+} from "@/components/product";
+import { productDetailService } from "@/lib/api/services/storefront/product-detail";
+import { Product } from "@/lib/api";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 interface ProductDetailPageProps {
   productId: string;
@@ -23,284 +26,232 @@ interface ProductDetailPageProps {
 export default function ProductDetailPage({
   productId,
 }: ProductDetailPageProps) {
-  const [selectedSize, setSelectedSize] = useState("");
-  const [selectedColor, setSelectedColor] = useState("");
-  const [quantity, setQuantity] = useState(1);
-
-  const {
-    addToCart: handleAddToCart,
-    isAdding,
-    error,
-  } = useAddToCart({
-    onSuccess: (product, quantity) => {
-      console.log(`Added ${quantity} x ${product.name} to cart`);
-    },
-    onError: (error) => {
-      console.error("Add to cart error:", error);
-    },
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [data, setData] = useState<{
+    product: Product | null;
+    relatedProducts: Product[];
+    loading: boolean;
+    error: string | null;
+  }>({
+    product: null,
+    relatedProducts: [],
+    loading: true,
+    error: null,
   });
 
-  const { isInCart, getItemQuantity } = useCart();
-  const isInCartState = isInCart(parseInt(productId));
-  const cartQuantity = getItemQuantity(parseInt(productId));
+  useEffect(() => {
+    const fetchProductData = async () => {
+      try {
+        setData((prev) => ({ ...prev, loading: true, error: null }));
 
-  // Mock product data - in real app, fetch based on productId
-  const product = {
-    id: parseInt(productId),
-    name: "Premium Product",
-    price: 199.99,
-    originalPrice: 249.99,
-    rating: 4.8,
-    reviewCount: 124,
-    description:
-      "This is a premium quality product with exceptional features and design. Perfect for those who appreciate quality and style.",
-    features: [
-      "High-quality materials",
-      "Durable construction",
-      "Modern design",
-      "Easy to use",
-      "Long-lasting performance",
-    ],
-    images: ["", "", "", ""], // Mock image URLs
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["Black", "White", "Blue", "Red"],
-    inStock: true,
-    stockCount: 15,
-  };
+        const [productData, relatedData] = await Promise.all([
+          productDetailService.getProductById(parseInt(productId)),
+          productDetailService.getRelatedProducts(parseInt(productId), 6),
+        ]);
 
-  const onAddToCart = () => {
-    // Convert to Product type for the cart
-    const productForCart = {
-      id: product.id,
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      compareAtPrice: product.originalPrice,
-      sku: `PROD-${product.id}`,
-      category: {
-        id: 1,
-        name: "Electronics",
-        slug: "electronics",
-        level: 1,
-        path: "/electronics",
-        seo: { title: "Electronics", description: "Electronics category" },
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      brand: undefined,
-      tags: [],
-      images: [],
-      variants: [],
-      inventory: {
-        quantity: product.stockCount,
-        reserved: 0,
-        available: product.stockCount,
-        trackQuantity: true,
-        allowBackorder: false,
-        lowStockThreshold: 5,
-      },
-      seo: { title: product.name, description: product.description },
-      status: product.inStock ? ("active" as const) : ("inactive" as const),
-      featured: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+        if (!productData) {
+          // Redirect to 404 page when product is not found
+          router.replace("/not-found");
+          return;
+        }
+
+        // Use startTransition for non-urgent state updates to prevent blocking
+        startTransition(() => {
+          setData({
+            product: productData,
+            relatedProducts: relatedData,
+            loading: false,
+            error: null,
+          });
+        });
+      } catch (err) {
+        setData((prev) => ({
+          ...prev,
+          error: "Failed to load product data",
+          loading: false,
+        }));
+        console.error("Error fetching product:", err);
+      }
     };
 
-    handleAddToCart(productForCart, undefined, quantity);
-  };
+    fetchProductData();
+  }, [productId]);
 
-  const handleBuyNow = () => {
-    onAddToCart();
-    // Navigate to checkout
-    window.location.href = "/checkout";
-  };
+  // Use deferred value to smooth out rendering
+  const deferredProduct = useDeferredValue(data.product);
+
+  // Memoize the enhanced product to prevent unnecessary re-renders
+  const enhancedProduct = useMemo(() => {
+    if (!deferredProduct) return null;
+
+    return {
+      ...deferredProduct,
+      rating: 4.8, // Mock rating
+      reviewCount: 124, // Mock review count
+      features: [
+        "High-quality materials",
+        "Durable construction",
+        "Modern design",
+        "Easy to use",
+        "Long-lasting performance",
+      ],
+      sizes: ["S", "M", "L", "XL"],
+      colors: ["Black", "White", "Blue", "Red"],
+      inStock: deferredProduct.inventory.available > 0,
+      stockCount: deferredProduct.inventory.available,
+      specifications: {
+        Material: "Premium Quality",
+        Dimensions: "10 x 8 x 2 inches",
+        Weight: "1.2 lbs",
+        Warranty: "2 years",
+        Origin: "Made in USA",
+      },
+      shippingInfo: {
+        freeShippingThreshold: 50,
+        estimatedDelivery: "3-5 business days",
+        returnPolicy: "30-day return policy",
+      },
+      warranty: "2-year manufacturer warranty",
+    };
+  }, [deferredProduct]);
+
+  // Memoize related products to prevent unnecessary re-renders
+  const relatedProductsForSlider = useMemo(() => {
+    return data.relatedProducts.map((p) => ({
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      price: p.price,
+      compareAtPrice: p.compareAtPrice,
+      rating: 4.5, // Mock rating
+      image: p.images[0]?.url || "/assets/placeholder-image.jpeg",
+      category: p.category.name,
+      inStock: p.inventory.available > 0,
+    }));
+  }, [data.relatedProducts]);
+
+  if (data.loading) {
+    return <ProductDetailSkeleton />;
+  }
+
+  // If there's an error or no product, redirect to 404
+  if (data.error || !data.product) {
+    router.replace("/not-found");
+    return null;
+  }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      {/* Product Images */}
-      <div className="space-y-4">
-        <div className="aspect-square bg-muted rounded-lg"></div>
-        <div className="grid grid-cols-4 gap-2">
-          {product.images.map((_, index) => (
-            <div
-              key={index}
-              className="aspect-square bg-muted rounded-md"
-            ></div>
-          ))}
+    <div className="relative">
+      {/* Loading indicator during transitions */}
+      {isPending && (
+        <div className="absolute top-4 right-4 z-10">
+          <div className="flex items-center gap-2 bg-background/90 backdrop-blur-sm px-3 py-2 rounded-md shadow-sm border">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+            <span className="text-sm text-muted-foreground">Loading...</span>
+          </div>
+        </div>
+      )}
+
+      <div
+        className={cn(
+          "space-y-12 transition-opacity duration-200",
+          isPending ? "opacity-90" : "opacity-100"
+        )}
+      >
+        {/* Main Product Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Product Images */}
+          <ProductImageGallery
+            images={deferredProduct?.images || []}
+            productName={deferredProduct?.name || ""}
+          />
+
+          {/* Product Info */}
+          {enhancedProduct && <ProductInfo product={enhancedProduct} />}
+        </div>
+
+        {/* Product Tabs */}
+        {enhancedProduct && <ProductTabs product={enhancedProduct} />}
+
+        {/* Related Products */}
+        {relatedProductsForSlider.length > 0 && (
+          <FeaturedProductSlider
+            products={relatedProductsForSlider}
+            title="Related Products"
+            showViewAll={true}
+            viewAllHref={`/categories/${deferredProduct?.category.slug || ""}`}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ProductDetailSkeleton() {
+  return (
+    <div className="space-y-12 animate-pulse">
+      {/* Main Product Section Skeleton */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Image Gallery Skeleton */}
+        <div className="space-y-4">
+          <Skeleton className="aspect-square rounded-lg bg-muted/50" />
+          <div className="grid grid-cols-4 gap-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton
+                key={i}
+                className="aspect-square rounded-md bg-muted/50"
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Product Info Skeleton */}
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <Skeleton className="h-4 w-20 bg-muted/50" />
+            <Skeleton className="h-8 w-3/4 bg-muted/50" />
+            <Skeleton className="h-4 w-32 bg-muted/50" />
+            <Skeleton className="h-6 w-24 bg-muted/50" />
+            <Skeleton className="h-4 w-full bg-muted/50" />
+            <Skeleton className="h-4 w-2/3 bg-muted/50" />
+          </div>
+
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-full bg-muted/50" />
+            <Skeleton className="h-10 w-full bg-muted/50" />
+            <Skeleton className="h-10 w-full bg-muted/50" />
+          </div>
+
+          <div className="space-y-3">
+            <Skeleton className="h-12 w-full bg-muted/50" />
+            <Skeleton className="h-12 w-full bg-muted/50" />
+          </div>
         </div>
       </div>
 
-      {/* Product Info */}
+      {/* Tabs Skeleton */}
+      <div className="space-y-4">
+        <div className="flex space-x-4">
+          <Skeleton className="h-10 w-24 bg-muted/50" />
+          <Skeleton className="h-10 w-32 bg-muted/50" />
+          <Skeleton className="h-10 w-20 bg-muted/50" />
+          <Skeleton className="h-10 w-28 bg-muted/50" />
+        </div>
+        <Skeleton className="h-64 w-full bg-muted/50" />
+      </div>
+
+      {/* Related Products Skeleton */}
       <div className="space-y-6">
-        <div>
-          <Badge variant="secondary" className="mb-2">
-            Electronics
-          </Badge>
-          <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
-
-          <div className="flex items-center gap-2 mb-4">
-            <div className="flex items-center gap-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className={`h-4 w-4 ${
-                    star <= Math.floor(product.rating)
-                      ? "fill-yellow-400 text-yellow-400"
-                      : "text-muted-foreground"
-                  }`}
-                />
-              ))}
+        <Skeleton className="h-8 w-48 bg-muted/50" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="space-y-2">
+              <Skeleton className="aspect-square rounded-lg bg-muted/50" />
+              <Skeleton className="h-4 w-3/4 bg-muted/50" />
+              <Skeleton className="h-4 w-1/2 bg-muted/50" />
             </div>
-            <span className="text-sm text-muted-foreground">
-              {product.rating} ({product.reviewCount} reviews)
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3 mb-4">
-            <span className="text-3xl font-bold">${product.price}</span>
-            <span className="text-lg text-muted-foreground line-through">
-              ${product.originalPrice}
-            </span>
-            <Badge variant="destructive">
-              Save ${(product.originalPrice - product.price).toFixed(2)}
-            </Badge>
-          </div>
-
-          <p className="text-muted-foreground">{product.description}</p>
-        </div>
-
-        <Separator />
-
-        {/* Product Options */}
-        <div className="space-y-4">
-          <div>
-            <label className="text-sm font-medium mb-2 block">Size</label>
-            <Select value={selectedSize} onValueChange={setSelectedSize}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select size" />
-              </SelectTrigger>
-              <SelectContent>
-                {product.sizes.map((size) => (
-                  <SelectItem key={size} value={size}>
-                    {size}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <label className="text-sm font-medium mb-2 block">Color</label>
-            <Select value={selectedColor} onValueChange={setSelectedColor}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select color" />
-              </SelectTrigger>
-              <SelectContent>
-                {product.colors.map((color) => (
-                  <SelectItem key={color} value={color}>
-                    {color}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <label className="text-sm font-medium mb-2 block">Quantity</label>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              >
-                -
-              </Button>
-              <span className="w-12 text-center">{quantity}</span>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setQuantity(quantity + 1)}
-              >
-                +
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        <Separator />
-
-        {/* Action Buttons */}
-        <div className="space-y-3">
-          <div className="flex gap-3">
-            <Button
-              size="lg"
-              className="flex-1"
-              onClick={onAddToCart}
-              disabled={isAdding || !product.inStock}
-            >
-              {isInCartState ? `In Cart (${cartQuantity})` : "Add to Cart"}
-            </Button>
-            <Button variant="outline" size="icon">
-              <Heart className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="icon">
-              <Share2 className="h-4 w-4" />
-            </Button>
-          </div>
-
-          <Button
-            variant="secondary"
-            size="lg"
-            className="w-full"
-            onClick={handleBuyNow}
-            disabled={isAdding || !product.inStock}
-          >
-            Buy Now
-          </Button>
-
-          {error && <p className="text-sm text-destructive">{error}</p>}
-        </div>
-
-        {/* Stock Status */}
-        <div className="text-sm">
-          {product.inStock ? (
-            <span className="text-green-600">
-              ✓ In Stock ({product.stockCount} available)
-            </span>
-          ) : (
-            <span className="text-red-600">✗ Out of Stock</span>
-          )}
-        </div>
-
-        {/* Features */}
-        <Card>
-          <CardContent className="p-4">
-            <h3 className="font-semibold mb-3">Key Features</h3>
-            <ul className="space-y-1">
-              {product.features.map((feature, index) => (
-                <li key={index} className="text-sm text-muted-foreground">
-                  • {feature}
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-
-        {/* Shipping Info */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <Truck className="h-4 w-4 text-primary" />
-            <span>Free shipping on orders over $50</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4 text-primary" />
-            <span>2-year warranty</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <RotateCcw className="h-4 w-4 text-primary" />
-            <span>30-day returns</span>
-          </div>
+          ))}
         </div>
       </div>
     </div>

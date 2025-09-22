@@ -68,6 +68,7 @@ const transformMockProductToApi = (mockProduct: MockProduct) => {
       level: 1,
       path: mockProduct.category.toLowerCase(),
       isActive: true,
+      includeInMenu: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       seo: {

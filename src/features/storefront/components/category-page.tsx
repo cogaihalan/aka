@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import {
@@ -13,12 +14,19 @@ import {
 } from "@/components/ui/pagination";
 import { ProductCard } from "@/components/product/product-card";
 import { ProductCardSkeleton } from "@/components/product/product-card-skeleton";
-import { NavigationSidebar, SortControls, MobileNavigation } from "@/components/navigation";
+import {
+  NavigationSidebar,
+  SortControls,
+  MobileNavigation,
+} from "@/components/navigation";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useProductFilters } from "@/hooks/use-product-filters";
 import { MOCK_PRODUCTS } from "@/constants/mock-products";
 import type { Product } from "@/lib/api";
-import { AnimatedGrid, LoadingOverlay } from "@/components/ui/animated-container";
+import {
+  AnimatedGrid,
+  LoadingOverlay,
+} from "@/components/ui/animated-container";
 
 // Extended Product interface for mock data
 interface MockProduct extends Product {
@@ -33,6 +41,18 @@ interface CategoryPageProps {
 }
 
 export default function CategoryPage({ categorySlug }: CategoryPageProps) {
+  const router = useRouter();
+
+  // Valid category slugs
+  const validCategorySlugs = [
+    "electronics",
+    "clothing",
+    "home",
+    "sports",
+    "books",
+    "beauty",
+  ];
+
   // Use navigation hook for URL state management
   const {
     state,
@@ -41,11 +61,11 @@ export default function CategoryPage({ categorySlug }: CategoryPageProps) {
     resetFilters,
     getActiveFiltersCount,
     isLoading,
-    setIsLoading
+    setIsLoading,
   } = useNavigation({
     defaultFilters: {
-      categories: [categorySlug]
-    }
+      // Don't include category in filters since we're already filtering by category in fetchProducts
+    },
   });
 
   // View mode is handled separately from navigation state
@@ -63,8 +83,9 @@ export default function CategoryPage({ categorySlug }: CategoryPageProps) {
 
       if (useMockData) {
         // Filter mock products by category
-        const categoryProducts = MOCK_PRODUCTS.filter(product => 
-          product.category?.slug.toLowerCase() === categorySlug.toLowerCase()
+        const categoryProducts = MOCK_PRODUCTS.filter(
+          (product) =>
+            product.category?.slug.toLowerCase() === categorySlug.toLowerCase()
         );
         setTimeout(() => {
           setProducts(categoryProducts);
@@ -83,15 +104,27 @@ export default function CategoryPage({ categorySlug }: CategoryPageProps) {
   }, [categorySlug, useMockData, setIsLoading]);
 
   // Use product filters hook for client-side filtering when using mock data
-  const { filteredProducts, filterCounts, totalProducts, filteredCount } = useProductFilters({
-    products: useMockData ? products : [],
-    filters: state.filters
-  });
+  const { filteredProducts, filterCounts, totalProducts, filteredCount } =
+    useProductFilters({
+      products: useMockData ? products : [],
+      filters: state.filters,
+    });
+
+  // Check if category is valid and redirect to 404 if not
+  useEffect(() => {
+    if (!validCategorySlugs.includes(categorySlug.toLowerCase())) {
+      router.replace("/not-found");
+      return;
+    }
+  }, [categorySlug, router]);
 
   // Load products when component mounts or category changes
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    // Only fetch products if category is valid
+    if (validCategorySlugs.includes(categorySlug.toLowerCase())) {
+      fetchProducts();
+    }
+  }, [fetchProducts, categorySlug]);
 
   // Determine which products to display
   const displayProducts = useMockData ? filteredProducts : products;
@@ -108,6 +141,11 @@ export default function CategoryPage({ categorySlug }: CategoryPageProps) {
   const handlePageChange = (page: number) => {
     updatePage(page);
   };
+
+  // Don't render anything if category is invalid (will redirect)
+  if (!validCategorySlugs.includes(categorySlug.toLowerCase())) {
+    return null;
+  }
 
   if (isLoading && products.length === 0) {
     return (
@@ -131,18 +169,20 @@ export default function CategoryPage({ categorySlug }: CategoryPageProps) {
               <div className="h-24 bg-muted animate-pulse rounded" />
             </div>
           </div>
-          
+
           <div className="flex-1">
             <div className="flex items-center justify-between mb-6">
               <div className="h-6 bg-muted animate-pulse rounded w-32" />
               <div className="h-10 bg-muted animate-pulse rounded w-24" />
             </div>
-            
-            <AnimatedGrid className={`grid gap-6 items-stretch ${
-              viewMode === "grid"
-                ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-                : "grid-cols-1 lg:grid-cols-2"
-            }`}>
+
+            <AnimatedGrid
+              className={`grid gap-6 items-stretch ${
+                viewMode === "grid"
+                  ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                  : "grid-cols-1 lg:grid-cols-2"
+              }`}
+            >
               {Array.from({ length: 6 }).map((_, index) => (
                 <ProductCardSkeleton
                   key={index}
@@ -184,7 +224,7 @@ export default function CategoryPage({ categorySlug }: CategoryPageProps) {
             size="sm"
             onClick={() => setUseMockData(!useMockData)}
           >
-            {useMockData ? 'Using Mock Data' : 'Using API Data'}
+            {useMockData ? "Using Mock Data" : "Using API Data"}
           </Button>
         </div>
       </div>
@@ -192,12 +232,15 @@ export default function CategoryPage({ categorySlug }: CategoryPageProps) {
       {/* Sort Controls */}
       <div className="flex items-center justify-between">
         <SortControls
-          sortBy={state.filters.sort || 'featured'}
+          sortBy={state.filters.sort || "featured"}
           viewMode={viewMode}
           onSortChange={(sort) => updateFilters({ sort })}
           onViewModeChange={setViewMode}
           totalProducts={displayTotal}
           filteredCount={displayCount}
+          currentPageCount={paginatedProducts.length}
+          currentPage={state.page}
+          itemsPerPage={itemsPerPage}
         />
         {/* Mobile Navigation */}
         <MobileNavigation
@@ -206,6 +249,7 @@ export default function CategoryPage({ categorySlug }: CategoryPageProps) {
           onResetFilters={resetFilters}
           filterCounts={filterCounts}
           activeFiltersCount={getActiveFiltersCount()}
+          hideCategoryFilter={true}
         />
       </div>
 
@@ -219,6 +263,7 @@ export default function CategoryPage({ categorySlug }: CategoryPageProps) {
           filterCounts={filterCounts}
           activeFiltersCount={getActiveFiltersCount()}
           isMobile={false}
+          hideCategoryFilter={true}
         />
 
         {/* Products Grid - 3 columns */}
@@ -264,10 +309,14 @@ export default function CategoryPage({ categorySlug }: CategoryPageProps) {
                   <PaginationItem>
                     <PaginationPrevious
                       onClick={() => handlePageChange(state.page - 1)}
-                      className={state.page <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      className={
+                        state.page <= 1
+                          ? "pointer-events-none opacity-50"
+                          : "cursor-pointer"
+                      }
                     />
                   </PaginationItem>
-                  
+
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                     let pageNumber;
                     if (totalPages <= 5) {
@@ -279,7 +328,7 @@ export default function CategoryPage({ categorySlug }: CategoryPageProps) {
                     } else {
                       pageNumber = state.page - 2 + i;
                     }
-                    
+
                     return (
                       <PaginationItem key={pageNumber}>
                         <PaginationLink
@@ -292,11 +341,15 @@ export default function CategoryPage({ categorySlug }: CategoryPageProps) {
                       </PaginationItem>
                     );
                   })}
-                  
+
                   <PaginationItem>
                     <PaginationNext
                       onClick={() => handlePageChange(state.page + 1)}
-                      className={state.page >= totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      className={
+                        state.page >= totalPages
+                          ? "pointer-events-none opacity-50"
+                          : "cursor-pointer"
+                      }
                     />
                   </PaginationItem>
                 </PaginationContent>
@@ -305,53 +358,53 @@ export default function CategoryPage({ categorySlug }: CategoryPageProps) {
           )}
 
           {/* Show skeleton cards when no products and no additional filters applied */}
-          {!isLoading && displayProducts.length === 0 && !(state.filters.search || getActiveFiltersCount() > 1) && (
-            <AnimatedGrid
-              className={`grid gap-6 items-stretch ${
-                viewMode === "grid"
-                  ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-                  : "grid-cols-1"
-              }`}
-            >
-              {Array.from({ length: 6 }).map((_, index) => (
-                <ProductCardSkeleton
-                  key={index}
-                  className="pt-0"
-                  variant={viewMode === "list" ? "compact" : "default"}
-                />
-              ))}
-            </AnimatedGrid>
-          )}
+          {!isLoading &&
+            displayProducts.length === 0 &&
+            !(state.filters.search || getActiveFiltersCount() > 1) && (
+              <AnimatedGrid
+                className={`grid gap-6 items-stretch ${
+                  viewMode === "grid"
+                    ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                    : "grid-cols-1"
+                }`}
+              >
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <ProductCardSkeleton
+                    key={index}
+                    className="pt-0"
+                    variant={viewMode === "list" ? "compact" : "default"}
+                  />
+                ))}
+              </AnimatedGrid>
+            )}
 
           {/* No products message - only show when filters/search are applied */}
-          {!isLoading && displayProducts.length === 0 && (state.filters.search || getActiveFiltersCount() > 1) && (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">
-                {state.filters.search || getActiveFiltersCount() > 1 
-                  ? "No products found matching your criteria" 
-                  : "No products found in this category"
-                }
-              </p>
-              <div className="flex flex-col sm:flex-row gap-2 justify-center mt-4">
-                {state.filters.search && (
-                  <Button
-                    variant="outline"
-                    onClick={() => updateFilters({ search: '' })}
-                  >
-                    Clear search
-                  </Button>
-                )}
-                {getActiveFiltersCount() > 1 && (
-                  <Button
-                    variant="outline"
-                    onClick={resetFilters}
-                  >
-                    Clear all filters
-                  </Button>
-                )}
+          {!isLoading &&
+            displayProducts.length === 0 &&
+            (state.filters.search || getActiveFiltersCount() > 1) && (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">
+                  {state.filters.search || getActiveFiltersCount() > 1
+                    ? "No products found matching your criteria"
+                    : "No products found in this category"}
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2 justify-center mt-4">
+                  {state.filters.search && (
+                    <Button
+                      variant="outline"
+                      onClick={() => updateFilters({ search: "" })}
+                    >
+                      Clear search
+                    </Button>
+                  )}
+                  {getActiveFiltersCount() > 1 && (
+                    <Button variant="outline" onClick={resetFilters}>
+                      Clear all filters
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       </div>
     </div>
