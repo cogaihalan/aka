@@ -15,7 +15,7 @@ import {
   FeaturedProductSlider,
 } from "@/components/product";
 import { productDetailService } from "@/lib/api/services/storefront/product-detail";
-import { Product } from "@/lib/api";
+import { Product } from "@/lib/api/types-only";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 

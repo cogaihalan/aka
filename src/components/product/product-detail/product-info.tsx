@@ -22,7 +22,7 @@ import {
   useWishlistAuthStatus,
 } from "@/stores/wishlist-store";
 import { cn } from "@/lib/utils";
-import { Product } from "@/lib/api";
+import { Product } from "@/lib/api/types-only";
 
 interface ProductInfoProps {
   product: Product & {

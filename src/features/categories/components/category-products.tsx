@@ -37,8 +37,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-  adminCategoryService,
+import { adminCategoryService } from "@/lib/api";
+import type {
   CategoryWithProducts,
   Product,
 } from "@/lib/api/types";

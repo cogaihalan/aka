@@ -1,4 +1,4 @@
-import { ApiError } from "@/lib/api/client";
+import { ApiError } from "@/lib/api/shared-types";
 
 // Error types
 interface ErrorDetails {

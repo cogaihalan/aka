@@ -1,6 +1,6 @@
 import { useAuth } from "@clerk/nextjs";
 import { isMockMode, getApiBaseUrl } from "@/lib/api/config";
-import type { ApiConfig, ApiResponse, RequestOptions } from "@/lib/api/client";
+import type { ApiConfig, ApiResponse, RequestOptions } from "@/lib/api/shared-types";
 
 // Browser API Client that works in client components
 export class BrowserApiClient {

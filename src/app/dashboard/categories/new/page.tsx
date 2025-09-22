@@ -53,9 +53,6 @@ async function NewCategoryPage() {
   return (
     <CategoryForm
       categories={categories}
-      onSuccess={() => {
-        // This will be handled by the form component
-      }}
     />
   );
 }

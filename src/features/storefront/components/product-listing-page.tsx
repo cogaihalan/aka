@@ -14,7 +14,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { storefrontCatalogBrowserService } from "@/lib/api/services/storefront/catalog-browser";
-import type { Product } from "@/lib/api";
+import type { Product } from "@/lib/api/types-only";
 import { ProductCard } from "@/components/product/product-card";
 import { ProductCardSkeleton } from "@/components/product/product-card-skeleton";
 import { NavigationSidebar, SortControls, MobileNavigation } from "@/components/navigation";

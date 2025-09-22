@@ -1,12 +1,10 @@
 import { auth } from "@clerk/nextjs/server";
+import type { ApiConfig, ApiResponse, RequestOptions } from "./shared-types";
+import { ApiError } from "./shared-types";
 
-// API Configuration
-export interface ApiConfig {
-  baseUrl: string;
-  timeout?: number;
-  retries?: number;
-  retryDelay?: number;
-}
+// Re-export shared types
+export type { ApiConfig, ApiResponse, RequestOptions };
+export { ApiError };
 
 // Default configuration
 const DEFAULT_CONFIG: ApiConfig = {
@@ -15,40 +13,6 @@ const DEFAULT_CONFIG: ApiConfig = {
   retries: 3,
   retryDelay: 1000,
 };
-
-// API Response wrapper
-export interface ApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  message?: string;
-  error?: string;
-  timestamp: string;
-  requestId?: string;
-}
-
-// API Error class
-export class ApiError extends Error {
-  constructor(
-    public status: number,
-    public message: string,
-    public requestId?: string,
-    public details?: any
-  ) {
-    super(message);
-    this.name = "ApiError";
-  }
-}
-
-// Request options
-export interface RequestOptions {
-  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
-  headers?: Record<string, string>;
-  body?: any;
-  timeout?: number;
-  retries?: number;
-  cache?: RequestCache;
-  next?: NextFetchRequestConfig;
-}
 
 // API Client class
 export class ApiClient {

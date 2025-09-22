@@ -22,7 +22,7 @@ import {
 import { useNavigation } from "@/hooks/use-navigation";
 import { useProductFilters } from "@/hooks/use-product-filters";
 import { MOCK_PRODUCTS } from "@/constants/mock-products";
-import type { Product } from "@/lib/api";
+import type { Product } from "@/lib/api/types-only";
 import {
   AnimatedGrid,
   LoadingOverlay,
@@ -67,7 +67,7 @@ export default function CategoryPage({ categorySlug }: CategoryPageProps) {
       // Don't include category in filters since we're already filtering by category in fetchProducts
     },
   });
-
+ 
   // View mode is handled separately from navigation state
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 

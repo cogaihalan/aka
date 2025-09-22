@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from 'react';
-import { Product } from '@/lib/api';
+import { Product } from '@/lib/api/types-only';
 import { NavigationFilters, FilterCounts } from '@/types/navigation';
 
 // Extended Product interface for mock data

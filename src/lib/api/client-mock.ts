@@ -1,5 +1,5 @@
 import { isMockMode, getApiBaseUrl } from "@/lib/api/config";
-import type { ApiConfig, ApiResponse, RequestOptions } from "@/lib/api/client";
+import type { ApiConfig, ApiResponse, RequestOptions } from "@/lib/api/shared-types";
 
 // Mock API Client that works with Next.js API routes
 export class MockApiClient {
@@ -161,11 +161,11 @@ export const createApiClient = () => {
   if (isMockMode()) {
     return new MockApiClient();
   } else {
-    // Import the real API client
-    const { ApiClient } = require("./client");
-    return new ApiClient();
+    // For non-mock mode, you should import the real client from a server-only context
+    // This factory function should only be used in mock mode from client components
+    throw new Error("Real API client should be imported from @/lib/api/server in server-only contexts");
   }
 };
 
 // Export the default client
-export const apiClient = createApiClient();
+export const apiClient = new MockApiClient();

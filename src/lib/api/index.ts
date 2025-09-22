@@ -1,6 +1,5 @@
-// Main API exports
+// Main API exports - CLIENT SAFE (no server-only imports)
 export { apiClient, createApiClient } from "./client-mock";
-export { ApiClient, ApiError } from "./client";
 export { browserApiClient, createBrowserApiClient } from "./client-browser";
 export * from "./types";
 

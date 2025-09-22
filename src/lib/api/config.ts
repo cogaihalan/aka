@@ -24,5 +24,7 @@ export const isMockMode = () => API_CONFIG.mode === "mock";
 
 // Helper function to get the appropriate base URL
 export const getApiBaseUrl = () => {
-  return isMockMode() ? "/api/mock" : API_CONFIG.real.baseUrl;
+  return isMockMode() 
+  ? process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api" 
+  : API_CONFIG.real.baseUrl;
 };
