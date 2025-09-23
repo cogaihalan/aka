@@ -6,18 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { FeaturedProductCard } from "./featured-product-card";
 import { cn } from "@/lib/utils";
-
-interface Product {
-    id: number;
-    name: string;
-    description: string;
-    price: number;
-    compareAtPrice?: number;
-    rating: number;
-    image?: string;
-    category?: string;
-    inStock?: boolean;
-}
+import { Product } from "@/types/product";
 
 interface FeaturedProductSliderProps {
     products: Product[];

@@ -30,6 +30,8 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
+  SortingState,
+  ColumnFiltersState,
 } from "@tanstack/react-table";
 import { Category } from "@/lib/api/types";
 import {
@@ -54,8 +56,8 @@ export function CategoryTable<TData, TValue>({
   totalItems,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = useState({});
-  const [sorting, setSorting] = useState([]);
-  const [columnFilters, setColumnFilters] = useState([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
 
@@ -82,8 +84,6 @@ export function CategoryTable<TData, TValue>({
     <div className="space-y-4">
       <DataTableToolbar
         table={table}
-        globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter}
       />
       <div className="rounded-md border">
         <Table>
@@ -135,7 +135,7 @@ export function CategoryTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} totalItems={totalItems} />
+      <DataTablePagination table={table} />
     </div>
   );
 }

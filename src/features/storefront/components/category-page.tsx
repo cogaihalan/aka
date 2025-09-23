@@ -21,15 +21,15 @@ import {
 } from "@/components/navigation";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useProductFilters } from "@/hooks/use-product-filters";
-import { MOCK_PRODUCTS } from "@/constants/mock-products";
-import type { Product } from "@/lib/api/types-only";
+// Mock products removed - using API data only
+import type { Product } from "@/lib/api/types";
 import {
   AnimatedGrid,
   LoadingOverlay,
 } from "@/components/ui/animated-container";
 
-// Extended Product interface for mock data
-interface MockProduct extends Product {
+// Extended Product interface for additional properties
+interface ExtendedProduct extends Product {
   rating?: number;
   inStock?: boolean;
   color?: string;
@@ -71,9 +71,9 @@ export default function CategoryPage({ categorySlug }: CategoryPageProps) {
   // View mode is handled separately from navigation state
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  const [products, setProducts] = useState<MockProduct[]>([]);
+  const [products, setProducts] = useState<ExtendedProduct[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [useMockData, setUseMockData] = useState(true);
+  // Mock data removed - using API data only
 
   // Fetch products for the category
   const fetchProducts = useCallback(async () => {
@@ -81,18 +81,7 @@ export default function CategoryPage({ categorySlug }: CategoryPageProps) {
       setIsLoading(true);
       setError(null);
 
-      if (useMockData) {
-        // Filter mock products by category
-        const categoryProducts = MOCK_PRODUCTS.filter(
-          (product) =>
-            product.category?.slug.toLowerCase() === categorySlug.toLowerCase()
-        );
-        setTimeout(() => {
-          setProducts(categoryProducts);
-          setIsLoading(false);
-        }, 500);
-        return;
-      }
+      // Mock data removed - using API data only
 
       // TODO: Implement API call for category products
       setProducts([]);
@@ -101,12 +90,12 @@ export default function CategoryPage({ categorySlug }: CategoryPageProps) {
       setError(err instanceof Error ? err.message : "Failed to fetch products");
       setIsLoading(false);
     }
-  }, [categorySlug, useMockData, setIsLoading]);
+  }, [categorySlug, setIsLoading]);
 
-  // Use product filters hook for client-side filtering when using mock data
+  // Use product filters hook for client-side filtering
   const { filteredProducts, filterCounts, totalProducts, filteredCount } =
     useProductFilters({
-      products: useMockData ? products : [],
+      products: products,
       filters: state.filters,
     });
 
@@ -127,9 +116,9 @@ export default function CategoryPage({ categorySlug }: CategoryPageProps) {
   }, [fetchProducts, categorySlug]);
 
   // Determine which products to display
-  const displayProducts = useMockData ? filteredProducts : products;
-  const displayCount = useMockData ? filteredCount : products.length;
-  const displayTotal = useMockData ? totalProducts : products.length;
+  const displayProducts = products;
+  const displayCount = products.length;
+  const displayTotal = products.length;
 
   // Pagination logic
   const itemsPerPage = state.limit;
@@ -217,16 +206,7 @@ export default function CategoryPage({ categorySlug }: CategoryPageProps) {
         <p className="text-muted-foreground">
           Browse our {categorySlug.replace("-", " ")} collection
         </p>
-        {/* Mock data toggle for development */}
-        <div className="mt-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setUseMockData(!useMockData)}
-          >
-            {useMockData ? "Using Mock Data" : "Using API Data"}
-          </Button>
-        </div>
+        {/* Mock data removed - using API data only */}
       </div>
 
       {/* Sort Controls */}

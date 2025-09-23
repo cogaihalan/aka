@@ -3,7 +3,7 @@ import {
   useMutation,
   useSearch,
 } from "@/lib/api/hooks/use-api";
-import { adminCategoryService } from "@/lib/api";
+import { unifiedCategoryService } from "@/lib/api/services/unified";
 import type {
   QueryParams,
   CreateCategoryRequest,
@@ -17,14 +17,17 @@ import type {
 export function useCategories(params: QueryParams = {}) {
   return usePaginatedApi(
     async (page: number, limit: number) => {
-      const response = await adminCategoryService.getCategories({
+      const response = await unifiedCategoryService.getCategories({
         ...params,
         page,
         limit,
       });
+      const categories = Array.isArray(response) ? response : response.categories;
+      const pagination = Array.isArray(response) ? { page: 1, limit: response.length, total: response.length, totalPages: 1, hasNext: false, hasPrev: false } : response.pagination;
+      
       return {
-        data: response.categories,
-        pagination: response.pagination,
+        data: categories,
+        pagination: pagination,
       };
     },
     {
@@ -36,20 +39,16 @@ export function useCategories(params: QueryParams = {}) {
 
 // Hook for category tree
 export function useCategoryTree() {
-  return useMutation<CategoryTree[]>({
-    mutationFn: async () => {
-      const response = await adminCategoryService.getCategoryTree();
-      return response.categories;
-    },
+  return useMutation<CategoryTree[]>(async () => {
+    const response = await unifiedCategoryService.getCategoryTree();
+    return response.categories;
   });
 }
 
 // Hook for single category
 export function useCategory(id: number) {
-  return useMutation<Category>({
-    mutationFn: async () => {
-      return await adminCategoryService.getCategory(id);
-    },
+  return useMutation<Category>(async () => {
+    return await unifiedCategoryService.getCategory(id);
   });
 }
 
@@ -57,7 +56,7 @@ export function useCategory(id: number) {
 export function useCategoryWithProducts(id: number, params: QueryParams = {}) {
   return usePaginatedApi(
     async (page: number, limit: number) => {
-      const response = await adminCategoryService.getCategoryWithProducts(id, {
+      const response = await unifiedCategoryService.getCategoryWithProducts(id, {
         ...params,
         page,
         limit,
@@ -84,116 +83,38 @@ export function useCategoryWithProducts(id: number, params: QueryParams = {}) {
 
 // Hook for category search
 export function useCategorySearch() {
-  return useSearch({
-    searchFn: async (query: string) => {
-      return await adminCategoryService.searchCategories(query);
-    },
+  return useSearch(async (query: string) => {
+    return await unifiedCategoryService.searchCategories(query);
   });
 }
 
 // Hook for creating category
 export function useCreateCategory() {
-  return useMutation<Category, CreateCategoryRequest>({
-    mutationFn: async (data: CreateCategoryRequest) => {
-      return await adminCategoryService.createCategory(data);
-    },
+  return useMutation<Category>(async (data: CreateCategoryRequest) => {
+    return await unifiedCategoryService.createCategory(data);
   });
 }
 
 // Hook for updating category
 export function useUpdateCategory() {
-  return useMutation<Category, UpdateCategoryRequest>({
-    mutationFn: async (data: UpdateCategoryRequest) => {
-      return await adminCategoryService.updateCategory(data);
-    },
+  return useMutation<Category>(async (data: UpdateCategoryRequest) => {
+    return await unifiedCategoryService.updateCategory(data);
   });
 }
 
 // Hook for deleting category
 export function useDeleteCategory() {
-  return useMutation<void, number>({
-    mutationFn: async (id: number) => {
-      return await adminCategoryService.deleteCategory(id);
-    },
+  return useMutation<void>(async (id: number) => {
+    return await unifiedCategoryService.deleteCategory(id);
   });
 }
 
-// Hook for category statistics
-export function useCategoryStats() {
-  return useMutation<{
-    totalCategories: number;
-    activeCategories: number;
-    inactiveCategories: number;
-    categoriesWithProducts: number;
-    totalProducts: number;
-  }>({
-    mutationFn: async () => {
-      return await adminCategoryService.getCategoryStats();
-    },
-  });
-}
 
-// Hook for assigning products to category
-export function useAssignProductsToCategory() {
-  return useMutation<
-    void,
-    {
-      categoryId: number;
-      productIds: number[];
-      positions?: Record<number, number>;
-    }
-  >({
-    mutationFn: async ({ categoryId, productIds, positions }) => {
-      return await adminCategoryService.assignProductsToCategory({
-        categoryId,
-        productIds,
-        positions,
-      });
-    },
-  });
-}
 
-// Hook for removing products from category
-export function useRemoveProductsFromCategory() {
-  return useMutation<void, { categoryId: number; productIds: number[] }>({
-    mutationFn: async ({ categoryId, productIds }) => {
-      return await adminCategoryService.removeProductsFromCategory(
-        categoryId,
-        productIds
-      );
-    },
-  });
-}
-
-// Hook for uncategorized products
-export function useUncategorizedProducts(params: QueryParams = {}) {
-  return usePaginatedApi(
-    async (page: number, limit: number) => {
-      const response = await adminCategoryService.getUncategorizedProducts({
-        ...params,
-        page,
-        limit,
-      });
-      return {
-        data: response.products,
-        pagination: response.pagination,
-      };
-    },
-    {
-      initialPage: params.page || 1,
-      initialLimit: params.limit || 20,
-    }
-  );
-}
 
 // Hook for validating category slug
 export function useValidateCategorySlug() {
-  return useMutation<
-    { isValid: boolean; message?: string },
-    { slug: string; excludeId?: number }
-  >({
-    mutationFn: async ({ slug, excludeId }) => {
-      return await adminCategoryService.validateSlug(slug, excludeId);
-    },
+  return useMutation<{ isValid: boolean; message?: string }>(async ({ slug, excludeId }: { slug: string; excludeId?: number }) => {
+    return await unifiedCategoryService.validateSlug(slug, excludeId);
   });
 }

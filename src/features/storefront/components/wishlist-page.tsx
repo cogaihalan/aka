@@ -148,7 +148,7 @@ export default function WishlistPage() {
                   <div className="flex-1 space-y-3">
                     {/* Category badge */}
                     <Badge variant="secondary" className="text-xs w-fit">
-                      {item.product.category?.name || "Uncategorized"}
+                      {item.product.primaryCategory?.name || "Uncategorized"}
                     </Badge>
 
                     {/* Product name */}
@@ -166,12 +166,12 @@ export default function WishlistPage() {
                     {/* Price */}
                     <div className="flex items-center gap-2">
                       <span className="text-lg font-bold">
-                        ${item.product.price}
+                        ${item.product.pricing.basePrice}
                       </span>
-                      {item.product.compareAtPrice &&
-                        item.product.compareAtPrice > item.product.price && (
+                      {item.product.pricing.compareAtPrice &&
+                        item.product.pricing.compareAtPrice > item.product.pricing.basePrice && (
                           <span className="text-sm text-muted-foreground line-through">
-                            ${item.product.compareAtPrice}
+                            ${item.product.pricing.compareAtPrice}
                           </span>
                         )}
                     </div>

@@ -96,7 +96,7 @@ export function CategoryTreeNode({
         {/* Category Image */}
         {category.image && (
           <img
-            src={category.image}
+            src={category.image.url}
             alt={category.name}
             className="h-6 w-6 rounded object-cover flex-shrink-0"
           />

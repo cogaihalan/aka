@@ -4,7 +4,6 @@ import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 import { DataTableSkeleton } from "@/components/ui/table/data-table-skeleton";
 import CategoryListingPage from "@/features/categories/components/category-listing";
-import { CategoryStats } from "@/features/categories/components/category-stats";
 import { searchParamsCache } from "@/lib/searchparams";
 import { cn } from "@/lib/utils";
 import { Plus, TreePine } from "lucide-react";
@@ -55,13 +54,6 @@ export default async function Page(props: pageProps) {
           </div>
         </div>
         <Separator />
-
-        {/* Category Statistics */}
-        {/* <Suspense fallback={<div>Loading statistics...</div>}>
-          <CategoryStats />
-        </Suspense> */}
-
-        {/* <Separator /> */}
 
         <Suspense
           fallback={

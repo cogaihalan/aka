@@ -16,7 +16,6 @@ A comprehensive category management system for the admin dashboard, built follow
 
 ### 📊 Admin Features
 
-- **Category Statistics**: Dashboard with key metrics
 - **Product Count Tracking**: See how many products are in each category
 - **Status Management**: Active/Inactive and Menu visibility controls
 - **Sort Order**: Customizable category ordering
@@ -78,7 +77,6 @@ src/
 │   │   ├── category-form.tsx      # Category form component
 │   │   ├── category-tree.tsx      # Tree view component
 │   │   ├── category-products.tsx  # Product management
-│   │   ├── category-stats.tsx     # Statistics dashboard
 │   │   └── category-tables/
 │   │       ├── index.tsx          # Data table wrapper
 │   │       └── columns.tsx        # Table column definitions
@@ -111,9 +109,8 @@ src/
 - `POST /api/mock/categories/[id]/products` - Assign products to category
 - `DELETE /api/mock/categories/[id]/products` - Remove products from category
 
-### Statistics
+### Uncategorized Products
 
-- `GET /api/mock/categories/stats` - Get category statistics
 - `GET /api/mock/categories/uncategorized-products` - Get uncategorized products
 
 ## Usage Examples

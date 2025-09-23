@@ -82,9 +82,9 @@ export const useCartStore = create<CartStore>()(
               productId: product.id,
               variantId: variantToUse?.id,
               name: product.name,
-              price: variantToUse?.price || product.price,
+              price: variantToUse?.price || product.pricing.basePrice,
               compareAtPrice:
-                variantToUse?.compareAtPrice || product.compareAtPrice,
+                variantToUse?.compareAtPrice || product.pricing.compareAtPrice,
               quantity,
               image: product.images?.[0]?.url || variantToUse?.images?.[0]?.url,
               attributes: {
@@ -92,7 +92,7 @@ export const useCartStore = create<CartStore>()(
                 ...(variantToUse?.attributes || {}),
               },
               sku: variantToUse?.sku || product.sku,
-              weight: variantToUse?.weight || product.weight,
+              weight: variantToUse?.weight || product.shipping?.weight,
               maxQuantity:
                 variantToUse?.inventory?.quantity ||
                 product.inventory?.quantity,

@@ -68,7 +68,7 @@ export const columns: ColumnDef<Category>[] = [
           <div className="flex items-center space-x-2">
             {category.image && (
               <img
-                src={category.image}
+                src={category.image.url}
                 alt={category.name}
                 className="h-8 w-8 rounded object-cover"
               />

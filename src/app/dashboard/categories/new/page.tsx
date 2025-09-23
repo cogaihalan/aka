@@ -46,9 +46,10 @@ export default async function Page() {
 
 async function NewCategoryPage() {
   // Get all categories for parent selection
-  const { categories } = await adminCategoryService.getCategories({
+  const result = await adminCategoryService.getCategories({
     limit: 1000,
   });
+  const categories = Array.isArray(result) ? result : result.categories;
 
   return <CategoryForm categories={categories} />;
 }

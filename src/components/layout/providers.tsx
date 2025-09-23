@@ -7,6 +7,7 @@ import { ActiveThemeProvider } from "@/components/active-theme";
 import { CartProvider } from "@/components/providers/cart-provider";
 import { QuickViewProvider } from "@/components/providers/quick-view-provider";
 import { WishlistAuthProvider } from "@/components/providers/wishlist-auth-provider";
+import { AuthSyncProvider } from "@/components/providers/auth-sync-provider";
 
 export default function Providers({
   activeThemeValue,
@@ -26,11 +27,13 @@ export default function Providers({
             baseTheme: resolvedTheme === "dark" ? dark : undefined,
           }}
         >
-          <WishlistAuthProvider>
-            <CartProvider>
-              <QuickViewProvider>{children}</QuickViewProvider>
-            </CartProvider>
-          </WishlistAuthProvider>
+          <AuthSyncProvider>
+            <WishlistAuthProvider>
+              <CartProvider>
+                <QuickViewProvider>{children}</QuickViewProvider>
+              </CartProvider>
+            </WishlistAuthProvider>
+          </AuthSyncProvider>
         </ClerkProvider>
       </ActiveThemeProvider>
     </>

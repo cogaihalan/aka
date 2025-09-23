@@ -24,8 +24,8 @@ export default async function CategoryListingPage({}: CategoryListingPage) {
   };
 
   const data = await adminCategoryService.getCategories(filters);
-  const totalCategories = data.pagination.total;
-  const categories = data.categories;
+  const totalCategories = Array.isArray(data) ? data.length : data.pagination.total;
+  const categories = Array.isArray(data) ? data : data.categories;
 
   return (
     <CategoryTable

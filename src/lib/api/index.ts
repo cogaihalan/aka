@@ -1,14 +1,27 @@
 // Main API exports - CLIENT SAFE (no server-only imports)
 export { apiClient, createApiClient } from "./client-mock";
-export { browserApiClient, createBrowserApiClient } from "./client-browser";
 export * from "./types";
 
-// Admin services
-export * from "./services/admin";
+// Unified services (recommended for most use cases)
+export { 
+  unifiedProductService, 
+  unifiedCategoryService,
+  unifiedAnalyticsService,
+  unifiedCustomerService,
+  unifiedOrderService
+} from "./services/unified";
+
+// Admin services (aliases to unified services for backward compatibility)
+export { 
+  unifiedProductService as adminProductService,
+  unifiedCategoryService as adminCategoryService,
+  unifiedOrderService as adminOrderService,
+  unifiedCustomerService as adminCustomerService,
+  unifiedAnalyticsService as adminAnalyticsService
+} from "./services/unified";
 
 // Storefront services
 export * from "./services/storefront";
-export { storefrontCatalogBrowserService } from "./services/storefront/catalog-browser";
 
 // Configuration
 export { API_CONFIG, isMockMode, getApiBaseUrl } from "./config";

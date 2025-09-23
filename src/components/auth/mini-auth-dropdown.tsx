@@ -225,6 +225,21 @@ export function MiniAuthDropdown({ className }: MiniAuthDropdownProps) {
                                 </Link>
                             </Button>
 
+                            {/* Admin Dashboard Link */}
+                            {user.publicMetadata?.role === "admin" && (
+                                <Button
+                                    asChild
+                                    variant="ghost"
+                                    className="w-full justify-start h-10 px-3"
+                                    onClick={closeDropdown}
+                                >
+                                    <Link href="/dashboard" className="flex items-center gap-3">
+                                        <Settings className="w-4 h-4" />
+                                        <span>Dashboard</span>
+                                    </Link>
+                                </Button>
+                            )}
+
                             <Button
                                 variant="ghost"
                                 className="w-full justify-start h-10 px-3 text-destructive hover:text-destructive hover:bg-destructive/10"

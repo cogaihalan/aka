@@ -1,11 +1,11 @@
 "use client";
 
 import { useMemo } from 'react';
-import { Product } from '@/lib/api/types-only';
+import { Product } from '@/types/product';
 import { NavigationFilters, FilterCounts } from '@/types/navigation';
 
-// Extended Product interface for mock data
-interface MockProduct extends Product {
+// Extended Product interface for additional filtering properties
+interface ExtendedProduct extends Product {
   rating?: number;
   inStock?: boolean;
   color?: string;
@@ -13,7 +13,7 @@ interface MockProduct extends Product {
 }
 
 interface UseProductFiltersOptions {
-  products: MockProduct[];
+  products: ExtendedProduct[];
   filters: NavigationFilters;
 }
 
@@ -35,7 +35,7 @@ export function useProductFilters({ products, filters }: UseProductFiltersOption
     if (filters.priceRange) {
       const [minPrice, maxPrice] = filters.priceRange;
       filtered = filtered.filter(product => {
-        const price = product.price || 0;
+        const price = product.pricing?.basePrice || 0;
         return price >= minPrice && price <= maxPrice;
       });
     }
@@ -43,7 +43,7 @@ export function useProductFilters({ products, filters }: UseProductFiltersOption
     // Category filter
     if (filters.categories && filters.categories.length > 0) {
       filtered = filtered.filter(product =>
-        product.category && filters.categories!.includes(product.category.slug.toLowerCase())
+        product.primaryCategory && filters.categories!.includes(product.primaryCategory.slug.toLowerCase())
       );
     }
 
@@ -65,7 +65,7 @@ export function useProductFilters({ products, filters }: UseProductFiltersOption
           return product.inStock;
         }
         if (filters.availability!.includes('on-sale')) {
-          return product.compareAtPrice && product.compareAtPrice > (product.price || 0);
+          return product.pricing?.compareAtPrice && product.pricing.compareAtPrice > (product.pricing?.basePrice || 0);
         }
         if (filters.availability!.includes('new-arrival')) {
           const createdAt = product.createdAt;
@@ -91,9 +91,9 @@ export function useProductFilters({ products, filters }: UseProductFiltersOption
 
     switch (filters.sort) {
       case 'price-low':
-        return sorted.sort((a, b) => (a.price || 0) - (b.price || 0));
+        return sorted.sort((a, b) => (a.pricing?.basePrice || 0) - (b.pricing?.basePrice || 0));
       case 'price-high':
-        return sorted.sort((a, b) => (b.price || 0) - (a.price || 0));
+        return sorted.sort((a, b) => (b.pricing?.basePrice || 0) - (a.pricing?.basePrice || 0));
       case 'rating':
         return sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
       case 'newest':
@@ -118,8 +118,8 @@ export function useProductFilters({ products, filters }: UseProductFiltersOption
     // Category counts
     const categoryCounts: { [key: string]: number } = {};
     products.forEach(product => {
-      if (product.category) {
-        const category = product.category.slug.toLowerCase();
+      if (product.primaryCategory) {
+        const category = product.primaryCategory.slug.toLowerCase();
         categoryCounts[category] = (categoryCounts[category] || 0) + 1;
       }
     });
@@ -146,7 +146,7 @@ export function useProductFilters({ products, filters }: UseProductFiltersOption
 
     products.forEach(product => {
       if (product.inStock) inStockCount++;
-      if (product.compareAtPrice && product.compareAtPrice > (product.price || 0)) onSaleCount++;
+      if (product.pricing?.compareAtPrice && product.pricing.compareAtPrice > (product.pricing?.basePrice || 0)) onSaleCount++;
       
       const createdAt = product.createdAt;
       if (createdAt) {

@@ -3,7 +3,7 @@ import {
   useMutation,
   useSearch,
 } from "@/lib/api/hooks/use-api";
-import { adminProductService } from "@/lib/api";
+import { unifiedProductService } from "@/lib/api";
 import type {
   QueryParams,
   CreateProductRequest,
@@ -14,7 +14,7 @@ import type {
 export function useProducts(params: QueryParams = {}) {
   return usePaginatedApi(
     async (page: number, limit: number) => {
-      const response = await adminProductService.getProducts({
+      const response = await unifiedProductService.getProducts({
         ...params,
         page,
         limit,
@@ -35,7 +35,7 @@ export function useProducts(params: QueryParams = {}) {
 export function useProductSearch() {
   return useSearch(
     async (query: string) => {
-      const response = await adminProductService.getProducts({
+      const response = await unifiedProductService.getProducts({
         search: query,
         limit: 10,
       });
@@ -52,7 +52,7 @@ export function useProductSearch() {
 export function useCreateProduct() {
   return useMutation(
     async (data: CreateProductRequest) => {
-      return await adminProductService.createProduct(data);
+      return await unifiedProductService.createProduct(data);
     },
     {
       onSuccess: (product) => {
@@ -66,7 +66,7 @@ export function useCreateProduct() {
 export function useUpdateProduct() {
   return useMutation(
     async ({ id, data }: { id: number; data: UpdateProductRequest }) => {
-      return await adminProductService.updateProduct(id, data);
+      return await unifiedProductService.updateProduct(id, data);
     },
     {
       onSuccess: (product) => {
@@ -80,7 +80,7 @@ export function useUpdateProduct() {
 export function useDeleteProduct() {
   return useMutation(
     async (id: number) => {
-      await adminProductService.deleteProduct(id);
+      await unifiedProductService.deleteProduct(id);
       return id;
     },
     {
@@ -97,12 +97,12 @@ export function useBulkProductOperations() {
     async (
       updates: Array<{ id: number; data: Partial<UpdateProductRequest> }>
     ) => {
-      return await adminProductService.bulkUpdateProducts(updates);
+      return await unifiedProductService.bulkUpdateProducts(updates);
     }
   );
 
   const deleteMutation = useMutation(async (ids: number[]) => {
-    await adminProductService.bulkDeleteProducts(ids);
+    await unifiedProductService.bulkDeleteProducts(ids);
     return ids;
   });
 
@@ -115,15 +115,15 @@ export function useBulkProductOperations() {
 // Hook for product status management
 export function useProductStatus() {
   const publishMutation = useMutation(async (id: number) => {
-    return await adminProductService.publishProduct(id);
+    return await unifiedProductService.publishProduct(id);
   });
 
   const unpublishMutation = useMutation(async (id: number) => {
-    return await adminProductService.unpublishProduct(id);
+    return await unifiedProductService.unpublishProduct(id);
   });
 
   const archiveMutation = useMutation(async (id: number) => {
-    return await adminProductService.archiveProduct(id);
+    return await unifiedProductService.archiveProduct(id);
   });
 
   return {

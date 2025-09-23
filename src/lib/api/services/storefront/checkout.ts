@@ -4,8 +4,8 @@ import type {
   Cart,
   Address,
   PaymentInfo,
-  ShippingInfo,
 } from "@/lib/api/types";
+import type { ShippingInfo } from "@/types/product";
 
 export class StorefrontCheckoutService {
   private basePath = "/storefront/checkout";

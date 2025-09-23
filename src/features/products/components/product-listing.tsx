@@ -1,5 +1,5 @@
 import { Product } from '@/constants/data';
-import { fakeProducts } from '@/constants/mock-api';
+// Mock API removed - using real API data only
 import { searchParamsCache } from '@/lib/searchparams';
 import { ProductTable } from './product-tables';
 import { columns } from './product-tables/columns';
@@ -20,7 +20,8 @@ export default async function ProductListingPage({}: ProductListingPage) {
     ...(categories && { categories: categories })
   };
 
-  const data = await fakeProducts.getProducts(filters);
+  // TODO: Implement API call to get products
+  const data = { products: [], total_products: 0 };
   const totalProducts = data.total_products;
   const products: Product[] = data.products;
 

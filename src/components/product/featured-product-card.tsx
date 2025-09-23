@@ -17,18 +17,10 @@ import {
 } from "@/stores/wishlist-store";
 import { cn } from "@/lib/utils";
 
+import { Product } from "@/types/product";
+
 interface FeaturedProductCardProps {
-  product: {
-    id: number;
-    name: string;
-    description: string;
-    price: number;
-    compareAtPrice?: number;
-    rating: number;
-    image?: string;
-    category?: string;
-    inStock?: boolean;
-  };
+  product: Product;
   className?: string;
 }
 
@@ -59,147 +51,7 @@ export function FeaturedProductCard({
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
-    // Convert to Product type for the cart
-    const productForCart = {
-      id: product.id,
-      name: product.name,
-      slug: `product-${product.id}`,
-      description: product.description,
-      shortDescription: product.description,
-      sku: `PROD-${product.id}`,
-      barcode: undefined,
-      categories: [
-        {
-          id: 1,
-          name: product.category || "General",
-          slug: "general",
-          description: "",
-          shortDescription: "",
-          level: 1,
-          path: "/general",
-          parentId: undefined,
-          children: [],
-          seo: { title: product.category || "General", description: "" },
-          isActive: true,
-          includeInMenu: true,
-          isAnchor: false,
-          displayMode: "products_only" as const,
-          customLayoutUpdate: undefined,
-          customApplyToProducts: undefined,
-          customDesign: undefined,
-          image: undefined,
-          thumbnail: undefined,
-          metaImage: undefined,
-          attributes: {},
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      ],
-      primaryCategory: {
-        id: 1,
-        name: product.category || "General",
-        slug: "general",
-        description: "",
-        shortDescription: "",
-        level: 1,
-        path: "/general",
-        parentId: undefined,
-        children: [],
-        seo: { title: product.category || "General", description: "" },
-        isActive: true,
-        includeInMenu: true,
-        isAnchor: false,
-        displayMode: "products_only" as const,
-        customLayoutUpdate: undefined,
-        customApplyToProducts: undefined,
-        customDesign: undefined,
-        image: undefined,
-        thumbnail: undefined,
-        metaImage: undefined,
-        attributes: {},
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      brand: undefined,
-      tags: [],
-      images: product.image
-        ? [
-            {
-              id: 1,
-              url: product.image,
-              alt: product.name,
-              title: product.name,
-              caption: "",
-              order: 0,
-              isPrimary: true,
-              type: "image" as const,
-              mimeType: "image/jpeg",
-              fileSize: 0,
-              dimensions: { width: 200, height: 200 },
-            },
-          ]
-        : [],
-      videos: [],
-      documents: [],
-      gallery: [],
-      variants: [],
-      hasVariants: false,
-      variantAttributes: [],
-      pricing: {
-        basePrice: product.price,
-        price: product.price,
-        compareAtPrice: product.compareAtPrice,
-        costPrice: 0,
-        margin: 0,
-        markup: 0,
-        currency: "USD",
-        taxClass: "standard",
-        taxIncluded: false,
-      },
-      inventory: {
-        quantity: product.inStock ? 10 : 0,
-        reserved: 0,
-        available: product.inStock ? 10 : 0,
-        trackQuantity: true,
-        allowBackorder: false,
-        allowPreorder: false,
-        minQuantity: 1,
-        lowStockThreshold: 5,
-        outOfStockThreshold: 0,
-        stockStatus: product.inStock ? "in_stock" : "out_of_stock",
-        lastUpdated: new Date().toISOString(),
-      },
-      shipping: {
-        weight: 0,
-        dimensions: { length: 0, width: 0, height: 0 },
-        requiresShipping: true,
-        freeShipping: false,
-        shippingClass: "standard",
-      },
-      attributes: [],
-      customAttributes: {},
-      relatedProducts: [],
-      reviews: [],
-      ratings: [],
-      averageRating: product.rating || 0,
-      totalReviews: 0,
-      seo: { title: product.name, description: product.description },
-      status: (product.inStock ? "active" : "inactive") as
-        | "active"
-        | "inactive"
-        | "draft"
-        | "archived",
-      featured: true,
-      visibility: "visible" as const,
-      productType: "simple" as const,
-      version: 1,
-      isActive: product.inStock || false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    addToCart(productForCart, undefined, 1);
+    addToCart(product, undefined, 1);
   };
 
   const handleWishlist = (e: React.MouseEvent) => {
@@ -214,116 +66,14 @@ export function FeaturedProductCard({
     if (isInWishlistState) {
       removeFromWishlist(product.id);
     } else {
-      // Convert to Product type for wishlist
-      const productForWishlist = {
-        id: product.id,
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        compareAtPrice: product.compareAtPrice,
-        sku: `PROD-${product.id}`,
-        category: {
-          id: 1,
-          name: product.category || "General",
-          slug: "general",
-          level: 1,
-          path: "/general",
-          seo: { title: product.category || "General", description: "" },
-          isActive: true,
-          includeInMenu: true,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        brand: undefined,
-        tags: [],
-        images: product.image
-          ? [
-              {
-                id: 1,
-                url: product.image,
-                alt: product.name,
-                order: 0,
-                isPrimary: true,
-              },
-            ]
-          : [],
-        variants: [],
-        inventory: {
-          quantity: product.inStock ? 10 : 0,
-          reserved: 0,
-          available: product.inStock ? 10 : 0,
-          trackQuantity: true,
-          allowBackorder: false,
-        },
-        seo: { title: product.name, description: product.description },
-        status: (product.inStock ? "active" : "inactive") as
-          | "active"
-          | "inactive"
-          | "draft"
-          | "archived",
-        featured: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      addToWishlist(productForWishlist);
+      addToWishlist(product);
     }
   };
 
   const handleQuickView = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    // Convert to Product type for quick view
-    const productForQuickView = {
-      id: product.id,
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      compareAtPrice: product.compareAtPrice,
-      sku: `PROD-${product.id}`,
-      category: {
-        id: 1,
-        name: product.category || "General",
-        slug: "general",
-        level: 1,
-        path: "/general",
-        seo: { title: product.category || "General", description: "" },
-        isActive: true,
-        includeInMenu: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      brand: undefined,
-      tags: [],
-      images: product.image
-        ? [
-            {
-              id: 1,
-              url: product.image,
-              alt: product.name,
-              order: 0,
-              isPrimary: true,
-            },
-          ]
-        : [],
-      variants: [],
-      inventory: {
-        quantity: product.inStock ? 10 : 0,
-        reserved: 0,
-        available: product.inStock ? 10 : 0,
-        trackQuantity: true,
-        allowBackorder: false,
-      },
-      seo: { title: product.name, description: product.description },
-      status: (product.inStock ? "active" : "inactive") as
-        | "active"
-        | "inactive"
-        | "draft"
-        | "archived",
-      featured: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    openQuickView(productForQuickView);
+    openQuickView(product);
   };
 
   return (
@@ -335,8 +85,8 @@ export function FeaturedProductCard({
     >
       <div className="aspect-square bg-muted rounded-t-lg overflow-hidden relative">
         <Image
-          src={product.image || "/assets/placeholder-image.jpeg"}
-          alt={product.name}
+          src={product.images?.[0]?.url || "/assets/placeholder-image.jpeg"}
+          alt={product.images?.[0]?.alt || product.name}
           width={300}
           height={300}
           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
@@ -399,7 +149,7 @@ export function FeaturedProductCard({
               <Star
                 key={star}
                 className={`h-4 w-4 ${
-                  star <= Math.floor(product.rating)
+                  star <= Math.floor(product.averageRating || 0)
                     ? "fill-yellow-400 text-yellow-400"
                     : "text-muted-foreground"
                 }`}
@@ -419,11 +169,11 @@ export function FeaturedProductCard({
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-lg font-bold">${product.price}</span>
-              {product.compareAtPrice &&
-                product.compareAtPrice > product.price && (
+              <span className="text-lg font-bold">${product.pricing.basePrice}</span>
+              {product.pricing.compareAtPrice &&
+                product.pricing.compareAtPrice > product.pricing.basePrice && (
                   <span className="text-sm text-muted-foreground line-through">
-                    ${product.compareAtPrice}
+                    ${product.pricing.compareAtPrice}
                   </span>
                 )}
             </div>
@@ -431,12 +181,12 @@ export function FeaturedProductCard({
         </div>
 
         <div className="mt-auto space-y-2">
-          <Button
-            size="sm"
-            onClick={handleAddToCart}
-            disabled={isAdding || !product.inStock}
-            className="w-full"
-          >
+            <Button
+              size="sm"
+              onClick={handleAddToCart}
+              disabled={isAdding || product.status !== "active"}
+              className="w-full"
+            >
             {isInCartState ? (
               <>
                 <ShoppingCart className="h-4 w-4 mr-2" />

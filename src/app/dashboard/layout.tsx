@@ -2,6 +2,7 @@ import KBar from "@/components/kbar";
 import AppSidebar from "@/components/layout/app-sidebar";
 import Header from "@/components/layout/header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { DashboardAccess } from "@/components/auth/role-guard";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 
@@ -31,16 +32,29 @@ export default async function DashboardLayout({
     }
   }
   return (
-    <KBar>
-      <SidebarProvider defaultOpen={defaultOpen}>
-        <AppSidebar />
-        <SidebarInset>
-          <Header />
-          {/* page main content */}
-          {children}
-          {/* page main content ends */}
-        </SidebarInset>
-      </SidebarProvider>
-    </KBar>
+    <DashboardAccess
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
+            <p className="text-muted-foreground">
+              You need admin privileges to access the dashboard.
+            </p>
+          </div>
+        </div>
+      }
+    >
+      <KBar>
+        <SidebarProvider defaultOpen={defaultOpen}>
+          <AppSidebar />
+          <SidebarInset>
+            <Header />
+            {/* page main content */}
+            {children}
+            {/* page main content ends */}
+          </SidebarInset>
+        </SidebarProvider>
+      </KBar>
+    </DashboardAccess>
   );
 }

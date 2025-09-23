@@ -113,7 +113,7 @@ export function ProductCard({
               <div className="space-y-1 flex-1">
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
-                    {product.category?.name || "Uncategorized"}
+                    {product.primaryCategory?.name || "Uncategorized"}
                   </Badge>
                 </div>
                 <Link href={`/products/${product.id}`}>
@@ -127,7 +127,7 @@ export function ProductCard({
               </div>
 
               <div className="flex items-center justify-between mt-2">
-                <span className="text-sm font-bold">${product.price}</span>
+                <span className="text-sm font-bold">${product.pricing.basePrice}</span>
                 <div className="flex items-center gap-1">
                   {showWishlist && (
                     <Button
@@ -252,7 +252,7 @@ export function ProductCard({
           <div className="flex-1 space-y-3">
             <div className="flex items-center justify-between">
               <Badge variant="secondary" className="text-xs">
-                {product.category?.name || "Uncategorized"}
+                {product.primaryCategory?.name || "Uncategorized"}
               </Badge>
               {product.featured && (
                 <Badge variant="destructive" className="text-xs">
@@ -273,11 +273,11 @@ export function ProductCard({
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-lg font-bold">${product.price}</span>
-                {product.compareAtPrice &&
-                  product.compareAtPrice > product.price && (
+                <span className="text-lg font-bold">${product.pricing.basePrice}</span>
+                {product.pricing.compareAtPrice &&
+                  product.pricing.compareAtPrice > product.pricing.basePrice && (
                     <span className="text-sm text-muted-foreground line-through">
-                      ${product.compareAtPrice}
+                      ${product.pricing.compareAtPrice}
                     </span>
                   )}
               </div>
@@ -387,7 +387,7 @@ export function ProductCard({
       <CardContent className="px-4 pb-4 flex flex-col h-full">
         <div className="flex-1 space-y-3">
           <Badge variant="secondary" className="text-xs">
-            {product.category?.name || "Uncategorized"}
+            {product.primaryCategory?.name || "Uncategorized"}
           </Badge>
 
           <Link href={`/products/${product.id}`}>
@@ -402,11 +402,11 @@ export function ProductCard({
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-lg font-bold">${product.price}</span>
-              {product.compareAtPrice &&
-                product.compareAtPrice > product.price && (
+              <span className="text-lg font-bold">${product.pricing.basePrice}</span>
+              {product.pricing.compareAtPrice &&
+                product.pricing.compareAtPrice > product.pricing.basePrice && (
                   <span className="text-sm text-muted-foreground line-through">
-                    ${product.compareAtPrice}
+                    ${product.pricing.compareAtPrice}
                   </span>
                 )}
             </div>

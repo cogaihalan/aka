@@ -214,7 +214,7 @@ export const useWishlistStore = create<WishlistStore>()(
         const currentUserId = state.currentUserId;
         return state.items
           .filter((item) => !currentUserId || item.userId === currentUserId)
-          .reduce((total, item) => total + item.product.price, 0);
+          .reduce((total, item) => total + item.product.pricing.basePrice, 0);
       },
 
       // User management

@@ -22,7 +22,7 @@ import {
   useWishlistAuthStatus,
 } from "@/stores/wishlist-store";
 import { cn } from "@/lib/utils";
-import { Product } from "@/lib/api/types-only";
+import { Product } from "@/types/product";
 
 interface ProductInfoProps {
   product: Product & {
@@ -144,9 +144,9 @@ export const ProductInfo = memo(function ProductInfo({
     ));
   };
 
-  const discountPercentage = product.compareAtPrice
+  const discountPercentage = product.pricing?.compareAtPrice
     ? Math.round(
-        ((product.compareAtPrice - product.price) / product.compareAtPrice) *
+        ((product.pricing.compareAtPrice - product.pricing.basePrice) / product.pricing.compareAtPrice) *
           100
       )
     : 0;
@@ -156,7 +156,7 @@ export const ProductInfo = memo(function ProductInfo({
       {/* Product Header */}
       <div>
         <div className="flex items-center gap-2 mb-2">
-          <Badge variant="secondary">{product.category.name}</Badge>
+          <Badge variant="secondary">{product.primaryCategory?.name || "Uncategorized"}</Badge>
           {product.brand && (
             <Badge variant="outline">{product.brand.name}</Badge>
           )}
@@ -180,12 +180,12 @@ export const ProductInfo = memo(function ProductInfo({
         {/* Price */}
         <div className="flex items-center gap-3 mb-4">
           <span className="text-3xl font-bold">
-            ${product.price.toFixed(2)}
+            ${product.pricing?.basePrice?.toFixed(2) || '0.00'}
           </span>
-          {product.compareAtPrice && (
+          {product.pricing?.compareAtPrice && (
             <>
               <span className="text-lg text-muted-foreground line-through">
-                ${product.compareAtPrice.toFixed(2)}
+                ${product.pricing.compareAtPrice.toFixed(2)}
               </span>
               <Badge variant="destructive">Save {discountPercentage}%</Badge>
             </>

@@ -1,10 +1,7 @@
 import { apiClient } from "@/lib/api/client-mock";
 import type {
   Cart,
-  CartItem,
-  CartPricing,
   Product,
-  ProductVariant,
 } from "@/lib/api/types";
 
 export class StorefrontCartService {

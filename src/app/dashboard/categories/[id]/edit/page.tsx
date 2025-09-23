@@ -55,10 +55,14 @@ export default async function Page(props: PageProps) {
 async function EditCategoryPage({ categoryId }: { categoryId: number }) {
   try {
     // Get the category and all categories for parent selection
-    const [category, { categories }] = await Promise.all([
+    const [category, categoriesResponse] = await Promise.all([
       adminCategoryService.getCategory(categoryId),
       adminCategoryService.getCategories({ limit: 1000 }),
     ]);
+    
+    const categories = Array.isArray(categoriesResponse) 
+      ? categoriesResponse 
+      : categoriesResponse.categories;
 
     return (
       <CategoryForm

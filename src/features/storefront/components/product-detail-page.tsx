@@ -15,7 +15,7 @@ import {
   FeaturedProductSlider,
 } from "@/components/product";
 import { productDetailService } from "@/lib/api/services/storefront/product-detail";
-import { Product } from "@/lib/api/types-only";
+import { Product } from "@/lib/api/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -116,20 +116,8 @@ export default function ProductDetailPage({
     };
   }, [deferredProduct]);
 
-  // Memoize related products to prevent unnecessary re-renders
-  const relatedProductsForSlider = useMemo(() => {
-    return data.relatedProducts.map((p) => ({
-      id: p.id,
-      name: p.name,
-      description: p.description,
-      price: p.price,
-      compareAtPrice: p.compareAtPrice,
-      rating: 4.5, // Mock rating
-      image: p.images[0]?.url || "/assets/placeholder-image.jpeg",
-      category: p.category.name,
-      inStock: p.inventory.available > 0,
-    }));
-  }, [data.relatedProducts]);
+  // Use related products directly
+  const relatedProductsForSlider = data.relatedProducts;
 
   if (data.loading) {
     return <ProductDetailSkeleton />;
@@ -180,7 +168,7 @@ export default function ProductDetailPage({
             products={relatedProductsForSlider}
             title="Related Products"
             showViewAll={true}
-            viewAllHref={`/categories/${deferredProduct?.category.slug || ""}`}
+            viewAllHref={`/categories/${deferredProduct?.primaryCategory.slug || ""}`}
           />
         )}
       </div>

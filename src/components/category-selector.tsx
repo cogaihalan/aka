@@ -48,7 +48,8 @@ export function CategorySelector({
         const response = await adminCategoryService.getCategories({
           limit: 1000,
         });
-        setCategories(response.categories);
+        const categories = Array.isArray(response) ? response : response.categories;
+        setCategories(categories);
       } catch (error) {
         console.error("Error loading categories:", error);
       } finally {
