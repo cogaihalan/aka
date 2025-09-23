@@ -1,3 +1,27 @@
+// Import comprehensive product types
+import type {
+  Product,
+  Category,
+  Brand,
+  ProductVariant,
+  Inventory,
+  SEO,
+  MediaFile,
+  ProductQuery,
+  ProductSearchResult,
+  CreateProductRequest,
+  UpdateProductRequest,
+  ProductAttribute,
+  ProductAttributeValue,
+  ProductPricing,
+  ShippingInfo as ProductShippingInfo,
+  ProductReview,
+  ProductRating,
+  ProductRelation,
+  ProductWishlistItem,
+  RecentlyViewedProduct,
+} from "@/types/product";
+
 // Base API types
 export interface PaginationParams {
   page?: number;
@@ -31,83 +55,31 @@ export interface QueryParams
   [key: string]: any;
 }
 
-// Product types
-export interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  compareAtPrice?: number;
-  sku: string;
-  barcode?: string;
-  weight?: number;
-  dimensions?: {
-    length: number;
-    width: number;
-    height: number;
-  };
-  category: Category;
-  brand?: Brand;
-  tags: string[];
-  images: ProductImage[];
-  variants: ProductVariant[];
-  inventory: Inventory;
-  seo: SEO;
-  status: "active" | "inactive" | "draft" | "archived";
-  featured: boolean;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt?: string;
-}
+// Re-export product types for backward compatibility
+export type {
+  Product,
+  Category,
+  Brand,
+  ProductVariant,
+  Inventory,
+  SEO,
+  MediaFile,
+  ProductQuery,
+  ProductSearchResult,
+  CreateProductRequest,
+  UpdateProductRequest,
+  ProductAttribute,
+  ProductAttributeValue,
+  ProductPricing,
+  ProductReview,
+  ProductRating,
+  ProductRelation,
+  ProductWishlistItem,
+  RecentlyViewedProduct,
+};
 
-export interface ProductImage {
-  id: number;
-  url: string;
-  alt: string;
-  order: number;
-  isPrimary: boolean;
-}
-
-export interface ProductVariant {
-  id: number;
-  name: string;
-  sku: string;
-  price: number;
-  compareAtPrice?: number;
-  cost?: number;
-  weight?: number;
-  attributes: Record<string, string>;
-  inventory: Inventory;
-  images: ProductImage[];
-}
-
-export interface Inventory {
-  quantity: number;
-  reserved: number;
-  available: number;
-  trackQuantity: boolean;
-  allowBackorder: boolean;
-  lowStockThreshold?: number;
-}
-
-export interface Category {
-  id: number;
-  name: string;
-  slug: string;
-  description?: string;
-  parentId?: number;
-  level: number;
-  path: string;
-  image?: string;
-  seo: SEO;
-  isActive: boolean;
-  sortOrder?: number;
-  includeInMenu: boolean;
-  children?: Category[];
-  productCount?: number;
-  createdAt: string;
-  updatedAt: string;
-}
+// Legacy type aliases for backward compatibility
+export type ProductImage = MediaFile;
 
 // Extended category types for admin management
 export interface CategoryTree extends Category {
@@ -152,25 +124,9 @@ export interface CategoryProductAssignment {
   positions?: Record<number, number>;
 }
 
-export interface Brand {
-  id: number;
-  name: string;
-  slug: string;
-  description?: string;
-  logo?: string;
-  website?: string;
-  seo: SEO;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+// Brand interface is now imported from @/types/product
 
-export interface SEO {
-  title?: string;
-  description?: string;
-  keywords?: string[];
-  canonicalUrl?: string;
-}
+// SEO interface is now imported from @/types/product
 
 // Order types
 export interface Order {
@@ -184,7 +140,7 @@ export interface Order {
   billingAddress: Address;
   items: OrderItem[];
   pricing: OrderPricing;
-  shipping: ShippingInfo;
+  shipping: OrderShippingInfo;
   payment: PaymentInfo;
   notes?: string;
   tags: string[];
@@ -214,7 +170,7 @@ export interface OrderPricing {
   currency: string;
 }
 
-export interface ShippingInfo {
+export interface OrderShippingInfo {
   method: string;
   carrier?: string;
   trackingNumber?: string;
@@ -449,27 +405,7 @@ export interface ApiErrorResponse {
   timestamp: string;
 }
 
-// Request types
-export interface CreateProductRequest {
-  name: string;
-  description: string;
-  price: number;
-  compareAtPrice?: number;
-  sku: string;
-  categoryId: number;
-  brandId?: number;
-  tags?: string[];
-  images?: Omit<ProductImage, "id">[];
-  variants?: Omit<ProductVariant, "id">[];
-  inventory: Omit<Inventory, "reserved" | "available">;
-  seo?: Partial<SEO>;
-  status?: Product["status"];
-  featured?: boolean;
-}
-
-export interface UpdateProductRequest extends Partial<CreateProductRequest> {
-  id: number;
-}
+// Product request types are now imported from @/types/product
 
 export interface CreateOrderRequest {
   customerId?: number;

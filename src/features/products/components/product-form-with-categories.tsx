@@ -53,7 +53,7 @@ const formSchema = z.object({
   name: z.string().min(2, {
     message: "Product name must be at least 2 characters.",
   }),
-  categoryIds: z.array(z.number()).min(1, "At least one category is required."),
+  categoryIds: z.array(z.number()).optional(),
   price: z.number(),
   description: z.string().min(10, {
     message: "Description must be at least 10 characters.",
@@ -227,7 +227,9 @@ export default function ProductFormWithCategories({
                             placeholder={
                               isLoadingCategories
                                 ? "Loading categories..."
-                                : "Select a category to add"
+                                : categories.length === 0
+                                  ? "No categories available. Create categories first."
+                                  : "Select a category to add"
                             }
                           />
                         </SelectTrigger>

@@ -23,225 +23,14 @@ class MockCategoryStore {
   }
 
   private initialize() {
-    // Create root categories
-    const rootCategories = [
-      {
-        id: this.nextId++,
-        name: "Electronics",
-        slug: "electronics",
-        description: "Electronic devices and accessories",
-        parentId: undefined,
-        level: 0,
-        path: "1",
-        image:
-          "https://api.slingacademy.com/public/sample-categories/electronics.png",
-        seo: {
-          title: "Electronics - Best Electronic Devices",
-          description: "Shop the latest electronic devices and accessories",
-          keywords: ["electronics", "devices", "gadgets"],
-        },
-        isActive: true,
-        sortOrder: 1,
-        includeInMenu: true,
-        productCount: 0,
-        createdAt: faker.date.past().toISOString(),
-        updatedAt: faker.date.recent().toISOString(),
-      },
-      {
-        id: this.nextId++,
-        name: "Fashion",
-        slug: "fashion",
-        description: "Clothing and fashion accessories",
-        parentId: undefined,
-        level: 0,
-        path: "2",
-        image:
-          "https://api.slingacademy.com/public/sample-categories/fashion.png",
-        seo: {
-          title: "Fashion - Latest Trends",
-          description: "Discover the latest fashion trends and styles",
-          keywords: ["fashion", "clothing", "style"],
-        },
-        isActive: true,
-        sortOrder: 2,
-        includeInMenu: true,
-        productCount: 0,
-        createdAt: faker.date.past().toISOString(),
-        updatedAt: faker.date.recent().toISOString(),
-      },
-      {
-        id: this.nextId++,
-        name: "Home & Garden",
-        slug: "home-garden",
-        description: "Home improvement and garden supplies",
-        parentId: undefined,
-        level: 0,
-        path: "3",
-        image:
-          "https://api.slingacademy.com/public/sample-categories/home-garden.png",
-        seo: {
-          title: "Home & Garden - Everything for Your Home",
-          description: "Transform your home with our home and garden products",
-          keywords: ["home", "garden", "furniture"],
-        },
-        isActive: true,
-        sortOrder: 3,
-        includeInMenu: true,
-        productCount: 0,
-        createdAt: faker.date.past().toISOString(),
-        updatedAt: faker.date.recent().toISOString(),
-      },
-    ];
+    // Start with empty categories array - no predefined categories
+    this.categories = [];
 
-    this.categories = rootCategories;
+    // Clear any existing product assignments
+    this.categoryProducts.clear();
 
-    // Create subcategories
-    const subcategories = [
-      // Electronics subcategories
-      {
-        id: this.nextId++,
-        name: "Smartphones",
-        slug: "smartphones",
-        description: "Latest smartphones and mobile devices",
-        parentId: 1,
-        level: 1,
-        path: "1/4",
-        seo: {
-          title: "Smartphones - Latest Mobile Devices",
-          description: "Shop the latest smartphones and mobile devices",
-          keywords: ["smartphones", "mobile", "phones"],
-        },
-        isActive: true,
-        sortOrder: 1,
-        includeInMenu: true,
-        productCount: 0,
-        createdAt: faker.date.past().toISOString(),
-        updatedAt: faker.date.recent().toISOString(),
-      },
-      {
-        id: this.nextId++,
-        name: "Laptops",
-        slug: "laptops",
-        description: "Laptops and portable computers",
-        parentId: 1,
-        level: 1,
-        path: "1/5",
-        seo: {
-          title: "Laptops - Portable Computers",
-          description: "Find the perfect laptop for your needs",
-          keywords: ["laptops", "computers", "portable"],
-        },
-        isActive: true,
-        sortOrder: 2,
-        includeInMenu: true,
-        productCount: 0,
-        createdAt: faker.date.past().toISOString(),
-        updatedAt: faker.date.recent().toISOString(),
-      },
-      // Fashion subcategories
-      {
-        id: this.nextId++,
-        name: "Men's Clothing",
-        slug: "mens-clothing",
-        description: "Men's fashion and clothing",
-        parentId: 2,
-        level: 1,
-        path: "2/6",
-        seo: {
-          title: "Men's Clothing - Latest Fashion",
-          description: "Shop the latest men's clothing and fashion",
-          keywords: ["mens", "clothing", "fashion"],
-        },
-        isActive: true,
-        sortOrder: 1,
-        includeInMenu: true,
-        productCount: 0,
-        createdAt: faker.date.past().toISOString(),
-        updatedAt: faker.date.recent().toISOString(),
-      },
-      {
-        id: this.nextId++,
-        name: "Women's Clothing",
-        slug: "womens-clothing",
-        description: "Women's fashion and clothing",
-        parentId: 2,
-        level: 1,
-        path: "2/7",
-        seo: {
-          title: "Women's Clothing - Latest Fashion",
-          description: "Shop the latest women's clothing and fashion",
-          keywords: ["womens", "clothing", "fashion"],
-        },
-        isActive: true,
-        sortOrder: 2,
-        includeInMenu: true,
-        productCount: 0,
-        createdAt: faker.date.past().toISOString(),
-        updatedAt: faker.date.recent().toISOString(),
-      },
-    ];
-
-    this.categories.push(...subcategories);
-
-    // Create some third-level categories
-    const thirdLevelCategories = [
-      {
-        id: this.nextId++,
-        name: "iPhone",
-        slug: "iphone",
-        description: "Apple iPhone smartphones",
-        parentId: 4,
-        level: 2,
-        path: "1/4/8",
-        seo: {
-          title: "iPhone - Apple Smartphones",
-          description: "Shop the latest iPhone models",
-          keywords: ["iphone", "apple", "smartphone"],
-        },
-        isActive: true,
-        sortOrder: 1,
-        includeInMenu: true,
-        productCount: 0,
-        createdAt: faker.date.past().toISOString(),
-        updatedAt: faker.date.recent().toISOString(),
-      },
-      {
-        id: this.nextId++,
-        name: "Android",
-        slug: "android",
-        description: "Android smartphones",
-        parentId: 4,
-        level: 2,
-        path: "1/4/9",
-        seo: {
-          title: "Android - Android Smartphones",
-          description: "Shop the latest Android smartphones",
-          keywords: ["android", "smartphone", "mobile"],
-        },
-        isActive: true,
-        sortOrder: 2,
-        includeInMenu: true,
-        productCount: 0,
-        createdAt: faker.date.past().toISOString(),
-        updatedAt: faker.date.recent().toISOString(),
-      },
-    ];
-
-    this.categories.push(...thirdLevelCategories);
-
-    // Simulate some product assignments
-    this.categoryProducts.set(1, [1, 2, 3, 4, 5]); // Electronics
-    this.categoryProducts.set(2, [6, 7, 8, 9, 10]); // Fashion
-    this.categoryProducts.set(3, [11, 12, 13, 14, 15]); // Home & Garden
-    this.categoryProducts.set(4, [1, 2, 3]); // Smartphones
-    this.categoryProducts.set(5, [4, 5]); // Laptops
-    this.categoryProducts.set(6, [6, 7, 8]); // Men's Clothing
-    this.categoryProducts.set(7, [9, 10]); // Women's Clothing
-    this.categoryProducts.set(8, [1, 2]); // iPhone
-    this.categoryProducts.set(9, [3]); // Android
-
-    // Update product counts
-    this.updateProductCounts();
+    // Reset nextId to start from 1
+    this.nextId = 1;
   }
 
   private updateProductCounts() {
@@ -457,7 +246,6 @@ class MockCategoryStore {
       image: data.image,
       seo: data.seo || {},
       isActive: data.isActive ?? true,
-      sortOrder: data.sortOrder || 0,
       includeInMenu: data.includeInMenu ?? true,
       productCount: 0,
       createdAt: new Date().toISOString(),
@@ -736,7 +524,6 @@ class MockCategoryStore {
 
       this.categories[categoryIndex] = {
         ...this.categories[categoryIndex],
-        sortOrder,
         updatedAt: new Date().toISOString(),
       };
     }

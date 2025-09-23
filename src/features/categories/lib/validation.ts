@@ -34,12 +34,6 @@ export const categoryFormSchema = z.object({
 
   includeInMenu: z.boolean().default(true),
 
-  sortOrder: z
-    .number()
-    .int("Sort order must be an integer")
-    .min(0, "Sort order must be non-negative")
-    .default(0),
-
   seo: z
     .object({
       title: z

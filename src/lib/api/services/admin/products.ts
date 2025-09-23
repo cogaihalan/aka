@@ -5,12 +5,14 @@ import type {
   CreateProductRequest,
   UpdateProductRequest,
   QueryParams,
+  ProductQuery,
+  ProductSearchResult,
 } from "@/lib/api/types";
 
 export class AdminProductService {
   private basePath = "/admin/products";
 
-  // Get all products with filtering and pagination
+  // Get all products with filtering and pagination (legacy)
   async getProducts(params: QueryParams = {}): Promise<ProductListResponse> {
     const searchParams = new URLSearchParams();
 
@@ -33,6 +35,63 @@ export class AdminProductService {
       : this.basePath;
 
     const response = await apiClient.get<ProductListResponse>(endpoint);
+    return response.data!;
+  }
+
+  // Enhanced product search with comprehensive filtering
+  async searchProducts(
+    params: ProductQuery = {}
+  ): Promise<ProductSearchResult> {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page.toString());
+    if (params.limit) searchParams.append("limit", params.limit.toString());
+    if (params.search) searchParams.append("search", params.search);
+    if (params.sortBy) searchParams.append("sortBy", params.sortBy);
+    if (params.sortOrder) searchParams.append("sortOrder", params.sortOrder);
+    if (params.categoryIds?.length) {
+      params.categoryIds.forEach((id) =>
+        searchParams.append("categoryIds[]", id.toString())
+      );
+    }
+    if (params.brandIds?.length) {
+      params.brandIds.forEach((id) =>
+        searchParams.append("brandIds[]", id.toString())
+      );
+    }
+    if (params.priceRange) {
+      searchParams.append("priceMin", params.priceRange.min.toString());
+      searchParams.append("priceMax", params.priceRange.max.toString());
+    }
+    if (params.status?.length) {
+      params.status.forEach((status) =>
+        searchParams.append("status[]", status)
+      );
+    }
+    if (params.featured !== undefined) {
+      searchParams.append("featured", params.featured.toString());
+    }
+    if (params.inStock !== undefined) {
+      searchParams.append("inStock", params.inStock.toString());
+    }
+    if (params.tags?.length) {
+      params.tags.forEach((tag) => searchParams.append("tags[]", tag));
+    }
+    if (params.createdFrom)
+      searchParams.append("createdFrom", params.createdFrom);
+    if (params.createdTo) searchParams.append("createdTo", params.createdTo);
+    if (params.attributes) {
+      Object.entries(params.attributes).forEach(([key, value]) => {
+        searchParams.append(`attributes[${key}]`, value.toString());
+      });
+    }
+
+    const queryString = searchParams.toString();
+    const endpoint = queryString
+      ? `${this.basePath}/search?${queryString}`
+      : `${this.basePath}/search`;
+
+    const response = await apiClient.get<ProductSearchResult>(endpoint);
     return response.data!;
   }
 
@@ -75,6 +134,184 @@ export class AdminProductService {
   // Delete a product
   async deleteProduct(id: number): Promise<void> {
     await apiClient.delete(`${this.basePath}/${id}`);
+  }
+
+  // Enhanced product management methods
+
+  // Get product with full details including variants, reviews, etc.
+  async getProductWithDetails(id: number): Promise<Product> {
+    const response = await apiClient.get<Product>(
+      `${this.basePath}/${id}/details`
+    );
+    return response.data!;
+  }
+
+  // Update product inventory
+  async updateProductInventory(
+    id: number,
+    inventory: Partial<import("@/types/product").Inventory>
+  ): Promise<Product> {
+    const response = await apiClient.patch<Product>(
+      `${this.basePath}/${id}/inventory`,
+      inventory
+    );
+    return response.data!;
+  }
+
+  // Update product pricing
+  async updateProductPricing(
+    id: number,
+    pricing: Partial<import("@/types/product").ProductPricing>
+  ): Promise<Product> {
+    const response = await apiClient.patch<Product>(
+      `${this.basePath}/${id}/pricing`,
+      pricing
+    );
+    return response.data!;
+  }
+
+  // Update product SEO
+  async updateProductSEO(
+    id: number,
+    seo: Partial<import("@/types/product").SEO>
+  ): Promise<Product> {
+    const response = await apiClient.patch<Product>(
+      `${this.basePath}/${id}/seo`,
+      seo
+    );
+    return response.data!;
+  }
+
+  // Manage product variants
+  async createProductVariant(
+    productId: number,
+    variant: Omit<import("@/types/product").ProductVariant, "id">
+  ): Promise<import("@/types/product").ProductVariant> {
+    const response = await apiClient.post<
+      import("@/types/product").ProductVariant
+    >(`${this.basePath}/${productId}/variants`, variant);
+    return response.data!;
+  }
+
+  async updateProductVariant(
+    productId: number,
+    variantId: number,
+    variant: Partial<import("@/types/product").ProductVariant>
+  ): Promise<import("@/types/product").ProductVariant> {
+    const response = await apiClient.patch<
+      import("@/types/product").ProductVariant
+    >(`${this.basePath}/${productId}/variants/${variantId}`, variant);
+    return response.data!;
+  }
+
+  async deleteProductVariant(
+    productId: number,
+    variantId: number
+  ): Promise<void> {
+    await apiClient.delete(
+      `${this.basePath}/${productId}/variants/${variantId}`
+    );
+  }
+
+  // Manage product media
+  async uploadProductMedia(
+    productId: number,
+    file: File,
+    metadata?: {
+      alt?: string;
+      title?: string;
+      order?: number;
+      isPrimary?: boolean;
+    }
+  ): Promise<import("@/types/product").MediaFile> {
+    const formData = new FormData();
+    formData.append("file", file);
+    if (metadata) {
+      Object.entries(metadata).forEach(([key, value]) => {
+        if (value !== undefined) {
+          formData.append(key, value.toString());
+        }
+      });
+    }
+
+    const response = await apiClient.post<import("@/types/product").MediaFile>(
+      `${this.basePath}/${productId}/media`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data!;
+  }
+
+  async updateProductMedia(
+    productId: number,
+    mediaId: number,
+    metadata: Partial<import("@/types/product").MediaFile>
+  ): Promise<import("@/types/product").MediaFile> {
+    const response = await apiClient.patch<import("@/types/product").MediaFile>(
+      `${this.basePath}/${productId}/media/${mediaId}`,
+      metadata
+    );
+    return response.data!;
+  }
+
+  async deleteProductMedia(productId: number, mediaId: number): Promise<void> {
+    await apiClient.delete(`${this.basePath}/${productId}/media/${mediaId}`);
+  }
+
+  // Manage product categories
+  async assignProductToCategories(
+    productId: number,
+    categoryIds: number[],
+    primaryCategoryId?: number
+  ): Promise<Product> {
+    const response = await apiClient.patch<Product>(
+      `${this.basePath}/${productId}/categories`,
+      {
+        categoryIds,
+        primaryCategoryId,
+      }
+    );
+    return response.data!;
+  }
+
+  // Manage product attributes
+  async updateProductAttributes(
+    productId: number,
+    attributes: import("@/types/product").ProductAttributeValue[]
+  ): Promise<Product> {
+    const response = await apiClient.patch<Product>(
+      `${this.basePath}/${productId}/attributes`,
+      { attributes }
+    );
+    return response.data!;
+  }
+
+  // Product analytics and insights
+  async getProductAnalytics(id: number): Promise<{
+    views: number;
+    sales: number;
+    revenue: number;
+    conversionRate: number;
+    averageRating: number;
+    totalReviews: number;
+    lastUpdated: string;
+  }> {
+    const response = await apiClient.get(`${this.basePath}/${id}/analytics`);
+    return response.data!;
+  }
+
+  // Product comparison
+  async compareProducts(
+    productIds: number[]
+  ): Promise<import("@/types/product").ProductComparison> {
+    const response = await apiClient.post<
+      import("@/types/product").ProductComparison
+    >(`${this.basePath}/compare`, { productIds });
+    return response.data!;
   }
 
   // Bulk operations

@@ -70,10 +70,9 @@ export function CategoryForm({
       slug: category?.slug || "",
       description: category?.description || "",
       parentId: category?.parentId,
-      image: category?.image || "",
+      image: category?.image?.url || "",
       isActive: category?.isActive ?? true,
       includeInMenu: category?.includeInMenu ?? true,
-      sortOrder: category?.sortOrder || 0,
       seo: {
         title: category?.seo?.title || "",
         description: category?.seo?.description || "",
@@ -187,7 +186,7 @@ export function CategoryForm({
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 items-start md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="name"
@@ -242,7 +241,7 @@ export function CategoryForm({
                   )}
                 />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 items-start md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="parentId"
@@ -251,17 +250,19 @@ export function CategoryForm({
                         <FormLabel>Parent Category</FormLabel>
                         <Select
                           onValueChange={(value) =>
-                            field.onChange(value ? parseInt(value) : undefined)
+                            field.onChange(
+                              value === "none" ? undefined : parseInt(value)
+                            )
                           }
-                          value={field.value?.toString()}
+                          value={field.value?.toString() || "none"}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                               <SelectValue placeholder="Select parent category" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="">
+                            <SelectItem value="none">
                               No parent (Root category)
                             </SelectItem>
                             {availableParentCategories.map((cat) => (
@@ -275,30 +276,6 @@ export function CategoryForm({
                             ))}
                           </SelectContent>
                         </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="sortOrder"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Sort Order</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            placeholder="0"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(parseInt(e.target.value) || 0)
-                            }
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Lower numbers appear first
-                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}

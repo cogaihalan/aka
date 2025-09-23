@@ -110,12 +110,6 @@ export default async function Page(props: PageProps) {
                       </label>
                       <p className="text-sm">{category.level}</p>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">
-                        Sort Order
-                      </label>
-                      <p className="text-sm">{category.sortOrder || 0}</p>
-                    </div>
                   </div>
 
                   {category.description && (
@@ -134,8 +128,8 @@ export default async function Page(props: PageProps) {
                       </label>
                       <div className="mt-2">
                         <Image
-                          src={category.image}
-                          alt={category.name}
+                          src={category.image.url}
+                          alt={category.image.alt || category.name}
                           width={200}
                           height={200}
                           className="rounded-lg object-cover"

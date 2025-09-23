@@ -71,7 +71,6 @@ export const Icons = {
   laptop: Laptop,
   check: Check,
   book: Book,
-  folder: Folder,
   users: Users,
   "user-check": UserCheck,
 };

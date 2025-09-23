@@ -1,4 +1,7 @@
-import { Icons } from '@/components/icons';
+import { Icons } from "@/components/icons";
+
+// Re-export all product types
+export * from "./product";
 
 export interface NavItem {
   title: string;

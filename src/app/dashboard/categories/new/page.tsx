@@ -19,7 +19,7 @@ export default async function Page() {
   return (
     <PageContainer scrollable>
       <div className="flex-1 space-y-4">
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-col items-start space-x-4">
           <Link
             href="/dashboard/categories"
             className={cn(
@@ -27,7 +27,7 @@ export default async function Page() {
               "text-xs md:text-sm"
             )}
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className="h-4 w-4" />
             Back to Categories
           </Link>
           <Heading
@@ -50,9 +50,5 @@ async function NewCategoryPage() {
     limit: 1000,
   });
 
-  return (
-    <CategoryForm
-      categories={categories}
-    />
-  );
+  return <CategoryForm categories={categories} />;
 }

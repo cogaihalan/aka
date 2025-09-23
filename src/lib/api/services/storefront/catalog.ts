@@ -6,6 +6,8 @@ import type {
   Brand,
   SearchResult,
   QueryParams,
+  ProductQuery,
+  ProductSearchResult,
 } from "@/lib/api/types";
 
 export class StorefrontCatalogService {
@@ -83,6 +85,114 @@ export class StorefrontCatalogService {
       `${this.basePath}/products/sale?limit=${limit}`
     );
     return response.data!;
+  }
+
+  // Enhanced product search for storefront
+  async searchProducts(
+    params: ProductQuery = {}
+  ): Promise<ProductSearchResult> {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page.toString());
+    if (params.limit) searchParams.append("limit", params.limit.toString());
+    if (params.search) searchParams.append("search", params.search);
+    if (params.sortBy) searchParams.append("sortBy", params.sortBy);
+    if (params.sortOrder) searchParams.append("sortOrder", params.sortOrder);
+    if (params.categoryIds?.length) {
+      params.categoryIds.forEach((id) =>
+        searchParams.append("categoryIds[]", id.toString())
+      );
+    }
+    if (params.brandIds?.length) {
+      params.brandIds.forEach((id) =>
+        searchParams.append("brandIds[]", id.toString())
+      );
+    }
+    if (params.priceRange) {
+      searchParams.append("priceMin", params.priceRange.min.toString());
+      searchParams.append("priceMax", params.priceRange.max.toString());
+    }
+    if (params.featured !== undefined) {
+      searchParams.append("featured", params.featured.toString());
+    }
+    if (params.inStock !== undefined) {
+      searchParams.append("inStock", params.inStock.toString());
+    }
+    if (params.tags?.length) {
+      params.tags.forEach((tag) => searchParams.append("tags[]", tag));
+    }
+    if (params.attributes) {
+      Object.entries(params.attributes).forEach(([key, value]) => {
+        searchParams.append(`attributes[${key}]`, value.toString());
+      });
+    }
+
+    const queryString = searchParams.toString();
+    const endpoint = queryString
+      ? `${this.basePath}/products/search?${queryString}`
+      : `${this.basePath}/products/search`;
+
+    const response = await apiClient.get<ProductSearchResult>(endpoint);
+    return response.data!;
+  }
+
+  // Get product with full details for storefront
+  async getProductWithDetails(id: number): Promise<Product> {
+    const response = await apiClient.get<Product>(
+      `${this.basePath}/products/${id}/details`
+    );
+    return response.data!;
+  }
+
+  // Get related products
+  async getRelatedProducts(
+    productId: number,
+    limit: number = 8
+  ): Promise<Product[]> {
+    const response = await apiClient.get<Product[]>(
+      `${this.basePath}/products/${productId}/related?limit=${limit}`
+    );
+    return response.data!;
+  }
+
+  // Get recently viewed products
+  async getRecentlyViewedProducts(
+    customerId?: number,
+    limit: number = 10
+  ): Promise<Product[]> {
+    const searchParams = new URLSearchParams();
+    if (customerId) searchParams.append("customerId", customerId.toString());
+    searchParams.append("limit", limit.toString());
+
+    const queryString = searchParams.toString();
+    const endpoint = queryString
+      ? `${this.basePath}/products/recently-viewed?${queryString}`
+      : `${this.basePath}/products/recently-viewed`;
+
+    const response = await apiClient.get<Product[]>(endpoint);
+    return response.data!;
+  }
+
+  // Get products by category
+  async getProductsByCategory(
+    categoryId: number,
+    params: Omit<ProductQuery, "categoryIds"> = {}
+  ): Promise<ProductSearchResult> {
+    return this.searchProducts({
+      ...params,
+      categoryIds: [categoryId],
+    });
+  }
+
+  // Get products by brand
+  async getProductsByBrand(
+    brandId: number,
+    params: Omit<ProductQuery, "brandIds"> = {}
+  ): Promise<ProductSearchResult> {
+    return this.searchProducts({
+      ...params,
+      brandIds: [brandId],
+    });
   }
 
   // Related products

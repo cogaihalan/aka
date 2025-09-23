@@ -3,10 +3,11 @@ import { mockCategoryStore } from "@/lib/api/adapters/mock-category-adapter";
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
+    const resolvedParams = await params;
+    const id = parseInt(resolvedParams.id);
     const body = await request.json();
     const { isActive } = body;
 

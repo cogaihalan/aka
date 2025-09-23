@@ -3,10 +3,11 @@ import { mockCategoryStore } from "@/lib/api/adapters/mock-category-adapter";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
+    const resolvedParams = await params;
+    const id = parseInt(resolvedParams.id);
     const result = await mockCategoryStore.getCategory(id);
 
     return NextResponse.json({
@@ -30,10 +31,11 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
+    const resolvedParams = await params;
+    const id = parseInt(resolvedParams.id);
     const body = await request.json();
     const result = await mockCategoryStore.updateCategory({ id, ...body });
 
@@ -58,10 +60,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
+    const resolvedParams = await params;
+    const id = parseInt(resolvedParams.id);
     await mockCategoryStore.deleteCategory(id);
 
     return NextResponse.json({
