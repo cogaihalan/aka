@@ -16,8 +16,8 @@ import type {
 } from "@/lib/api/types";
 import type { ProductComparison } from "@/types/product";
 
-export class UnifiedProductService {
-  private basePath = "/admin/products";
+class UnifiedProductService {
+  private basePath = "/api/products";
 
   // Legacy methods for backward compatibility
   async getProducts(params: QueryParams = {}): Promise<ProductListResponse> {
@@ -450,6 +450,4 @@ export class UnifiedProductService {
   }
 }
 
-// Export the service as the default and create instance
-export { UnifiedProductService as default };
 export const unifiedProductService = new UnifiedProductService();

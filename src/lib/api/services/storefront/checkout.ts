@@ -8,7 +8,7 @@ import type {
 import type { ShippingInfo } from "@/types/product";
 
 export class StorefrontCheckoutService {
-  private basePath = "/storefront/checkout";
+  private basePath = "/api/checkout";
 
   // Initialize checkout
   async initializeCheckout(): Promise<{

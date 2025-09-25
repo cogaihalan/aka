@@ -1,8 +1,8 @@
-import { isMockMode, getApiBaseUrl } from "@/lib/api/config";
+import { getApiBaseUrl } from "@/lib/api/config";
 import type { ApiConfig, ApiResponse, RequestOptions } from "@/lib/api/shared-types";
 
-// Mock API Client that works with Next.js API routes
-export class MockApiClient {
+// Real API Client for production use
+export class ApiClient {
   private config: ApiConfig;
 
   constructor(config: Partial<ApiConfig> = {}) {
@@ -15,11 +15,9 @@ export class MockApiClient {
     };
   }
 
-  // Get authentication headers (for consistency with real API)
+  // Get authentication headers
   private async getAuthHeaders(): Promise<Record<string, string>> {
     try {
-      // In mock mode, we don't need real authentication
-      // This is just for consistency with the real API client
       if (typeof window !== "undefined") {
         // Client-side: try to get token from localStorage or cookies
         const token =
@@ -35,9 +33,9 @@ export class MockApiClient {
           };
         }
       } else {
-        // Server-side: in mock mode, we can skip auth or use a mock token
+        // Server-side: get token from headers or session
         return {
-          "X-Mock-Auth": "true",
+          "X-API-Key": process.env.API_KEY || "",
         };
       }
     } catch (error) {
@@ -156,16 +154,10 @@ export class MockApiClient {
   }
 }
 
-// Create the appropriate API client based on mode
+// Create the API client
 export const createApiClient = () => {
-  if (isMockMode()) {
-    return new MockApiClient();
-  } else {
-    // For non-mock mode, you should import the real client from a server-only context
-    // This factory function should only be used in mock mode from client components
-    throw new Error("Real API client should be imported from @/lib/api/server in server-only contexts");
-  }
+  return new ApiClient();
 };
 
 // Export the default client
-export const apiClient = new MockApiClient();
+export const apiClient = new ApiClient();

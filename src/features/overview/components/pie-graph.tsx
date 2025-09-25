@@ -19,13 +19,8 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--primary)" },
-  { browser: "safari", visitors: 200, fill: "var(--primary-light)" },
-  { browser: "firefox", visitors: 287, fill: "var(--primary-lighter)" },
-  { browser: "edge", visitors: 173, fill: "var(--primary-dark)" },
-  { browser: "other", visitors: 190, fill: "var(--primary-darker)" },
-];
+// TODO: Replace with actual data fetching from API
+const chartData: any[] = [];
 
 const chartConfig = {
   visitors: {
@@ -151,7 +146,7 @@ export function PieGraph() {
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 leading-none font-medium">
           Chrome leads with{" "}
-          {((chartData[0].visitors / totalVisitors) * 100).toFixed(1)}%{" "}
+          {((chartData[0]?.visitors / totalVisitors) * 100).toFixed(1)}%{" "}
           <TrendingUp className="h-4 w-4" />
         </div>
         <div className="text-muted-foreground leading-none">

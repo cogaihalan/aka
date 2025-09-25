@@ -8,8 +8,8 @@ import type {
   QueryParams,
 } from "@/lib/api/types";
 
-export class UnifiedAnalyticsService {
-  private basePath = "/admin/analytics";
+class UnifiedAnalyticsService {
+  private basePath = "/api/analytics";
 
   // Dashboard overview
   async getOverview(period?: string): Promise<AnalyticsOverview> {

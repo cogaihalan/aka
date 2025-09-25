@@ -1,8 +1,3 @@
-import {
-  Product,
-  CreateProductRequest,
-  UpdateProductRequest,
-} from "@/types/product";
 import { notFound } from "next/navigation";
 import ProductForm from "./product-form";
 import { adminProductService } from "@/lib/api";
@@ -27,30 +22,11 @@ export default async function ProductViewPage({
     }
   }
 
-  const handleSubmit = async (data: CreateProductRequest) => {
-    try {
-      if (productId === "new") {
-        await adminProductService.createProduct(data);
-      } else {
-        const updateData: UpdateProductRequest = {
-          ...data,
-          id: Number(productId),
-          version: product?.version || 1,
-        };
-        await adminProductService.updateProduct(Number(productId), updateData);
-      }
-      // Handle success (redirect, show toast, etc.)
-    } catch (error) {
-      console.error("Error saving product:", error);
-      // Handle error (show toast, etc.)
-    }
-  };
-
   return (
     <ProductForm
       initialData={product}
       pageTitle={pageTitle}
-      onSubmit={handleSubmit}
+      productId={productId}
     />
   );
 }

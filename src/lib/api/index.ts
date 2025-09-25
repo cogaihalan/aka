@@ -7,8 +7,8 @@ export {
   unifiedProductService, 
   unifiedCategoryService,
   unifiedAnalyticsService,
-  unifiedCustomerService,
-  unifiedOrderService
+  unifiedOrderService,
+  unifiedUserService
 } from "./services/unified";
 
 // Admin services (aliases to unified services for backward compatibility)
@@ -16,12 +16,12 @@ export {
   unifiedProductService as adminProductService,
   unifiedCategoryService as adminCategoryService,
   unifiedOrderService as adminOrderService,
-  unifiedCustomerService as adminCustomerService,
-  unifiedAnalyticsService as adminAnalyticsService
+  unifiedAnalyticsService as adminAnalyticsService,
+  unifiedUserService as adminUserService
 } from "./services/unified";
 
 // Storefront services
 export * from "./services/storefront";
 
 // Configuration
-export { API_CONFIG, isMockMode, getApiBaseUrl } from "./config";
+export { API_CONFIG, getApiBaseUrl } from "./config";

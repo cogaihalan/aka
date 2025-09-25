@@ -14,7 +14,6 @@ import type {
   ProductAttribute,
   ProductAttributeValue,
   ProductPricing,
-  ShippingInfo as ProductShippingInfo,
   ProductReview,
   ProductRating,
   ProductRelation,

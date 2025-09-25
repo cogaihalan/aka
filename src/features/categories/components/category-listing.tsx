@@ -1,6 +1,6 @@
 import { adminCategoryService } from "@/lib/api";
 import { searchParamsCache } from "@/lib/searchparams";
-import { CategoryTable } from "./category-tables";
+import { DataTableWrapper } from "@/components/ui/table/data-table-wrapper";
 import { columns } from "@/features/categories/components/category-tables/columns";
 
 type CategoryListingPage = {};
@@ -28,10 +28,12 @@ export default async function CategoryListingPage({}: CategoryListingPage) {
   const categories = Array.isArray(data) ? data : data.categories;
 
   return (
-    <CategoryTable
+    <DataTableWrapper
       data={categories}
       totalItems={totalCategories}
       columns={columns}
+      debounceMs={500}
+      shallow={false}
     />
   );
 }

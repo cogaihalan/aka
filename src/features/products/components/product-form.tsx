@@ -32,8 +32,9 @@ import {
   Category,
   Brand,
   CreateProductRequest,
+  UpdateProductRequest,
 } from "@/types/product";
-import { adminCategoryService } from "@/lib/api";
+import { adminCategoryService, adminProductService } from "@/lib/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray } from "react-hook-form";
 import { z } from "zod";
@@ -162,14 +163,14 @@ type FormData = z.infer<typeof formSchema>;
 interface ProductFormProps {
   initialData?: Product | null;
   pageTitle: string;
-  onSubmit: (data: CreateProductRequest) => Promise<void>;
+  productId: string;
   isLoading?: boolean;
 }
 
 export default function ProductForm({
   initialData,
   pageTitle,
-  onSubmit,
+  productId,
   isLoading = false,
 }: ProductFormProps) {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -365,7 +366,25 @@ export default function ProductForm({
       customAttributes: values.customAttributes,
     };
 
-    await onSubmit(productData);
+    try {
+      if (productId === "new") {
+        await adminProductService.createProduct(productData);
+        // Handle success (redirect, show toast, etc.)
+        console.log("Product created successfully");
+      } else {
+        const updateData: UpdateProductRequest = {
+          ...productData,
+          id: Number(productId),
+          version: initialData?.version || 1,
+        };
+        await adminProductService.updateProduct(Number(productId), updateData);
+        // Handle success (redirect, show toast, etc.)
+        console.log("Product updated successfully");
+      }
+    } catch (error) {
+      console.error("Error saving product:", error);
+      // Handle error (show toast, etc.)
+    }
   };
 
   if (isLoadingData) {

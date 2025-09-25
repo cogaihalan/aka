@@ -7,7 +7,6 @@ import {
 import { 
   UserRole, 
   CreateUserPayload, 
-  AuthApiResponse 
 } from "@/types/auth";
 import { ClerkUserService } from "@/lib/clerk/client";
 

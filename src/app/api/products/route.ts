@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { unifiedProductService } from "@/lib/api/services/unified";
-import { storefrontCatalogService } from "@/lib/api/services/storefront/catalog";
 
 // GET /api/products - Get products (used by both admin and storefront)
 export async function GET(request: NextRequest) {

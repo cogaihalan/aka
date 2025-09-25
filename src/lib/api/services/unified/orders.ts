@@ -10,8 +10,8 @@ import type {
   FulfillmentStatus,
 } from "@/lib/api/types";
 
-export class UnifiedOrderService {
-  private basePath = "/admin/orders";
+class UnifiedOrderService {
+  private basePath = "/api/orders";
 
   // Get all orders with filtering and pagination
   async getOrders(params: QueryParams = {}): Promise<OrderListResponse> {

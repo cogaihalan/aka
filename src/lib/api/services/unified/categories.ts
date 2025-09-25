@@ -9,7 +9,7 @@ import type {
   QueryParams,
 } from "@/lib/api/types";
 
-export class UnifiedCategoryService extends BaseService {
+class UnifiedCategoryService extends BaseService {
   constructor() {
     super({ basePath: "/api/categories" });
   }

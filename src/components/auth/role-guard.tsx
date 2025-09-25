@@ -4,8 +4,7 @@ import { ReactNode } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { UserRole, UserPermission } from "@/types/auth";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ShieldX, Loader2 } from "lucide-react";
+import { ShieldX } from "lucide-react";
 
 interface RoleGuardProps {
   children: ReactNode;
@@ -29,7 +28,6 @@ export function RoleGuard({
   showError = true,
 }: RoleGuardProps) {
   const { 
-    user, 
     isLoading, 
     isAuthenticated, 
     hasRole, 
@@ -54,12 +52,31 @@ export function RoleGuard({
     if (fallback) return <>{fallback}</>;
     if (showError) {
       return (
-        <Alert>
-          <ShieldX className="h-4 w-4" />
-          <AlertDescription>
-            You must be signed in to access this content.
-          </AlertDescription>
-        </Alert>
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <div className="text-center space-y-4 max-w-md mx-auto p-6">
+            <div className="w-16 h-16 mx-auto bg-destructive/10 rounded-full flex items-center justify-center">
+              <ShieldX className="w-8 h-8 text-destructive" />
+            </div>
+            <h1 className="text-2xl font-bold text-foreground">Authentication Required</h1>
+            <p className="text-muted-foreground">
+              You must be signed in to access this content.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <a 
+                href="/auth/sign-in" 
+                className="inline-flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+              >
+                Sign In
+              </a>
+              <a 
+                href="/" 
+                className="inline-flex items-center justify-center px-4 py-2 border border-input bg-background rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+              >
+                Go Home
+              </a>
+            </div>
+          </div>
+        </div>
       );
     }
     return null;
@@ -70,12 +87,31 @@ export function RoleGuard({
     if (fallback) return <>{fallback}</>;
     if (showError) {
       return (
-        <Alert>
-          <ShieldX className="h-4 w-4" />
-          <AlertDescription>
-            You need {requiredRole} role to access this content.
-          </AlertDescription>
-        </Alert>
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <div className="text-center space-y-4 max-w-md mx-auto p-6">
+            <div className="w-16 h-16 mx-auto bg-destructive/10 rounded-full flex items-center justify-center">
+              <ShieldX className="w-8 h-8 text-destructive" />
+            </div>
+            <h1 className="text-2xl font-bold text-foreground">Access Restricted</h1>
+            <p className="text-muted-foreground">
+              You need {requiredRole} role to access this content.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <a 
+                href="/account" 
+                className="inline-flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+              >
+                My Account
+              </a>
+              <a 
+                href="/" 
+                className="inline-flex items-center justify-center px-4 py-2 border border-input bg-background rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+              >
+                Go Home
+              </a>
+            </div>
+          </div>
+        </div>
       );
     }
     return null;
@@ -85,12 +121,31 @@ export function RoleGuard({
     if (fallback) return <>{fallback}</>;
     if (showError) {
       return (
-        <Alert>
-          <ShieldX className="h-4 w-4" />
-          <AlertDescription>
-            You need one of the following roles: {requiredRoles.join(", ")}.
-          </AlertDescription>
-        </Alert>
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <div className="text-center space-y-4 max-w-md mx-auto p-6">
+            <div className="w-16 h-16 mx-auto bg-destructive/10 rounded-full flex items-center justify-center">
+              <ShieldX className="w-8 h-8 text-destructive" />
+            </div>
+            <h1 className="text-2xl font-bold text-foreground">Access Restricted</h1>
+            <p className="text-muted-foreground">
+              You need one of the following roles: {requiredRoles.join(", ")}.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <a 
+                href="/account" 
+                className="inline-flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+              >
+                My Account
+              </a>
+              <a 
+                href="/" 
+                className="inline-flex items-center justify-center px-4 py-2 border border-input bg-background rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+              >
+                Go Home
+              </a>
+            </div>
+          </div>
+        </div>
       );
     }
     return null;
@@ -101,12 +156,31 @@ export function RoleGuard({
     if (fallback) return <>{fallback}</>;
     if (showError) {
       return (
-        <Alert>
-          <ShieldX className="h-4 w-4" />
-          <AlertDescription>
-            You don't have the required permission: {requiredPermission}.
-          </AlertDescription>
-        </Alert>
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <div className="text-center space-y-4 max-w-md mx-auto p-6">
+            <div className="w-16 h-16 mx-auto bg-destructive/10 rounded-full flex items-center justify-center">
+              <ShieldX className="w-8 h-8 text-destructive" />
+            </div>
+            <h1 className="text-2xl font-bold text-foreground">Access Restricted</h1>
+            <p className="text-muted-foreground">
+              You don't have the required permission: {requiredPermission}.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <a 
+                href="/account" 
+                className="inline-flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+              >
+                My Account
+              </a>
+              <a 
+                href="/" 
+                className="inline-flex items-center justify-center px-4 py-2 border border-input bg-background rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+              >
+                Go Home
+              </a>
+            </div>
+          </div>
+        </div>
       );
     }
     return null;
@@ -116,12 +190,31 @@ export function RoleGuard({
     if (fallback) return <>{fallback}</>;
     if (showError) {
       return (
-        <Alert>
-          <ShieldX className="h-4 w-4" />
-          <AlertDescription>
-            You don't have any of the required permissions: {requiredPermissions.join(", ")}.
-          </AlertDescription>
-        </Alert>
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <div className="text-center space-y-4 max-w-md mx-auto p-6">
+            <div className="w-16 h-16 mx-auto bg-destructive/10 rounded-full flex items-center justify-center">
+              <ShieldX className="w-8 h-8 text-destructive" />
+            </div>
+            <h1 className="text-2xl font-bold text-foreground">Access Restricted</h1>
+            <p className="text-muted-foreground">
+              You don't have any of the required permissions: {requiredPermissions.join(", ")}.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <a 
+                href="/account" 
+                className="inline-flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+              >
+                My Account
+              </a>
+              <a 
+                href="/" 
+                className="inline-flex items-center justify-center px-4 py-2 border border-input bg-background rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+              >
+                Go Home
+              </a>
+            </div>
+          </div>
+        </div>
       );
     }
     return null;
