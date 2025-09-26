@@ -380,13 +380,7 @@ export interface Product extends BaseEntity {
   publishedAt?: string;
 
   // Product Type specific fields
-  productType:
-    | "simple"
-    | "configurable"
-    | "grouped"
-    | "bundle"
-    | "virtual"
-    | "downloadable";
+  productType: "simple" | "configurable" | "grouped" | "bundle";
 
   // Additional metadata
   metadata?: Record<string, any>;

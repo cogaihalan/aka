@@ -169,7 +169,9 @@ export function FeaturedProductCard({
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-lg font-bold">${product.pricing.basePrice}</span>
+              <span className="text-lg font-bold">
+                ${product.pricing.basePrice}
+              </span>
               {product.pricing.compareAtPrice &&
                 product.pricing.compareAtPrice > product.pricing.basePrice && (
                   <span className="text-sm text-muted-foreground line-through">
@@ -181,12 +183,12 @@ export function FeaturedProductCard({
         </div>
 
         <div className="mt-auto space-y-2">
-            <Button
-              size="sm"
-              onClick={handleAddToCart}
-              disabled={isAdding || product.status !== "active"}
-              className="w-full"
-            >
+          <Button
+            size="sm"
+            onClick={handleAddToCart}
+            disabled={isAdding || product.status !== "active"}
+            className="w-full"
+          >
             {isInCartState ? (
               <>
                 <ShoppingCart className="h-4 w-4 mr-2" />

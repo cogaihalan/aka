@@ -18,7 +18,18 @@ class UnifiedCategoryService extends BaseService {
   async getCategories(params: QueryParams = {}, isAdmin: boolean = false): Promise<CategoryListResponse | Category[]> {
     const searchParams = this.buildQueryParams(params);
     const endpoint = this.buildEndpoint("", searchParams);
-    return this.get<CategoryListResponse | Category[]>(endpoint, isAdmin);
+    return {
+      categories: [],
+      pagination: {
+        total: 0,
+        page: 0,
+        limit: 0,
+        totalPages: 0,
+        hasNext: false,
+        hasPrev: false,
+      },
+    };
+    // return this.get<CategoryListResponse | Category[]>(endpoint, isAdmin);
   }
 
   // Get category tree (hierarchical structure) - admin only

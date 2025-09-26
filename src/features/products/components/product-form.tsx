@@ -39,6 +39,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray } from "react-hook-form";
 import { z } from "zod";
 import { Plus, Trash2, Upload, X } from "lucide-react";
+import { log } from "console";
 
 const MAX_FILE_SIZE = 5000000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -73,7 +74,7 @@ const formSchema = z.object({
   specialPrice: z.number().optional(),
   specialPriceFrom: z.string().optional(),
   specialPriceTo: z.string().optional(),
-  currency: z.string().default("USD"),
+  currency: z.string().default("VND"),
 
   // Inventory
   quantity: z.number().min(0, "Quantity must be non-negative."),
@@ -114,14 +115,7 @@ const formSchema = z.object({
     .enum(["catalog", "search", "catalog_search", "not_visible"])
     .default("catalog_search"),
   productType: z
-    .enum([
-      "simple",
-      "configurable",
-      "grouped",
-      "bundle",
-      "virtual",
-      "downloadable",
-    ])
+    .enum(["simple", "configurable", "grouped", "bundle"])
     .default("simple"),
 
   // Media
@@ -262,7 +256,9 @@ export default function ProductForm({
         const categoriesResponse = await adminCategoryService.getCategories({
           limit: 1000,
         });
-        const categories = Array.isArray(categoriesResponse) ? categoriesResponse : categoriesResponse.categories;
+        const categories = Array.isArray(categoriesResponse)
+          ? categoriesResponse
+          : categoriesResponse.categories;
         setCategories(categories);
 
         // Load brands (you'll need to implement this service)
@@ -293,6 +289,7 @@ export default function ProductForm({
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
+    console.log("tagToRemove", tagToRemove);
     const updatedTags = selectedTags.filter((tag) => tag !== tagToRemove);
     setSelectedTags(updatedTags);
     form.setValue("tags", updatedTags);
@@ -371,6 +368,11 @@ export default function ProductForm({
         await adminProductService.createProduct(productData);
         // Handle success (redirect, show toast, etc.)
         console.log("Product created successfully");
+
+        // TODO: Handle image uploads separately
+        // if (values.images && values.images.length > 0) {
+        //   await uploadProductImages(productId, values.images);
+        // }
       } else {
         const updateData: UpdateProductRequest = {
           ...productData,
@@ -380,6 +382,11 @@ export default function ProductForm({
         await adminProductService.updateProduct(Number(productId), updateData);
         // Handle success (redirect, show toast, etc.)
         console.log("Product updated successfully");
+
+        // TODO: Handle image uploads separately
+        // if (values.images && values.images.length > 0) {
+        //   await uploadProductImages(productId, values.images);
+        // }
       }
     } catch (error) {
       console.error("Error saving product:", error);
@@ -405,11 +412,12 @@ export default function ProductForm({
             className="space-y-8"
           >
             <Tabs defaultValue="basic" className="w-full">
-              <TabsList className="grid w-full grid-cols-6">
+              <TabsList className="grid w-full grid-cols-7">
                 <TabsTrigger value="basic">Basic Info</TabsTrigger>
                 <TabsTrigger value="pricing">Pricing</TabsTrigger>
                 <TabsTrigger value="inventory">Inventory</TabsTrigger>
                 <TabsTrigger value="shipping">Shipping</TabsTrigger>
+                <TabsTrigger value="media">Media</TabsTrigger>
                 <TabsTrigger value="seo">SEO</TabsTrigger>
                 <TabsTrigger value="variants">Variants</TabsTrigger>
               </TabsList>
@@ -635,10 +643,14 @@ export default function ProductForm({
                         className="flex items-center gap-1"
                       >
                         {tag}
-                        <X
-                          className="h-3 w-3 cursor-pointer"
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="w-3 h-3"
                           onClick={() => handleRemoveTag(tag)}
-                        />
+                        >
+                          <X className="h-2 w-2" />
+                        </Button>
                       </Badge>
                     ))}
                   </div>
@@ -1264,6 +1276,42 @@ export default function ProductForm({
                     )}
                   />
                 </div>
+              </TabsContent>
+
+              {/* Media Tab */}
+              <TabsContent value="media" className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="images"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Product Images</FormLabel>
+                      <FormControl>
+                        <FileUploader
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          accept={{
+                            "image/*": [
+                              ".png",
+                              ".jpg",
+                              ".jpeg",
+                              ".gif",
+                              ".webp",
+                            ],
+                          }}
+                          maxSize={MAX_FILE_SIZE}
+                          maxFiles={10}
+                          multiple={true}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Upload multiple product images. Maximum 10 images, 5MB
+                        each. Supported formats: PNG, JPG, JPEG, GIF, WebP
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </TabsContent>
 
               {/* SEO Tab */}

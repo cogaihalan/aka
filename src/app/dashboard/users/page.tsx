@@ -1,23 +1,46 @@
 import { Metadata } from "next";
-import { UserManagement } from "@/features/users/components/user-management";
+import { Suspense } from "react";
+import { AddUserDialog } from "@/features/users/components/add-user-dialog";
+import UserListingPage from "@/features/users/components/user-listing";
 import PageContainer from "@/components/layout/page-container";
+import { searchParamsCache } from "@/lib/searchparams";
+import { SearchParams } from "nuqs/server";
+import { Heading } from "@/components/ui/heading";
+import { Separator } from "@/components/ui/separator";
+import { DataTableSkeleton } from "@/components/ui/table/data-table-skeleton";
 
 export const metadata: Metadata = {
   title: "User Management | AKA Store Dashboard",
   description: "Manage user accounts, roles, and permissions",
 };
 
-export default function UsersPage() {
+type pageProps = {
+  searchParams: Promise<SearchParams>;
+};
+
+export default async function UsersPage(props: pageProps) {
+  const searchParams = await props.searchParams;
+  // Allow nested RSCs to access the search params (in a type-safe way)
+  searchParamsCache.parse(searchParams);
+
   return (
-    <PageContainer>
-      <div className="flex-1 space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
-          <p className="text-muted-foreground">
-            Manage user accounts, roles, and permissions for your store.
-          </p>
+    <PageContainer scrollable={false}>
+      <div className="flex flex-1 flex-col space-y-4">
+        <div className="flex items-start justify-between">
+          <Heading
+            title="Users"
+            description="Manage user accounts, roles, and permissions for your store."
+          />
+          <AddUserDialog />
         </div>
-        <UserManagement />
+        <Separator />
+        <Suspense
+          fallback={
+            <DataTableSkeleton columnCount={5} rowCount={8} filterCount={2} />
+          }
+        >
+          <UserListingPage />
+        </Suspense>
       </div>
     </PageContainer>
   );

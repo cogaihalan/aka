@@ -41,8 +41,20 @@ class UnifiedProductService {
       ? `${this.basePath}?${queryString}`
       : this.basePath;
 
-    const response = await apiClient.get<ProductListResponse>(endpoint);
-    return response.data!;
+    // const response = await apiClient.get<ProductListResponse>(endpoint);
+    // return response.data!;
+    return {
+      products: [],
+      pagination: {
+        total: 0,
+        page: 0,
+        limit: 0,
+        totalPages: 0,
+        hasNext: false,
+        hasPrev: false,
+      },
+      filters: [],
+    };
   }
 
   // Enhanced product search with comprehensive filtering

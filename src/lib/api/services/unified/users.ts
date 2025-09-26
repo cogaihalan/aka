@@ -6,18 +6,18 @@ import type {
   UserRole,
   UserListResponse,
 } from "@/types/auth";
-import { 
-  ALL_DEV_USERS, 
-  getUserByEmail, 
-  getUsersByRole, 
+import {
+  ALL_DEV_USERS,
+  getUserByEmail,
+  getUsersByRole,
   getActiveUsers,
   getRandomUsers,
   DEV_USER_CONSTANTS,
   isValidDevEmail,
   isAdminEmail,
   isUserEmail,
-  type DevUser
 } from "@/constants/users";
+import { useServiceMethods } from "@/constants/users-example";
 
 /**
  * Unified User Service
@@ -29,23 +29,70 @@ class UnifiedUserService {
   /**
    * Get users with pagination and filtering
    */
-  async getUsers(options: {
-    page?: number;
-    limit?: number;
-    role?: UserRole;
-    search?: string;
-    isActive?: boolean;
-  } = {}): Promise<UserListResponse> {
+  async getUsers(
+    options: {
+      page?: number;
+      limit?: number;
+      role?: UserRole;
+      search?: string;
+      isActive?: boolean;
+    } = {}
+  ): Promise<UserListResponse> {
     const params = new URLSearchParams();
-    
+
     if (options.page) params.append("page", options.page.toString());
     if (options.limit) params.append("limit", options.limit.toString());
     if (options.role) params.append("role", options.role);
     if (options.search) params.append("search", options.search);
-    if (options.isActive !== undefined) params.append("isActive", options.isActive.toString());
+    if (options.isActive !== undefined)
+      params.append("isActive", options.isActive.toString());
 
-    const response = await apiClient.get(`/api/users?${params.toString()}`);
-    return response.data;
+    // const response = await apiClient.get(`/api/users?${params.toString()}`);
+
+    // Apply filtering
+    let filteredUsers = ALL_DEV_USERS;
+
+    // Filter by role if specified
+    if (options.role) {
+      filteredUsers = filteredUsers.filter(
+        (user) => user.role === options.role
+      );
+    }
+
+    // Filter by search term if specified
+    if (options.search) {
+      const searchTerm = options.search.toLowerCase();
+      filteredUsers = filteredUsers.filter(
+        (user) =>
+          user.email.toLowerCase().includes(searchTerm) ||
+          user.firstName?.toLowerCase().includes(searchTerm) ||
+          user.lastName?.toLowerCase().includes(searchTerm) ||
+          user.fullName?.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Filter by active status if specified
+    if (options.isActive !== undefined) {
+      filteredUsers = filteredUsers.filter(
+        (user) => user.isActive === options.isActive
+      );
+    }
+
+    // Apply pagination
+    const page = options.page || 1;
+    const limit = options.limit || 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+    console.log("paginatedUsers", paginatedUsers);
+    return {
+      users: paginatedUsers,
+      total: filteredUsers.length,
+      page,
+      limit,
+      hasMore: endIndex < filteredUsers.length,
+    };
+    // return response.data;
   }
 
   /**
@@ -67,7 +114,10 @@ class UnifiedUserService {
   /**
    * Update user (admin only)
    */
-  async updateUser(userId: string, userData: UpdateUserPayload): Promise<AppUser> {
+  async updateUser(
+    userId: string,
+    userData: UpdateUserPayload
+  ): Promise<AppUser> {
     const response = await apiClient.put(`/api/users/${userId}`, userData);
     return response.data;
   }
@@ -90,32 +140,32 @@ class UnifiedUserService {
   /**
    * Development helper methods using constants
    */
-  
+
   /**
    * Get all development users (for testing)
    */
-  getDevUsers(): DevUser[] {
+  getDevUsers(): AppUser[] {
     return ALL_DEV_USERS;
   }
 
   /**
    * Get users by role from constants
    */
-  getDevUsersByRole(role: UserRole): DevUser[] {
+  getDevUsersByRole(role: UserRole): AppUser[] {
     return getUsersByRole(role);
   }
 
   /**
    * Get active users from constants
    */
-  getDevActiveUsers(): DevUser[] {
+  getDevActiveUsers(): AppUser[] {
     return getActiveUsers();
   }
 
   /**
    * Get random users for testing
    */
-  getDevRandomUsers(count: number): DevUser[] {
+  getDevRandomUsers(count: number): AppUser[] {
     return getRandomUsers(count);
   }
 
@@ -143,7 +193,7 @@ class UnifiedUserService {
   /**
    * Get user by email from constants
    */
-  getDevUserByEmail(email: string): DevUser | undefined {
+  getDevUserByEmail(email: string): AppUser | undefined {
     return getUserByEmail(email);
   }
 
