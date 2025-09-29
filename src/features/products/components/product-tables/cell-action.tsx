@@ -8,7 +8,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Product } from "@/constants/data";
+import { Product } from "@/lib/api/types";
 import { Edit, MoreVertical, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

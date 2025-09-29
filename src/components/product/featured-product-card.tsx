@@ -15,7 +15,7 @@ import {
   useIsInWishlist,
   useWishlistAuthStatus,
 } from "@/stores/wishlist-store";
-import { cn } from "@/lib/utils";
+import { cn, isProductOutOfStock, getStockStatusText } from "@/lib/utils";
 
 import { Product } from "@/types/product";
 
@@ -47,6 +47,10 @@ export function FeaturedProductCard({
   const isInCartState = isInCart(product.id);
   const cartQuantity = getItemQuantity(product.id);
   const isInWishlistState = useIsInWishlist(product.id);
+  
+  // Stock status checks
+  const isOutOfStock = isProductOutOfStock(product);
+  const stockStatusText = getStockStatusText(product);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -126,7 +130,12 @@ export function FeaturedProductCard({
               variant="secondary"
               size="icon"
               onClick={handleAddToCart}
-              className="h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-lg"
+              disabled={isOutOfStock}
+              className={cn(
+                "h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-lg",
+                isOutOfStock && "opacity-50 cursor-not-allowed"
+              )}
+              title={isOutOfStock ? stockStatusText : "Add to cart"}
             >
               <ShoppingCart className="h-4 w-4" />
             </Button>
@@ -186,10 +195,18 @@ export function FeaturedProductCard({
           <Button
             size="sm"
             onClick={handleAddToCart}
-            disabled={isAdding || product.status !== "active"}
-            className="w-full"
+            disabled={isAdding || isOutOfStock}
+            className={cn(
+              "w-full",
+              isOutOfStock && "opacity-50 cursor-not-allowed"
+            )}
           >
-            {isInCartState ? (
+            {isOutOfStock ? (
+              <>
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                {stockStatusText}
+              </>
+            ) : isInCartState ? (
               <>
                 <ShoppingCart className="h-4 w-4 mr-2" />
                 In Cart ({cartQuantity})

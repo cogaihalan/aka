@@ -13,11 +13,10 @@ import { useCart } from "@/hooks/use-cart";
 import { useQuickView } from "@/components/providers/quick-view-provider";
 import {
   useWishlistActions,
-  useIsInWishlist,
   useWishlistAuthStatus,
 } from "@/stores/wishlist-store";
 import { Product } from "@/lib/api/types";
-import { cn } from "@/lib/utils";
+import { cn, isProductOutOfStock, getStockStatusText } from "@/lib/utils";
 
 interface ProductCardProps {
   product: Product;
@@ -54,6 +53,10 @@ export function ProductCard({
   const isInCartState = isInCart(product.id);
   const cartQuantity = getItemQuantity(product.id);
   const isInWishlistState = isInWishlist(product.id);
+  
+  // Stock status checks
+  const isOutOfStock = isProductOutOfStock(product);
+  const stockStatusText = getStockStatusText(product);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -160,8 +163,12 @@ export function ProductCard({
                   <Button
                     size="sm"
                     onClick={handleAddToCart}
-                    disabled={isAdding || product.status !== "active"}
-                    className="h-7 px-2 text-xs"
+                    disabled={isAdding || isOutOfStock}
+                    className={cn(
+                      "h-7 px-2 text-xs",
+                      isOutOfStock && "opacity-50 cursor-not-allowed"
+                    )}
+                    title={isOutOfStock ? stockStatusText : "Add to cart"}
                   >
                     <ShoppingCart className="h-3 w-3" />
                   </Button>
@@ -230,7 +237,12 @@ export function ProductCard({
                 variant="secondary"
                 size="icon"
                 onClick={handleAddToCart}
-                className="h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-lg"
+                disabled={isOutOfStock}
+                className={cn(
+                  "h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-lg",
+                  isOutOfStock && "opacity-50 cursor-not-allowed"
+                )}
+                title={isOutOfStock ? stockStatusText : "Add to cart"}
               >
                 <ShoppingCart className="h-4 w-4" />
               </Button>
@@ -287,24 +299,32 @@ export function ProductCard({
 
           <div className="mt-auto space-y-2">
             <div className="flex items-center justify-between">
-              <Button
-                size="sm"
-                onClick={handleAddToCart}
-                disabled={isAdding || product.status !== "active"}
-                className="flex-1"
-              >
-                {isInCartState ? (
-                  <>
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    In Cart ({cartQuantity})
-                  </>
-                ) : (
-                  <>
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    Add to Cart
-                  </>
-                )}
-              </Button>
+            <Button
+              size="sm"
+              onClick={handleAddToCart}
+              disabled={isAdding || isOutOfStock}
+              className={cn(
+                "flex-1",
+                isOutOfStock && "opacity-50 cursor-not-allowed"
+              )}
+            >
+              {isOutOfStock ? (
+                <>
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  {stockStatusText}
+                </>
+              ) : isInCartState ? (
+                <>
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  In Cart ({cartQuantity})
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Add to Cart
+                </>
+              )}
+            </Button>
             </div>
 
             {error && <p className="text-xs text-destructive">{error}</p>}
@@ -367,7 +387,12 @@ export function ProductCard({
               variant="secondary"
               size="icon"
               onClick={handleAddToCart}
-              className="h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-lg"
+              disabled={isOutOfStock}
+              className={cn(
+                "h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-lg",
+                isOutOfStock && "opacity-50 cursor-not-allowed"
+              )}
+              title={isOutOfStock ? stockStatusText : "Add to cart"}
             >
               <ShoppingCart className="h-4 w-4" />
             </Button>
@@ -419,10 +444,18 @@ export function ProductCard({
             <Button
               size="sm"
               onClick={handleAddToCart}
-              disabled={isAdding || product.status !== "active"}
-              className="flex-1"
+              disabled={isAdding || isOutOfStock}
+              className={cn(
+                "flex-1",
+                isOutOfStock && "opacity-50 cursor-not-allowed"
+              )}
             >
-              {isInCartState ? (
+              {isOutOfStock ? (
+                <>
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  {stockStatusText}
+                </>
+              ) : isInCartState ? (
                 <>
                   <ShoppingCart className="h-4 w-4 mr-2" />
                   In Cart ({cartQuantity})

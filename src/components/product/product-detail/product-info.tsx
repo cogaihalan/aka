@@ -21,7 +21,7 @@ import {
   useIsInWishlist,
   useWishlistAuthStatus,
 } from "@/stores/wishlist-store";
-import { cn } from "@/lib/utils";
+import { cn, isProductOutOfStock, getStockStatusText } from "@/lib/utils";
 import { Product } from "@/types/product";
 
 interface ProductInfoProps {
@@ -69,6 +69,10 @@ export const ProductInfo = memo(function ProductInfo({
   const isInCartState = isInCart(product.id);
   const cartQuantity = getItemQuantity(product.id);
   const isWishlisted = isInWishlist(product.id);
+  
+  // Stock status checks
+  const isOutOfStock = isProductOutOfStock(product);
+  const stockStatusText = getStockStatusText(product);
 
   const onAddToCart = useCallback(() => {
     handleAddToCart(product, undefined, quantity);
@@ -276,11 +280,20 @@ export const ProductInfo = memo(function ProductInfo({
         <div className="flex gap-3">
           <Button
             size="lg"
-            className="flex-1"
+            className={cn(
+              "flex-1",
+              isOutOfStock && "opacity-50 cursor-not-allowed"
+            )}
             onClick={onAddToCart}
-            disabled={isAdding || !product.inventory.available}
+            disabled={isAdding || isOutOfStock}
           >
-            {isInCartState ? `In Cart (${cartQuantity})` : "Add to Cart"}
+            {isOutOfStock ? (
+              stockStatusText
+            ) : isInCartState ? (
+              `In Cart (${cartQuantity})`
+            ) : (
+              "Add to Cart"
+            )}
           </Button>
           <Button
             variant="outline"
@@ -301,11 +314,14 @@ export const ProductInfo = memo(function ProductInfo({
         <Button
           variant="secondary"
           size="lg"
-          className="w-full"
+          className={cn(
+            "w-full",
+            isOutOfStock && "opacity-50 cursor-not-allowed"
+          )}
           onClick={handleBuyNow}
-          disabled={isAdding || !product.inventory.available}
+          disabled={isAdding || isOutOfStock}
         >
-          Buy Now
+          {isOutOfStock ? stockStatusText : "Buy Now"}
         </Button>
 
         {error && <p className="text-sm text-destructive">{error}</p>}
@@ -313,12 +329,12 @@ export const ProductInfo = memo(function ProductInfo({
 
       {/* Stock Status */}
       <div className="text-sm">
-        {product.inventory.available > 0 ? (
-          <span className="text-green-600">
-            ✓ In Stock ({product.inventory.available} available)
-          </span>
+        {isOutOfStock ? (
+          <span className="text-red-600">✗ {stockStatusText}</span>
         ) : (
-          <span className="text-red-600">✗ Out of Stock</span>
+          <span className="text-green-600">
+            ✓ {stockStatusText}
+          </span>
         )}
       </div>
     </div>

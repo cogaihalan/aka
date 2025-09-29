@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { Product, ProductVariant } from "@/lib/api/types";
 import { useCart } from "./use-cart";
+import { toast } from "sonner";
 
 interface UseAddToCartOptions {
   onSuccess?: (product: Product, quantity: number) => void;
@@ -35,6 +36,16 @@ export function useAddToCart(options: UseAddToCartOptions = {}) {
 
         if (success) {
           setLastAddedItem({ product, quantity });
+          // Show toast notification by default unless explicitly disabled
+          if (options.showToast !== false) {
+            toast.success(
+              `${quantity > 1 ? `${quantity}x ` : ""}${product.name} added to cart`,
+              {
+                description: "Item successfully added to your cart",
+                duration: 3000,
+              }
+            );
+          }
           options.onSuccess?.(product, quantity);
         } else {
           options.onError?.(error || "Failed to add item to cart");
@@ -84,6 +95,16 @@ export function useAddVariantToCart(options: UseAddToCartOptions = {}) {
 
         if (success) {
           setSelectedVariant(variant);
+          // Show toast notification by default unless explicitly disabled
+          if (options.showToast !== false) {
+            toast.success(
+              `${quantity > 1 ? `${quantity}x ` : ""}${product.name} added to cart`,
+              {
+                description: variant ? `${variant.name} variant added to your cart` : "Item successfully added to your cart",
+                duration: 3000,
+              }
+            );
+          }
           options.onSuccess?.(product, quantity);
         } else {
           options.onError?.(error || "Failed to add variant to cart");
@@ -165,11 +186,31 @@ export function useBulkAddToCart(options: UseAddToCartOptions = {}) {
         const totalCount = results.length;
 
         if (successCount === totalCount) {
+          // Show toast notification for bulk add success
+          if (options.showToast !== false) {
+            toast.success(
+              `${successCount} items added to cart`,
+              {
+                description: "All items successfully added to your cart",
+                duration: 3000,
+              }
+            );
+          }
           options.onSuccess?.(
             items[0]?.product,
             items.reduce((sum, item) => sum + item.quantity, 0)
           );
         } else {
+          // Show toast notification for partial success
+          if (options.showToast !== false) {
+            toast.warning(
+              `Added ${successCount} of ${totalCount} items to cart`,
+              {
+                description: "Some items could not be added",
+                duration: 4000,
+              }
+            );
+          }
           options.onError?.(
             `Added ${successCount} of ${totalCount} items to cart`
           );

@@ -54,13 +54,13 @@ class MockUnifiedProductService {
 
     // Apply price range filter
     if (
-      params.filters?.priceMin !== undefined ||
-      params.filters?.priceMax !== undefined
+      params.filters?.priceRange[0] !== undefined ||
+      params.filters?.priceRange[1] !== undefined
     ) {
       filteredProducts = filteredProducts.filter((product) => {
         const price = product.pricing.basePrice;
-        const minPrice = params.filters!.priceMin ?? 0;
-        const maxPrice = params.filters!.priceMax ?? Infinity;
+        const minPrice = params.filters!.priceRange[0] ?? 0;
+        const maxPrice = params.filters!.priceRange[1] ?? Infinity;
         return price >= minPrice && price <= maxPrice;
       });
     }
