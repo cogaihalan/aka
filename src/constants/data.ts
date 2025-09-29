@@ -42,6 +42,14 @@ export const navItems: NavItem[] = [
     isActive: false,
     items: [],
   },
+  {
+    title: "Discounts",
+    url: "/dashboard/discounts",
+    icon: "percent",
+    shortcut: ["d", "i"],
+    isActive: false,
+    items: [],
+  },
 ];
 
 // Storefront navigation items
@@ -52,4 +60,3 @@ export const storefrontNavItems = [
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
 ];
-

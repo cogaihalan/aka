@@ -94,19 +94,17 @@ export function ProductCard({
         <CardContent className="p-3 flex-1 flex flex-col">
           <div className="flex gap-3 flex-1">
             {/* Image on the left - smaller */}
-            <Link href={`/products/${product.id}`} className="flex-shrink-0">
-              <div className="w-20 h-20 bg-muted rounded-lg overflow-hidden">
-                <Image
-                  src={
-                    product.images?.[0]?.url || "/assets/placeholder-image.jpeg"
-                  }
-                  alt={product.images?.[0]?.alt || product.name}
-                  width={80}
-                  height={80}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-            </Link>
+            <div className="w-20 h-20 bg-muted rounded-lg overflow-hidden">
+              <Image
+                src={
+                  product.images?.[0]?.url || "/assets/placeholder-image.jpeg"
+                }
+                alt={product.images?.[0]?.alt || product.name}
+                width={80}
+                height={80}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
 
             {/* Content on the right */}
             <div className="flex-1 flex flex-col justify-between min-w-0">
@@ -127,7 +125,9 @@ export function ProductCard({
               </div>
 
               <div className="flex items-center justify-between mt-2">
-                <span className="text-sm font-bold">${product.pricing.basePrice}</span>
+                <span className="text-sm font-bold">
+                  ${product.pricing.basePrice}
+                </span>
                 <div className="flex items-center gap-1">
                   {showWishlist && (
                     <Button
@@ -185,143 +185,6 @@ export function ProductCard({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <Link href={`/products/${product.id}`}>
-          <div className="aspect-square bg-muted rounded-t-lg overflow-hidden relative">
-            <Image
-              src={product.images?.[0]?.url || "/assets/placeholder-image.jpeg"}
-              alt={product.images?.[0]?.alt || product.name}
-              width={300}
-              height={300}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
-
-            {/* Overlay Actions */}
-            <div
-              className={cn(
-                "absolute inset-0 flex items-center justify-center transition-opacity duration-200",
-                isHovered ? "opacity-100" : "opacity-0"
-              )}
-            >
-              {/* Dark overlay background */}
-              <div className="absolute inset-0 bg-black/40" />
-
-              {/* Action buttons */}
-              <div className="relative flex items-center gap-3">
-                {showWishlist && (
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    onClick={handleWishlist}
-                    className={cn(
-                      "h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-lg transition-colors",
-                      isInWishlistState && "bg-red-50 hover:bg-red-100"
-                    )}
-                  >
-                    <Heart
-                      className={cn(
-                        "h-4 w-4",
-                        isInWishlistState
-                          ? "text-red-500 fill-red-500"
-                          : "text-red-500"
-                      )}
-                    />
-                  </Button>
-                )}
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  onClick={handleAddToCart}
-                  className="h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-lg"
-                >
-                  <ShoppingCart className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  onClick={handleQuickView}
-                  className="h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-lg"
-                >
-                  <Eye className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Link>
-
-        <CardContent className="px-4 pb-4 flex flex-col h-full">
-          <div className="flex-1 space-y-3">
-            <div className="flex items-center justify-between">
-              <Badge variant="secondary" className="text-xs">
-                {product.primaryCategory?.name || "Uncategorized"}
-              </Badge>
-              {product.featured && (
-                <Badge variant="destructive" className="text-xs">
-                  Featured
-                </Badge>
-              )}
-            </div>
-
-            <Link href={`/products/${product.id}`}>
-              <h3 className="font-semibold line-clamp-2 group-hover:text-primary transition-colors cursor-pointer">
-                {product.name}
-              </h3>
-            </Link>
-
-            <p className="text-sm text-muted-foreground line-clamp-2">
-              {product.description}
-            </p>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-lg font-bold">${product.pricing.basePrice}</span>
-                {product.pricing.compareAtPrice &&
-                  product.pricing.compareAtPrice > product.pricing.basePrice && (
-                    <span className="text-sm text-muted-foreground line-through">
-                      ${product.pricing.compareAtPrice}
-                    </span>
-                  )}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-auto space-y-2">
-            <div className="flex items-center justify-between">
-              <Button
-                size="sm"
-                onClick={handleAddToCart}
-                disabled={isAdding || product.status !== "active"}
-                className="flex-1"
-              >
-                {isInCartState ? (
-                  <>
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    In Cart ({cartQuantity})
-                  </>
-                ) : (
-                  <>
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    Add to Cart
-                  </>
-                )}
-              </Button>
-            </div>
-
-            {error && <p className="text-xs text-destructive">{error}</p>}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // Default variant
-  return (
-    <Card
-      className={cn("group cursor-pointer h-full flex flex-col", className)}
-      isProductCard={true}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <Link href={`/products/${product.id}`}>
         <div className="aspect-square bg-muted rounded-t-lg overflow-hidden relative">
           <Image
             src={product.images?.[0]?.url || "/assets/placeholder-image.jpeg"}
@@ -382,7 +245,143 @@ export function ProductCard({
             </div>
           </div>
         </div>
-      </Link>
+
+        <CardContent className="px-4 pb-4 flex flex-col h-full">
+          <div className="flex-1 space-y-3">
+            <div className="flex items-center justify-between">
+              <Badge variant="secondary" className="text-xs">
+                {product.primaryCategory?.name || "Uncategorized"}
+              </Badge>
+              {product.featured && (
+                <Badge variant="destructive" className="text-xs">
+                  Featured
+                </Badge>
+              )}
+            </div>
+
+            <Link href={`/products/${product.id}`}>
+              <h3 className="font-semibold line-clamp-2 group-hover:text-primary transition-colors cursor-pointer">
+                {product.name}
+              </h3>
+            </Link>
+
+            <p className="text-sm text-muted-foreground line-clamp-2">
+              {product.description}
+            </p>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-lg font-bold">
+                  ${product.pricing.basePrice}
+                </span>
+                {product.pricing.compareAtPrice &&
+                  product.pricing.compareAtPrice >
+                    product.pricing.basePrice && (
+                    <span className="text-sm text-muted-foreground line-through">
+                      ${product.pricing.compareAtPrice}
+                    </span>
+                  )}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-auto space-y-2">
+            <div className="flex items-center justify-between">
+              <Button
+                size="sm"
+                onClick={handleAddToCart}
+                disabled={isAdding || product.status !== "active"}
+                className="flex-1"
+              >
+                {isInCartState ? (
+                  <>
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    In Cart ({cartQuantity})
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    Add to Cart
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {error && <p className="text-xs text-destructive">{error}</p>}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Default variant
+  return (
+    <Card
+      className={cn("group cursor-pointer h-full flex flex-col", className)}
+      isProductCard={true}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className="flex-shrink-0 bg-muted rounded-t-lg overflow-hidden relative">
+        <Image
+          src={product.images?.[0]?.url || "/assets/placeholder-image.jpeg"}
+          alt={product.images?.[0]?.alt || product.name}
+          width={300}
+          height={300}
+          className="block w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+
+        {/* Overlay Actions */}
+        <div
+          className={cn(
+            "absolute inset-0 flex items-center justify-center transition-opacity duration-200",
+            isHovered ? "opacity-100" : "opacity-0"
+          )}
+        >
+          {/* Dark overlay background */}
+          <div className="absolute inset-0 bg-black/40" />
+
+          {/* Action buttons */}
+          <div className="relative flex items-center gap-3">
+            {showWishlist && (
+              <Button
+                variant="secondary"
+                size="icon"
+                onClick={handleWishlist}
+                className={cn(
+                  "h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-lg transition-colors",
+                  isInWishlistState && "bg-red-50 hover:bg-red-100"
+                )}
+              >
+                <Heart
+                  className={cn(
+                    "h-4 w-4",
+                    isInWishlistState
+                      ? "text-red-500 fill-red-500"
+                      : "text-red-500"
+                  )}
+                />
+              </Button>
+            )}
+            <Button
+              variant="secondary"
+              size="icon"
+              onClick={handleAddToCart}
+              className="h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-lg"
+            >
+              <ShoppingCart className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="secondary"
+              size="icon"
+              onClick={handleQuickView}
+              className="h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-lg"
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
 
       <CardContent className="px-4 pb-4 flex flex-col h-full">
         <div className="flex-1 space-y-3">
@@ -402,7 +401,9 @@ export function ProductCard({
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-lg font-bold">${product.pricing.basePrice}</span>
+              <span className="text-lg font-bold">
+                ${product.pricing.basePrice}
+              </span>
               {product.pricing.compareAtPrice &&
                 product.pricing.compareAtPrice > product.pricing.basePrice && (
                   <span className="text-sm text-muted-foreground line-through">

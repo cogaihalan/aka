@@ -4,7 +4,7 @@ import { AddUserDialog } from "@/features/users/components/add-user-dialog";
 import UserListingPage from "@/features/users/components/user-listing";
 import PageContainer from "@/components/layout/page-container";
 import { searchParamsCache } from "@/lib/searchparams";
-import { SearchParams } from "nuqs/server";
+import { DashboardPageProps } from "@/types";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 import { DataTableSkeleton } from "@/components/ui/table/data-table-skeleton";
@@ -14,11 +14,7 @@ export const metadata: Metadata = {
   description: "Manage user accounts, roles, and permissions",
 };
 
-type pageProps = {
-  searchParams: Promise<SearchParams>;
-};
-
-export default async function UsersPage(props: pageProps) {
+export default async function UsersPage(props: DashboardPageProps) {
   const searchParams = await props.searchParams;
   // Allow nested RSCs to access the search params (in a type-safe way)
   searchParamsCache.parse(searchParams);

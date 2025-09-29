@@ -8,19 +8,15 @@ import { searchParamsCache } from "@/lib/searchparams";
 import { cn } from "@/lib/utils";
 import { Plus, TreePine } from "lucide-react";
 import Link from "next/link";
-import { SearchParams } from "nuqs/server";
 import { Suspense } from "react";
+import { DashboardPageProps } from "@/types";
 
 export const metadata = {
   title: "Dashboard: Categories",
   description: "Manage product categories and their hierarchy",
 };
 
-type pageProps = {
-  searchParams: Promise<SearchParams>;
-};
-
-export default async function Page(props: pageProps) {
+export default async function Page(props: DashboardPageProps) {
   const searchParams = await props.searchParams;
   // Allow nested RSCs to access the search params (in a type-safe way)
   searchParamsCache.parse(searchParams);

@@ -7,8 +7,15 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Check, X, Truck, CreditCard, Shield } from "lucide-react";
-import { useCartStore } from "@/stores/cart-store";
+import {
+  useCartStore,
+  useCartDiscounts,
+  useCartCouponCode,
+  useCartDiscountTotal,
+  useCartFinalTotal,
+} from "@/stores/cart-store";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface CartSummaryProps {
   className?: string;
@@ -35,11 +42,17 @@ export function CartSummary({
     getTotal,
     getTotalItems,
     clearCart,
+    applyCoupon,
+    removeCoupon,
+    clearDiscounts,
   } = useCartStore();
 
+  const appliedDiscounts = useCartDiscounts();
+  const couponCode = useCartCouponCode();
+  const discountTotal = useCartDiscountTotal();
+  const finalTotal = useCartFinalTotal();
+
   const [promoCode, setPromoCode] = useState("");
-  const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
-  const [promoDiscount, setPromoDiscount] = useState(0);
 
   const subtotal = getSubtotal();
   const shipping = getShipping();
@@ -47,31 +60,29 @@ export function CartSummary({
   const total = getTotal();
   const itemCount = getTotalItems();
 
-  const handleApplyPromo = () => {
-    // Mock promo code logic - replace with real implementation
-    const validPromoCodes: Record<string, number> = {
-      SAVE10: 0.1,
-      WELCOME: 0.15,
-      FREESHIP: 0,
-    };
+  const handleApplyPromo = async () => {
+    if (!promoCode.trim()) return;
 
-    if (promoCode.toUpperCase() in validPromoCodes) {
-      const discount = validPromoCodes[promoCode.toUpperCase()];
-      setAppliedPromo(promoCode.toUpperCase());
-      setPromoDiscount(discount);
+    try {
+      const success = await applyCoupon(promoCode.toUpperCase());
+      if (success) {
+        toast.success("Coupon applied successfully!");
+        setPromoCode("");
+      } else {
+        toast.error("Invalid coupon code");
+      }
+    } catch (error) {
+      toast.error("Failed to apply coupon");
     }
   };
 
   const handleRemovePromo = () => {
-    setAppliedPromo(null);
-    setPromoDiscount(0);
+    if (couponCode) {
+      removeCoupon(couponCode);
+      toast.success("Coupon removed");
+    }
     setPromoCode("");
   };
-
-  const finalTotal =
-    appliedPromo === "FREESHIP"
-      ? total - shipping
-      : total * (1 - promoDiscount);
 
   if (items.length === 0) {
     return (
@@ -127,19 +138,22 @@ export function CartSummary({
             <span>${tax.toFixed(2)}</span>
           </div>
 
-          {appliedPromo && (
-            <div className="flex justify-between text-sm text-green-600">
-              <span className="flex items-center gap-1">
-                <Check className="w-4 h-4" />
-                Promo ({appliedPromo})
-              </span>
-              <span>
-                -$
-                {appliedPromo === "FREESHIP"
-                  ? shipping.toFixed(2)
-                  : (subtotal * promoDiscount).toFixed(2)}
-              </span>
-            </div>
+          {appliedDiscounts.length > 0 && (
+            <>
+              {appliedDiscounts.map((discount) => (
+                <div
+                  key={discount.id}
+                  className="flex justify-between text-sm text-green-600"
+                >
+                  <span className="flex items-center gap-1">
+                    <Check className="w-4 h-4" />
+                    {discount.description}
+                    {discount.couponCode && ` (${discount.couponCode})`}
+                  </span>
+                  <span>-${discount.discountAmount.toFixed(2)}</span>
+                </div>
+              ))}
+            </>
           )}
         </div>
 
@@ -154,9 +168,9 @@ export function CartSummary({
         {showPromoCode && (
           <div className="space-y-2">
             <label className="text-sm font-medium">Promo Code</label>
-            {appliedPromo ? (
+            {couponCode ? (
               <div className="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded-md">
-                <span className="text-sm text-green-700">{appliedPromo}</span>
+                <span className="text-sm text-green-700">{couponCode}</span>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -244,19 +258,16 @@ export function CartSummary({
           </div>
         )}
 
-        {/* Clear Cart Button (for development/testing) */}
-        {process.env.NODE_ENV === "development" && (
-          <div className="pt-4 border-t">
-            <Button
-              variant="destructive"
-              size="sm"
-              className="w-full"
-              onClick={() => clearCart()}
-            >
-              Clear Cart (Dev Only)
-            </Button>
-          </div>
-        )}
+        <div className="pt-4 border-t">
+          <Button
+            variant="destructive"
+            size="sm"
+            className="w-full"
+            onClick={() => clearCart()}
+          >
+            Clear Cart
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

@@ -31,6 +31,7 @@ import { getUserInitials, getUserDisplayName } from "@/lib/auth/utils";
 
 export const columns: ColumnDef<AppUser>[] = [
   {
+    id: "name", // Change from "email" to "name" to match server parameter
     accessorKey: "email",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="User" />
@@ -58,6 +59,7 @@ export const columns: ColumnDef<AppUser>[] = [
     },
   },
   {
+    id: "role",
     accessorKey: "role",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Role" />
@@ -87,6 +89,7 @@ export const columns: ColumnDef<AppUser>[] = [
     },
   },
   {
+    id: "isActive",
     accessorKey: "isActive",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Status" />
@@ -94,7 +97,7 @@ export const columns: ColumnDef<AppUser>[] = [
     cell: ({ row }) => {
       const isActive = row.getValue("isActive") as boolean;
       return (
-        <Badge variant={isActive ? "default" : "destructive"}>
+        <Badge variant={isActive ? "default" : "secondary"}>
           {isActive ? "Active" : "Inactive"}
         </Badge>
       );
@@ -111,6 +114,7 @@ export const columns: ColumnDef<AppUser>[] = [
     },
   },
   {
+    id: "createdAt",
     accessorKey: "createdAt",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Created" />
@@ -126,6 +130,7 @@ export const columns: ColumnDef<AppUser>[] = [
     },
   },
   {
+    id: "lastSignInAt",
     accessorKey: "lastSignInAt",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Last Sign In" />

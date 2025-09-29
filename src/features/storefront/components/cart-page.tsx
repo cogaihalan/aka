@@ -6,19 +6,21 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShoppingBag, ArrowLeft, AlertCircle } from "lucide-react";
 import Link from "next/link";
-import {
-  useCart,
-  useCartItems,
-  useCartLoading,
-  useCartError,
-} from "@/hooks/use-cart";
+import { useCart } from "@/hooks/use-cart";
 import { CartItem, CartSummary } from "@/components/cart";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function CartPage() {
-  const { items, isLoading, error, clearError, validateCart } = useCart();
-  const cartItems = useCartItems();
-  const cartLoading = useCartLoading();
-  const cartError = useCartError();
+  const {
+    items: cartItems,
+    isLoading: cartLoading,
+    error,
+    clearError,
+    validateCart,
+  } = useCart();
+
+  const { user: authUser } = useAuth();
+  console.log(authUser);
 
   // Validate cart on mount
   useEffect(() => {

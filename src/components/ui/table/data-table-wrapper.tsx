@@ -34,8 +34,6 @@ export function DataTableWrapper<TData, TValue>({
     debounceMs,
   });
 
-  console.log("table", table);
-
   return (
     <DataTable table={table}>
       <DataTableToolbar table={table} />

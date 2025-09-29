@@ -224,7 +224,7 @@ export function CartItem({
 
   // Default variant
   return (
-    <Card className={cn("overflow-hidden", className)}>
+    <Card className={cn("overflow-hidden", className)} isProductCard>
       <CardContent className="p-4">
         <div className="flex gap-4">
           <div className="w-20 h-20 bg-muted rounded-md overflow-hidden flex-shrink-0">

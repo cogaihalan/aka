@@ -1,4 +1,8 @@
-import { unifiedProductService, unifiedCategoryService } from "@/lib/api/services/unified";
+import {
+  unifiedProductService,
+  mockUnifiedProductService,
+  unifiedCategoryService,
+} from "@/lib/api/services/unified";
 import type {
   Product,
   ProductListResponse,
@@ -10,6 +14,12 @@ export class StorefrontCatalogService {
   // Product catalog - delegate to unified service
   async getProducts(params: QueryParams = {}): Promise<ProductListResponse> {
     return unifiedProductService.getProducts(params);
+  }
+
+  async mockGetProducts(
+    params: QueryParams = {}
+  ): Promise<ProductListResponse> {
+    return mockUnifiedProductService.getProducts(params);
   }
 
   // Get a single product by ID - delegate to unified service

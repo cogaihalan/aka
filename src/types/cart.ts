@@ -1,4 +1,5 @@
 import { Product, ProductVariant } from "@/lib/api/types";
+import { AppliedDiscount, DiscountCalculationContext } from "./discount";
 
 // Cart item represents a product variant in the cart
 export interface CartItem {
@@ -23,6 +24,8 @@ export interface CartState {
   isLoading: boolean;
   error: string | null;
   lastUpdated: number;
+  appliedDiscounts: AppliedDiscount[];
+  couponCode?: string;
 }
 
 // Cart actions interface
@@ -53,6 +56,13 @@ export interface CartActions {
   getTax: () => number;
   getTotal: () => number;
   isItemInCart: (productId: number, variantId?: number) => boolean;
+
+  // Discount management
+  applyCoupon: (couponCode: string) => Promise<boolean>;
+  removeCoupon: (couponCode: string) => void;
+  clearDiscounts: () => void;
+  getDiscountTotal: () => number;
+  getFinalTotal: () => number;
 
   // Persistence
   loadCart: () => void;

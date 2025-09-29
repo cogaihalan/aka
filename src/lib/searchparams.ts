@@ -14,6 +14,7 @@ export const searchParams = {
   isActive: parseAsString,
   parentId: parseAsString,
   role: parseAsString,
+  couponType: parseAsString,
   // advanced filter
   // filters: getFiltersStateParser().withDefault([]),
   // joinOperator: parseAsStringEnum(['and', 'or']).withDefault('and')

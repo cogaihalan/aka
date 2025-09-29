@@ -2,30 +2,37 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
-
-const categories = [
-  {
-    id: 1,
-    name: "Electronics",
-    slug: "electronics",
-    productCount: 45,
-    image: "",
-  },
-  { id: 2, name: "Fashion", slug: "fashion", productCount: 32, image: "" },
-  {
-    id: 3,
-    name: "Home & Garden",
-    slug: "home-garden",
-    productCount: 28,
-    image: "",
-  },
-  { id: 4, name: "Sports", slug: "sports", productCount: 19, image: "" },
-  { id: 5, name: "Books", slug: "books", productCount: 67, image: "" },
-  { id: 6, name: "Beauty", slug: "beauty", productCount: 23, image: "" },
-];
+import {
+  useCategories,
+  useAppLoading,
+} from "@/components/providers/app-provider";
 
 export default function CategoryListingPage() {
+  const { categories } = useCategories();
+  const { error, isLoading } = useAppLoading();
+
+  if (isLoading) {
+    return <CategoryListingSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-muted-foreground">Failed to load categories</p>
+      </div>
+    );
+  }
+
+  if (!categories.length) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-muted-foreground">No categories available</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -42,11 +49,40 @@ export default function CategoryListingPage() {
                 <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
                   {category.name}
                 </h3>
+                {category.description && (
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {category.description}
+                  </p>
+                )}
                 <Badge variant="secondary">
                   {category.productCount} products
                 </Badge>
               </CardContent>
             </Link>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CategoryListingSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <Skeleton className="h-8 w-48 mb-2" />
+        <Skeleton className="h-4 w-64" />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Card key={i}>
+            <Skeleton className="aspect-video rounded-t-lg" />
+            <CardContent className="p-4">
+              <Skeleton className="h-6 w-32 mb-2" />
+              <Skeleton className="h-4 w-24 mb-2" />
+              <Skeleton className="h-5 w-20" />
+            </CardContent>
           </Card>
         ))}
       </div>

@@ -17,15 +17,23 @@ import { storefrontCatalogService } from "@/lib/api/services/storefront/catalog"
 import type { Product } from "@/types/product";
 import { ProductCard } from "@/components/product/product-card";
 import { ProductCardSkeleton } from "@/components/product/product-card-skeleton";
-import { NavigationSidebar, SortControls, MobileNavigation } from "@/components/navigation";
+import {
+  NavigationSidebar,
+  SortControls,
+  MobileNavigation,
+} from "@/components/navigation";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useProductFilters } from "@/hooks/use-product-filters";
 // Mock products removed - using API data only
-import { AnimatedGrid, AnimatedList, LoadingOverlay } from "@/components/ui/animated-container";
+import {
+  AnimatedGrid,
+  AnimatedList,
+  LoadingOverlay,
+} from "@/components/ui/animated-container";
 
 export default function ProductListingPage() {
   const { getToken } = useAuth();
-  
+
   // Use navigation hook for URL state management
   const {
     state,
@@ -34,7 +42,7 @@ export default function ProductListingPage() {
     resetFilters,
     getActiveFiltersCount,
     isLoading,
-    setIsLoading
+    setIsLoading,
   } = useNavigation();
 
   // View mode is handled separately from navigation state
@@ -50,13 +58,12 @@ export default function ProductListingPage() {
       setIsLoading(true);
       setError(null);
 
-      // Mock data removed - using API data only
-
-      const response = await storefrontCatalogService.getProducts({
+      const response = await storefrontCatalogService.mockGetProducts({
         page: state.page,
         limit: state.limit,
         search: state.filters.search || undefined,
-        sortBy: state.filters.sort === "featured" ? undefined : state.filters.sort,
+        sortBy:
+          state.filters.sort === "featured" ? undefined : state.filters.sort,
         sortOrder: state.filters.sort?.includes("price-high") ? "desc" : "asc",
         filters: {
           priceRange: state.filters.priceRange,
@@ -75,10 +82,11 @@ export default function ProductListingPage() {
   }, [state.page, state.limit, state.filters, getToken]);
 
   // Use product filters hook for client-side filtering
-  const { filteredProducts, filterCounts, totalProducts, filteredCount } = useProductFilters({
-    products: products,
-    filters: state.filters
-  });
+  const { filteredProducts, filterCounts, totalProducts, filteredCount } =
+    useProductFilters({
+      products: products,
+      filters: state.filters,
+    });
 
   // Fetch products when filters change
   useEffect(() => {
@@ -126,18 +134,20 @@ export default function ProductListingPage() {
               <div className="h-24 bg-muted animate-pulse rounded" />
             </div>
           </div>
-          
+
           <div className="flex-1">
             <div className="flex items-center justify-between mb-6">
               <div className="h-6 bg-muted animate-pulse rounded w-32" />
               <div className="h-10 bg-muted animate-pulse rounded w-24" />
             </div>
-            
-            <AnimatedGrid className={`grid gap-6 items-stretch ${
-              viewMode === "grid"
-                ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-                : "grid-cols-1 lg:grid-cols-2"
-            }`}>
+
+            <AnimatedGrid
+              className={`grid gap-6 items-stretch ${
+                viewMode === "grid"
+                  ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                  : "grid-cols-1 lg:grid-cols-2"
+              }`}
+            >
               {Array.from({ length: 6 }).map((_, index) => (
                 <ProductCardSkeleton
                   key={index}
@@ -176,7 +186,7 @@ export default function ProductListingPage() {
       {/* Sort Controls */}
       <div className="flex items-end lg:items-center justify-between gap-2">
         <SortControls
-          sortBy={state.filters.sort || 'featured'}
+          sortBy={state.filters.sort || "featured"}
           viewMode={viewMode}
           onSortChange={(sort) => updateFilters({ sort })}
           onViewModeChange={setViewMode}
@@ -251,10 +261,14 @@ export default function ProductListingPage() {
                   <PaginationItem>
                     <PaginationPrevious
                       onClick={() => handlePageChange(state.page - 1)}
-                      className={state.page <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      className={
+                        state.page <= 1
+                          ? "pointer-events-none opacity-50"
+                          : "cursor-pointer"
+                      }
                     />
                   </PaginationItem>
-                  
+
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                     let pageNumber;
                     if (totalPages <= 5) {
@@ -266,7 +280,7 @@ export default function ProductListingPage() {
                     } else {
                       pageNumber = state.page - 2 + i;
                     }
-                    
+
                     return (
                       <PaginationItem key={pageNumber}>
                         <PaginationLink
@@ -279,11 +293,15 @@ export default function ProductListingPage() {
                       </PaginationItem>
                     );
                   })}
-                  
+
                   <PaginationItem>
                     <PaginationNext
                       onClick={() => handlePageChange(state.page + 1)}
-                      className={state.page >= totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      className={
+                        state.page >= totalPages
+                          ? "pointer-events-none opacity-50"
+                          : "cursor-pointer"
+                      }
                     />
                   </PaginationItem>
                 </PaginationContent>
@@ -292,48 +310,51 @@ export default function ProductListingPage() {
           )}
 
           {/* Show skeleton cards when no products and no filters applied */}
-          {!isLoading && displayProducts.length === 0 && !(state.filters.search || getActiveFiltersCount() > 0) && (
-            <AnimatedGrid
-              className={`grid gap-6 items-stretch ${
-                viewMode === "grid"
-                  ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-                  : "grid-cols-1 lg:grid-cols-2"
-              }`}
-            >
-              {Array.from({ length: 6 }).map((_, index) => (
-                <ProductCardSkeleton
-                  key={index}
-                  className="pt-0"
-                  variant={viewMode === "list" ? "compact" : "default"}
-                />
-              ))}
-            </AnimatedGrid>
-          )}
+          {!isLoading &&
+            displayProducts.length === 0 &&
+            !(state.filters.search || getActiveFiltersCount() > 0) && (
+              <AnimatedGrid
+                className={`grid gap-6 items-stretch ${
+                  viewMode === "grid"
+                    ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                    : "grid-cols-1 lg:grid-cols-2"
+                }`}
+              >
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <ProductCardSkeleton
+                    key={index}
+                    className="pt-0"
+                    variant={viewMode === "list" ? "compact" : "default"}
+                  />
+                ))}
+              </AnimatedGrid>
+            )}
 
           {/* No products message - only show when filters/search are applied */}
-          {!isLoading && displayProducts.length === 0 && (state.filters.search || getActiveFiltersCount() > 0) && (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">No products found matching your criteria</p>
-              <div className="flex flex-col sm:flex-row gap-2 justify-center mt-4">
-                {state.filters.search && (
-                  <Button
-                    variant="outline"
-                    onClick={() => updateFilters({ search: '' })}
-                  >
-                    Clear search
-                  </Button>
-                )}
-                {getActiveFiltersCount() > 0 && (
-                  <Button
-                    variant="outline"
-                    onClick={resetFilters}
-                  >
-                    Clear all filters
-                  </Button>
-                )}
+          {!isLoading &&
+            displayProducts.length === 0 &&
+            (state.filters.search || getActiveFiltersCount() > 0) && (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">
+                  No products found matching your criteria
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2 justify-center mt-4">
+                  {state.filters.search && (
+                    <Button
+                      variant="outline"
+                      onClick={() => updateFilters({ search: "" })}
+                    >
+                      Clear search
+                    </Button>
+                  )}
+                  {getActiveFiltersCount() > 0 && (
+                    <Button variant="outline" onClick={resetFilters}>
+                      Clear all filters
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       </div>
     </div>

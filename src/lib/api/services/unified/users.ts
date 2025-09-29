@@ -52,26 +52,26 @@ class UnifiedUserService {
     // Apply filtering
     let filteredUsers = ALL_DEV_USERS;
 
-    // Filter by role if specified
+    // Apply search filter (search in email and name)
+    if (options.search) {
+      const searchTerm = options.search.toLowerCase();
+      filteredUsers = filteredUsers.filter(
+        (user) =>
+          user.email.toLowerCase().includes(searchTerm) ||
+          (user.firstName &&
+            user.firstName.toLowerCase().includes(searchTerm)) ||
+          (user.lastName && user.lastName.toLowerCase().includes(searchTerm))
+      );
+    }
+
+    // Apply role filter
     if (options.role) {
       filteredUsers = filteredUsers.filter(
         (user) => user.role === options.role
       );
     }
 
-    // Filter by search term if specified
-    if (options.search) {
-      const searchTerm = options.search.toLowerCase();
-      filteredUsers = filteredUsers.filter(
-        (user) =>
-          user.email.toLowerCase().includes(searchTerm) ||
-          user.firstName?.toLowerCase().includes(searchTerm) ||
-          user.lastName?.toLowerCase().includes(searchTerm) ||
-          user.fullName?.toLowerCase().includes(searchTerm)
-      );
-    }
-
-    // Filter by active status if specified
+    // Apply status filter
     if (options.isActive !== undefined) {
       filteredUsers = filteredUsers.filter(
         (user) => user.isActive === options.isActive
@@ -84,7 +84,6 @@ class UnifiedUserService {
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
     const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
-    console.log("paginatedUsers", paginatedUsers);
     return {
       users: paginatedUsers,
       total: filteredUsers.length,

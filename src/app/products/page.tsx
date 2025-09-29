@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { Suspense } from "react";
-import ProductListingPage from "@/features/storefront/components/product-listing-page";
+import ProductListingPage from "@/features/storefront/components/product-list/product-listing-page";
 
 export const metadata: Metadata = {
   title: "All Products - AKA Store",

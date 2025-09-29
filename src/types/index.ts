@@ -3,6 +3,12 @@ import { Icons } from "@/components/icons";
 // Re-export all product types
 export * from "./product";
 
+// Re-export discount types
+export * from "./discount";
+
+// Re-export dashboard types
+export * from "./dashboard";
+
 export interface NavItem {
   title: string;
   url: string;

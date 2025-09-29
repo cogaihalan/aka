@@ -20,6 +20,7 @@ import {
   ShoppingBag,
   Moon,
   MoreVertical,
+  Percent,
   Pizza,
   Plus,
   Settings,
@@ -73,4 +74,5 @@ export const Icons = {
   book: Book,
   users: Users,
   "user-check": UserCheck,
+  percent: Percent,
 };
