@@ -14,3 +14,13 @@ export interface FullWidthBannerProps {
     slides?: BannerSlide[];
     className?: string;
 }
+
+export interface SlideComponentProps {
+    slide: BannerSlide;
+    slideIndex: number;
+    currentSlide: number;
+    isAnimating: boolean;
+    isLoaded: boolean;
+    loadedImages: Set<string>;
+    imageErrors: Set<string>;
+  }

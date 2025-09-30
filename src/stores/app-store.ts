@@ -9,10 +9,10 @@ import { AppStore, Category, SiteSettings, MegaMenuData } from "@/types/app";
 const DEFAULT_SETTINGS: SiteSettings = {
   siteName: "AKA Store",
   siteDescription: "Your premium shopping destination",
-  currency: "USD",
-  currencySymbol: "$",
+  currency: "VND",
+  currencySymbol: "₫",
   timezone: "UTC",
-  language: "en",
+  language: "vi",
   theme: {
     primaryColor: "#000000",
     secondaryColor: "#6B7280",
@@ -140,15 +140,22 @@ export const useAppStore = create<AppStore>()(
           const { setError, setSettings } = get();
 
           try {
-            // TODO: Replace with actual API call
-            // For now, using default settings
-            setSettings(DEFAULT_SETTINGS);
+            const response = await fetch("/api/settings");
+            const data = await response.json();
+            
+            if (data.success) {
+              setSettings(data.data);
+            } else {
+              throw new Error(data.error);
+            }
           } catch (error) {
             setError(
               error instanceof Error
                 ? error.message
                 : "Failed to fetch settings"
             );
+            // Fallback to default settings
+            setSettings(DEFAULT_SETTINGS);
           }
         },
 
@@ -156,8 +163,21 @@ export const useAppStore = create<AppStore>()(
           const { setError, setMegaMenuData } = get();
 
           try {
-            // TODO: Replace with actual API call
-            // For now, using mock data
+            const response = await fetch("/api/mega-menu");
+            const data = await response.json();
+            
+            if (data.success) {
+              setMegaMenuData(data.data);
+            } else {
+              throw new Error(data.error);
+            }
+          } catch (error) {
+            setError(
+              error instanceof Error
+                ? error.message
+                : "Failed to fetch mega menu data"
+            );
+            // Fallback to mock data
             const mockMegaMenuData: MegaMenuData = {
               items: [
                 {
@@ -180,14 +200,7 @@ export const useAppStore = create<AppStore>()(
                 },
               ],
             };
-
             setMegaMenuData(mockMegaMenuData);
-          } catch (error) {
-            setError(
-              error instanceof Error
-                ? error.message
-                : "Failed to fetch mega menu data"
-            );
           }
         },
 

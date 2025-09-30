@@ -10,7 +10,7 @@ import Logo from "@/components/logo";
 import Link from "next/link";
 import { CartIcon } from "@/components/cart";
 import { AuthIcon } from "@/components/auth";
-import { MegaMenu } from "@/components/mega-menu";
+import { MegaMenu } from "@/components/mega-menu/mega-menu";
 import {
   useWishlistItemCount,
   useWishlistAuthStatus,

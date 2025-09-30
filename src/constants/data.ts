@@ -58,13 +58,23 @@ export const navItems: NavItem[] = [
     isActive: false,
     items: [],
   },
-];
-
-// Storefront navigation items
-export const storefrontNavItems = [
-  { name: "Home", href: "/" },
-  { name: "Products", href: "/products" },
-  { name: "Categories", href: "/categories" },
-  { name: "About", href: "/about" },
-  { name: "Contact", href: "/contact" },
+  {
+    title: "Settings",
+    url: "/dashboard/settings",
+    icon: "settings",
+    shortcut: ["s", "s"],
+    isActive: false,
+    items: [
+      {
+        title: "Site Settings",
+        url: "/dashboard/settings",
+        shortcut: ["s", "i"],
+      },
+      {
+        title: "Mega Menu",
+        url: "/dashboard/mega-menu",
+        shortcut: ["s", "m"],
+      },
+    ],
+  },
 ];

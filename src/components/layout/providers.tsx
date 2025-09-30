@@ -3,7 +3,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { useTheme } from "next-themes";
 import React from "react";
-import { ActiveThemeProvider } from "@/components/active-theme";
+import { ActiveThemeProvider } from "@/components/theme/active-theme";
 import { CartProvider } from "@/components/providers/cart-provider";
 import { QuickViewProvider } from "@/components/providers/quick-view-provider";
 import { WishlistAuthProvider } from "@/components/providers/wishlist-auth-provider";

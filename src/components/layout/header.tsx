@@ -3,9 +3,8 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { UserNav } from "./user-nav";
-import { ThemeSelector } from "@/components/theme-selector";
+import { ThemeSelector } from "@/components/theme/theme-selector";
 import { ModeToggle } from "./ThemeToggle/theme-toggle";
-import { CartButton } from "@/components/cart";
 
 export default function Header() {
   return (
