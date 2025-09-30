@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { mockOrders } from "@/lib/api/mock-data/orders";
 
 export async function GET(
   request: NextRequest,
@@ -7,14 +8,14 @@ export async function GET(
   try {
     const { id } = await params;
     const orderId = parseInt(id);
-    
-    // TODO: Replace with actual database query
-    // const order = await db.orders.findUnique({ where: { id: orderId } });
-    
-    return NextResponse.json(
-      { error: "Database integration required" },
-      { status: 501 }
-    );
+
+    const order = mockOrders.find((o) => o.id === orderId);
+
+    if (!order) {
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(order);
   } catch (error) {
     console.error("Error fetching order:", error);
     return NextResponse.json(
@@ -32,17 +33,21 @@ export async function PUT(
     const { id } = await params;
     const orderId = parseInt(id);
     const body = await request.json();
-    
-    // TODO: Replace with actual database update
-    // const order = await db.orders.update({ 
-    //   where: { id: orderId }, 
-    //   data: body 
-    // });
-    
-    return NextResponse.json(
-      { error: "Database integration required" },
-      { status: 501 }
-    );
+
+    const orderIndex = mockOrders.findIndex((o) => o.id === orderId);
+
+    if (orderIndex === -1) {
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
+    // Update the order
+    mockOrders[orderIndex] = {
+      ...mockOrders[orderIndex],
+      ...body,
+      updatedAt: new Date().toISOString(),
+    };
+
+    return NextResponse.json(mockOrders[orderIndex]);
   } catch (error) {
     console.error("Error updating order:", error);
     return NextResponse.json(
@@ -59,14 +64,17 @@ export async function DELETE(
   try {
     const { id } = await params;
     const orderId = parseInt(id);
-    
-    // TODO: Replace with actual database deletion
-    // await db.orders.delete({ where: { id: orderId } });
-    
-    return NextResponse.json(
-      { error: "Database integration required" },
-      { status: 501 }
-    );
+
+    const orderIndex = mockOrders.findIndex((o) => o.id === orderId);
+
+    if (orderIndex === -1) {
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
+    // Remove the order
+    mockOrders.splice(orderIndex, 1);
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting order:", error);
     return NextResponse.json(

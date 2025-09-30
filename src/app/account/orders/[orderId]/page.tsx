@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import OrderDetailPage from "@/features/storefront/components/order-detail-page";
+import OrderDetailPage from "@/features/storefront/components/account/orders/order-detail-page";
 
 interface OrderDetailPageProps {
   params: Promise<{

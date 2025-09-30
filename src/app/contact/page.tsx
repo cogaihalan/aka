@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import ContactPage from "@/features/storefront/components/contact-page";
+import ContactPage from "@/features/storefront/components/pages/contact-page";
 
 export const metadata: Metadata = {
   title: "Contact Us - AKA Store",

@@ -123,10 +123,6 @@ export interface CategoryProductAssignment {
   positions?: Record<number, number>;
 }
 
-// Brand interface is now imported from @/types/product
-
-// SEO interface is now imported from @/types/product
-
 // Order types
 export interface Order {
   id: number;
@@ -214,12 +210,7 @@ export interface Customer {
   firstName: string;
   lastName: string;
   phone?: string;
-  dateOfBirth?: string;
-  gender?: "male" | "female" | "other";
   addresses: Address[];
-  defaultAddressId?: number;
-  preferences: CustomerPreferences;
-  tags: string[];
   status: "active" | "inactive" | "banned";
   createdAt: string;
   updatedAt: string;
@@ -231,23 +222,10 @@ export interface Address {
   type: "shipping" | "billing";
   firstName: string;
   lastName: string;
-  company?: string;
   address1: string;
   address2?: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
   phone?: string;
   isDefault: boolean;
-}
-
-export interface CustomerPreferences {
-  newsletter: boolean;
-  sms: boolean;
-  language: string;
-  currency: string;
-  timezone: string;
 }
 
 // Cart types
@@ -373,11 +351,6 @@ export interface OrderListResponse {
   pagination: PaginationResponse;
 }
 
-export interface CustomerListResponse {
-  customers: Customer[];
-  pagination: PaginationResponse;
-}
-
 export interface CategoryListResponse {
   categories: Category[];
   pagination: PaginationResponse;
@@ -428,20 +401,4 @@ export interface UpdateOrderRequest {
   fulfillmentStatus?: FulfillmentStatus;
   notes?: string;
   tags?: string[];
-}
-
-export interface CreateCustomerRequest {
-  email: string;
-  firstName: string;
-  lastName: string;
-  phone?: string;
-  dateOfBirth?: string;
-  gender?: Customer["gender"];
-  addresses?: Omit<Address, "id">[];
-  preferences?: Partial<CustomerPreferences>;
-  tags?: string[];
-}
-
-export interface UpdateCustomerRequest extends Partial<CreateCustomerRequest> {
-  id: number;
 }

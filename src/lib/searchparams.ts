@@ -15,6 +15,13 @@ export const searchParams = {
   parentId: parseAsString,
   role: parseAsString,
   couponType: parseAsString,
+  // Order-specific parameters
+  orderNumber: parseAsString,
+  status: parseAsString,
+  paymentStatus: parseAsString,
+  fulfillmentStatus: parseAsString,
+  dateFrom: parseAsString,
+  dateTo: parseAsString,
   // advanced filter
   // filters: getFiltersStateParser().withDefault([]),
   // joinOperator: parseAsStringEnum(['and', 'or']).withDefault('and')

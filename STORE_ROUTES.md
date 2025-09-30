@@ -15,7 +15,8 @@ This document outlines the complete routing structure for the AKA ecommerce stor
 ├── /checkout/                # Checkout process
 │   └── /success/             # Order confirmation
 ├── /search/                  # Product search
-├── /wishlist/                # User wishlist
+├── /account/
+│   ├── /wishlist/            # User wishlist
 ├── /about/                   # About page
 ├── /contact/                 # Contact page
 ├── /help/                    # Help center
@@ -53,7 +54,7 @@ This document outlines the complete routing structure for the AKA ecommerce stor
 - **`/checkout`** - Checkout process with payment forms
 - **`/checkout/success`** - Order confirmation page
 - **`/search`** - Product search with filters
-- **`/wishlist`** - User's saved items
+- **`/account/wishlist`** - User's saved items
 
 ### Information Pages
 

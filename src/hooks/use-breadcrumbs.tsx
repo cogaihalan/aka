@@ -28,7 +28,10 @@ const routeMapping: Record<string, BreadcrumbItem[]> = {
   "/products": [{ title: "Products", link: "/products" }],
   "/search": [{ title: "Search", link: "/search" }],
   "/cart": [{ title: "Cart", link: "/cart" }],
-  "/wishlist": [{ title: "Wishlist", link: "/wishlist" }],
+  "/account/wishlist": [
+    { title: "Account", link: "/account" },
+    { title: "Wishlist", link: "/account/wishlist" },
+  ],
   "/checkout": [{ title: "Checkout", link: "/checkout" }],
   "/checkout/success": [
     { title: "Checkout", link: "/checkout" },

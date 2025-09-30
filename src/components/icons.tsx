@@ -17,6 +17,7 @@ import {
   LayoutDashboard,
   Loader2,
   LogIn,
+  Package,
   ShoppingBag,
   Moon,
   MoreVertical,
@@ -75,4 +76,5 @@ export const Icons = {
   users: Users,
   "user-check": UserCheck,
   percent: Percent,
+  package: Package,
 };

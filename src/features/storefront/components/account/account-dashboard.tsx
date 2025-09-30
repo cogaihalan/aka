@@ -114,7 +114,7 @@ export default function AccountDashboard() {
                 className="w-full justify-start"
                 asChild
               >
-                <Link href="/wishlist">
+                <Link href="/account/wishlist">
                   <Heart className="mr-2 h-4 w-4" />
                   View Wishlist
                 </Link>

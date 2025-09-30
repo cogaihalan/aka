@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import AccountDashboard from "@/features/storefront/components/account-dashboard";
+import AccountDashboard from "@/features/storefront/components/account/account-dashboard";
 
 export const metadata: Metadata = {
   title: "Account Dashboard - AKA Store",

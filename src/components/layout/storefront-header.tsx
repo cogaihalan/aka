@@ -66,7 +66,7 @@ export default function StorefrontHeader() {
                 asChild={isAuthenticated}
               >
                 {isAuthenticated ? (
-                  <Link href="/wishlist">
+                  <Link href="/account/wishlist">
                     <Heart className="h-5 w-5" />
                     {wishlistCount > 0 && (
                       <Badge
@@ -78,9 +78,9 @@ export default function StorefrontHeader() {
                     )}
                   </Link>
                 ) : (
-                  <>
+                  <Link href="/auth/sign-in">
                     <Heart className="h-5 w-5" />
-                  </>
+                  </Link>
                 )}
               </Button>
 

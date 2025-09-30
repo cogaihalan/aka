@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import AddressBookPage from "@/features/storefront/components/address-book-page";
+import AddressBookPage from "@/features/storefront/components/account/addresses/address-book-page";
 
 export const metadata: Metadata = {
   title: "Address Book - AKA Store",

@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import WishlistPage from "@/features/storefront/components/wishlist-page";
+import WishlistPage from "@/features/storefront/components/account/wishlist-page";
 
 export const metadata: Metadata = {
   title: "Wishlist - AKA Store",

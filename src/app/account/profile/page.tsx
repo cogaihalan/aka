@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import ProfilePage from "@/features/storefront/components/profile-page";
+import ProfilePage from "@/features/storefront/components/account/profile-page";
 
 export const metadata: Metadata = {
   title: "Profile Settings - AKA Store",

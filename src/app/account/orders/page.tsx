@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import OrderHistoryPage from "@/features/storefront/components/order-history-page";
+import OrderHistoryPage from "@/features/storefront/components/account/orders/order-history-page";
 
 export const metadata: Metadata = {
   title: "Order History - AKA Store",

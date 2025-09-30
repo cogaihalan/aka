@@ -18,7 +18,6 @@ import {
 } from "@/stores/wishlist-store";
 import { useAddToCart } from "@/hooks/use-add-to-cart";
 import { useCart } from "@/hooks/use-cart";
-import { cn } from "@/lib/utils";
 
 export default function WishlistPage() {
   const router = useRouter();
@@ -166,10 +165,11 @@ export default function WishlistPage() {
                     {/* Price */}
                     <div className="flex items-center gap-2">
                       <span className="text-lg font-bold">
-                        ${item.product.pricing.basePrice}
+                        ${item.product.pricing?.basePrice}
                       </span>
-                      {item.product.pricing.compareAtPrice &&
-                        item.product.pricing.compareAtPrice > item.product.pricing.basePrice && (
+                      {item.product.pricing?.compareAtPrice &&
+                        item.product.pricing?.compareAtPrice >
+                          item.product.pricing?.basePrice && (
                           <span className="text-sm text-muted-foreground line-through">
                             ${item.product.pricing.compareAtPrice}
                           </span>
