@@ -210,7 +210,6 @@ export interface Customer {
   firstName: string;
   lastName: string;
   phone?: string;
-  addresses: Address[];
   status: "active" | "inactive" | "banned";
   createdAt: string;
   updatedAt: string;

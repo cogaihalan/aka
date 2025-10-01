@@ -183,11 +183,6 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           >
             <Eye className="mr-2 h-4 w-4" /> View Details
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => router.push(`/dashboard/orders/${data.id}/edit`)}
-          >
-            <Edit className="mr-2 h-4 w-4" /> Edit Order
-          </DropdownMenuItem>
           <DropdownMenuSeparator />
 
           <DropdownMenuLabel>Status Updates</DropdownMenuLabel>

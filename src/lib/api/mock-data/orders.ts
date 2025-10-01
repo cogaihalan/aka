@@ -1,4 +1,77 @@
-import { Order } from "@/lib/api/types";
+import { Order, Product } from "@/lib/api/types";
+
+// Helper function to create minimal product objects for order items
+const createMinimalProduct = (
+  id: number,
+  name: string,
+  sku: string,
+  basePrice: number
+): Product => ({
+  id,
+  name,
+  slug: name.toLowerCase().replace(/\s+/g, "-"),
+  description: `${name} - High quality product`,
+  sku,
+  categories: [],
+  primaryCategory: {
+    id: 1,
+    name: "Electronics",
+    slug: "electronics",
+    level: 0,
+    path: "/electronics",
+    seo: { title: "Electronics", description: "Electronics category" },
+    includeInMenu: true,
+    isActive: true,
+    isAnchor: false,
+    displayMode: "products_only",
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-01T00:00:00Z",
+  },
+  tags: ["electronics"],
+  images: [],
+  variants: [],
+  hasVariants: false,
+  variantAttributes: [],
+  pricing: { basePrice, currency: "VND" },
+  inventory: {
+    trackQuantity: true,
+    quantity: 100,
+    reserved: 0,
+    available: 100,
+    minQuantity: 0,
+    lowStockThreshold: 10,
+    stockStatus: "in_stock",
+    allowBackorder: false,
+    allowPreorder: false,
+    lastUpdated: "2024-01-01T00:00:00Z",
+  },
+  shipping: {
+    weight: 0.5,
+    weightUnit: "kg",
+    dimensions: { length: 20, width: 15, height: 8, unit: "cm" },
+    freeShipping: false,
+  },
+  attributes: [],
+  customAttributes: {},
+  relatedProducts: [],
+  reviews: [],
+  ratings: [],
+  averageRating: 0,
+  totalReviews: 0,
+  seo: {
+    title: name,
+    description: `${name} - High quality product`,
+    keywords: [name.toLowerCase()],
+  },
+  isActive: true,
+  featured: false,
+  status: "active",
+  visibility: "catalog_search",
+  productType: "simple",
+  version: 1,
+  createdAt: "2024-01-01T00:00:00Z",
+  updatedAt: "2024-01-01T00:00:00Z",
+});
 
 // Simplified mock data for orders CRUD functionality
 export const mockOrders: Order[] = [
@@ -14,7 +87,7 @@ export const mockOrders: Order[] = [
       lastName: "Doe",
       email: "john.doe@example.com",
       phone: "+1234567890",
-      addresses: [],
+
       status: "active",
       createdAt: "2024-01-01T00:00:00Z",
       updatedAt: "2024-01-15T10:00:00Z",
@@ -39,7 +112,31 @@ export const mockOrders: Order[] = [
       phone: "+1234567890",
       isDefault: true,
     },
-    items: [],
+    items: [
+      {
+        id: 1,
+        product: createMinimalProduct(
+          1,
+          "Premium Wireless Headphones",
+          "PWH-001",
+          1999900
+        ),
+        quantity: 2,
+        price: 1999900,
+        total: 3999800,
+        discount: 0,
+        tax: 0,
+      },
+      {
+        id: 2,
+        product: createMinimalProduct(2, "Smart Watch Pro", "SWP-002", 1499900),
+        quantity: 1,
+        price: 1499900,
+        total: 1499900,
+        discount: 0,
+        tax: 0,
+      },
+    ],
     pricing: {
       subtotal: 4999750, // ~$199.99 in VND
       tax: 399950, // ~$15.99 in VND
@@ -80,7 +177,7 @@ export const mockOrders: Order[] = [
       lastName: "Smith",
       email: "jane.smith@example.com",
       phone: "+1987654321",
-      addresses: [],
+
       status: "active",
       createdAt: "2024-01-01T00:00:00Z",
       updatedAt: "2024-01-10T09:00:00Z",
@@ -105,7 +202,31 @@ export const mockOrders: Order[] = [
       phone: "+1987654321",
       isDefault: true,
     },
-    items: [],
+    items: [
+      {
+        id: 3,
+        product: createMinimalProduct(3, "Gaming Mouse RGB", "GMR-003", 899900),
+        quantity: 1,
+        price: 899900,
+        total: 899900,
+        discount: 0,
+        tax: 0,
+      },
+      {
+        id: 4,
+        product: createMinimalProduct(
+          4,
+          "Mechanical Keyboard",
+          "MKB-004",
+          1299900
+        ),
+        quantity: 1,
+        price: 1299900,
+        total: 1299900,
+        discount: 0,
+        tax: 0,
+      },
+    ],
     pricing: {
       subtotal: 3499750, // ~$139.99 in VND
       tax: 250000, // ~$10.00 in VND
@@ -145,7 +266,7 @@ export const mockOrders: Order[] = [
       lastName: "Johnson",
       email: "bob.johnson@example.com",
       phone: "+1555123456",
-      addresses: [],
+
       status: "active",
       createdAt: "2024-01-01T00:00:00Z",
       updatedAt: "2024-01-05T11:00:00Z",
@@ -210,7 +331,7 @@ export const mockOrders: Order[] = [
       lastName: "Brown",
       email: "alice.brown@example.com",
       phone: "+1444555666",
-      addresses: [],
+
       status: "active",
       createdAt: "2024-01-01T00:00:00Z",
       updatedAt: "2024-01-01T10:00:00Z",
@@ -276,7 +397,7 @@ export const mockOrders: Order[] = [
       lastName: "Wilson",
       email: "charlie.wilson@example.com",
       phone: "+1777888999",
-      addresses: [],
+
       status: "active",
       createdAt: "2024-01-01T00:00:00Z",
       updatedAt: "2024-01-03T14:00:00Z",
@@ -341,7 +462,7 @@ export const mockOrders: Order[] = [
       lastName: "Lee",
       email: "david.lee@example.com",
       phone: "+1666777888",
-      addresses: [],
+
       status: "active",
       createdAt: "2024-01-01T00:00:00Z",
       updatedAt: "2024-01-08T16:00:00Z",
@@ -406,7 +527,7 @@ export const mockOrders: Order[] = [
       lastName: "Davis",
       email: "sarah.davis@example.com",
       phone: "+1333444555",
-      addresses: [],
+
       status: "active",
       createdAt: "2024-01-01T00:00:00Z",
       updatedAt: "2024-01-02T12:00:00Z",
@@ -472,7 +593,7 @@ export const mockOrders: Order[] = [
       lastName: "Garcia",
       email: "michael.garcia@example.com",
       phone: "+1999888777",
-      addresses: [],
+
       status: "active",
       createdAt: "2024-01-01T00:00:00Z",
       updatedAt: "2024-01-12T09:00:00Z",
