@@ -1,0 +1,217 @@
+/* EditorJS Styling */
+.editor-container {
+  @apply border border-gray-200 rounded-lg;
+}
+
+.editor-js {
+  @apply p-4;
+}
+
+/* EditorJS Toolbar */
+.codex-editor__redactor {
+  @apply p-4;
+}
+
+.codex-editor__redactor .ce-block__content {
+  @apply max-w-none;
+}
+
+/* EditorJS Block Styling */
+.ce-block {
+  @apply mb-4;
+}
+
+.ce-block__content {
+  @apply max-w-none;
+}
+
+.ce-paragraph {
+  @apply text-gray-900 leading-relaxed;
+}
+
+.ce-header {
+  @apply font-bold text-gray-900;
+}
+
+.ce-header[data-level="1"] {
+  @apply text-3xl mb-6;
+}
+
+.ce-header[data-level="2"] {
+  @apply text-2xl mb-4;
+}
+
+.ce-header[data-level="3"] {
+  @apply text-xl mb-3;
+}
+
+.ce-header[data-level="4"] {
+  @apply text-lg mb-2;
+}
+
+.ce-header[data-level="5"] {
+  @apply text-base mb-2;
+}
+
+.ce-header[data-level="6"] {
+  @apply text-sm mb-2;
+}
+
+.ce-quote {
+  @apply border-l-4 border-gray-300 pl-4 py-2 italic text-gray-700;
+}
+
+.ce-list {
+  @apply space-y-1;
+}
+
+.ce-list__item {
+  @apply text-gray-900;
+}
+
+.ce-list--ordered .ce-list__item {
+  @apply list-decimal list-inside;
+}
+
+.ce-list--unordered .ce-list__item {
+  @apply list-disc list-inside;
+}
+
+.ce-table {
+  @apply w-full border-collapse border border-gray-300;
+}
+
+.ce-table th,
+.ce-table td {
+  @apply border border-gray-300 px-3 py-2;
+}
+
+.ce-table th {
+  @apply bg-gray-50 font-semibold;
+}
+
+.ce-code {
+  @apply bg-gray-100 p-4 rounded font-mono text-sm;
+}
+
+.ce-delimiter {
+  @apply text-center my-8;
+}
+
+.ce-delimiter::before {
+  content: "***";
+  @apply text-gray-400 text-2xl;
+}
+
+/* EditorJS Toolbar */
+.codex-editor__toolbar {
+  @apply border-b border-gray-200;
+}
+
+.codex-editor__toolbar .ce-toolbar__content {
+  @apply flex items-center space-x-2 p-2;
+}
+
+.codex-editor__toolbar .ce-toolbar__button {
+  @apply p-2 rounded hover:bg-gray-100 transition-colors;
+}
+
+.codex-editor__toolbar .ce-toolbar__button--active {
+  @apply bg-blue-100 text-blue-700;
+}
+
+/* EditorJS Inline Toolbar */
+.codex-editor__inline-toolbar {
+  @apply bg-white border border-gray-200 rounded shadow-lg;
+}
+
+.codex-editor__inline-toolbar .ce-inline-toolbar__button {
+  @apply p-2 hover:bg-gray-100 transition-colors;
+}
+
+/* EditorJS Settings Panel */
+.codex-editor__settings {
+  @apply bg-white border border-gray-200 rounded shadow-lg;
+}
+
+.codex-editor__settings .ce-settings__button {
+  @apply p-2 hover:bg-gray-100 transition-colors;
+}
+
+/* EditorJS Block Settings */
+.ce-block__settings {
+  @apply opacity-0 group-hover:opacity-100 transition-opacity;
+}
+
+.ce-block__settings .ce-settings__button {
+  @apply p-1 rounded hover:bg-gray-100 transition-colors;
+}
+
+/* EditorJS Drag Handle */
+.ce-block__drag-handle {
+  @apply opacity-0 group-hover:opacity-100 transition-opacity;
+}
+
+/* EditorJS Focus States */
+.ce-block--focused {
+  @apply ring-2 ring-blue-500;
+}
+
+/* EditorJS Placeholder */
+.ce-paragraph[data-placeholder]:empty::before {
+  @apply text-gray-400 italic;
+}
+
+/* EditorJS Image Block */
+.ce-image {
+  @apply my-4;
+}
+
+.ce-image__picture {
+  @apply max-w-full h-auto rounded;
+}
+
+.ce-image__caption {
+  @apply text-sm text-gray-600 mt-2 text-center;
+}
+
+/* EditorJS Link Tool */
+.ce-link-tool {
+  @apply my-4;
+}
+
+.ce-link-tool__content {
+  @apply border border-gray-200 rounded p-4;
+}
+
+.ce-link-tool__title {
+  @apply font-semibold text-blue-600;
+}
+
+.ce-link-tool__description {
+  @apply text-sm text-gray-600 mt-1;
+}
+
+/* EditorJS Raw Block */
+.ce-raw {
+  @apply my-4;
+}
+
+.ce-raw__content {
+  @apply bg-gray-100 p-4 rounded font-mono text-sm;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .editor-js {
+    @apply p-2;
+  }
+  
+  .ce-block__content {
+    @apply px-2;
+  }
+  
+  .codex-editor__toolbar .ce-toolbar__content {
+    @apply flex-wrap;
+  }
+}

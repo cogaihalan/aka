@@ -11,6 +11,9 @@ export {
   unifiedUserService
 } from "./services/unified";
 
+// Pages service
+export { pagesService } from "./services/pages";
+
 // Admin services (aliases to unified services for backward compatibility)
 export { 
   unifiedProductService as adminProductService,
