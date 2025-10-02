@@ -3,24 +3,21 @@ export { apiClient, createApiClient } from "./client-mock";
 export * from "./types";
 
 // Unified services (recommended for most use cases)
-export { 
-  unifiedProductService, 
+export {
+  unifiedProductService,
   unifiedCategoryService,
   unifiedAnalyticsService,
   unifiedOrderService,
-  unifiedUserService
+  unifiedUserService,
 } from "./services/unified";
 
-// Pages service
-export { pagesService } from "./services/pages";
-
 // Admin services (aliases to unified services for backward compatibility)
-export { 
+export {
   unifiedProductService as adminProductService,
   unifiedCategoryService as adminCategoryService,
   unifiedOrderService as adminOrderService,
   unifiedAnalyticsService as adminAnalyticsService,
-  unifiedUserService as adminUserService
+  unifiedUserService as adminUserService,
 } from "./services/unified";
 
 // Storefront services
