@@ -66,7 +66,7 @@ export function AddressForm({
       address1: address?.address1 || "",
       address2: address?.address2 || "",
       phone: address?.phone || "",
-      isDefault: address?.isDefault || false,
+      isDefault: address?.isDefault ?? false, // Use nullish coalescing to ensure false for new addresses
     },
   });
 
@@ -76,7 +76,12 @@ export function AddressForm({
   const handleFormSubmit = async (data: AddressFormValues) => {
     try {
       setIsSubmitting(true);
-      await onSubmit(data);
+      // Ensure isDefault is explicitly set to false if not checked
+      const formData = {
+        ...data,
+        isDefault: data.isDefault || false,
+      };
+      await onSubmit(formData);
     } catch (error) {
       console.error("Error submitting form:", error);
     } finally {
@@ -183,11 +188,11 @@ export function AddressForm({
             <Checkbox
               id="isDefault"
               checked={watchedIsDefault}
-              onCheckedChange={(checked) =>
-                setValue("isDefault", checked as boolean)
-              }
+              onCheckedChange={(checked) => {
+                setValue("isDefault", !!checked);
+              }}
             />
-            <Label htmlFor="isDefault">Set as default address</Label>
+            <Label htmlFor="isDefault">Set as default {watchedType} address</Label>
           </div>
 
           {/* Form Actions */}

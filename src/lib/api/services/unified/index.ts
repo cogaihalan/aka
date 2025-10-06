@@ -6,5 +6,6 @@ export { unifiedAnalyticsService } from "./analytics";
 export { unifiedOrderService } from "./orders";
 export { unifiedUserService } from "./users";
 export { unifiedDiscountService } from "./discounts";
+export { unifiedCourseService } from "./courses";
 
 // Types are available through the main API index

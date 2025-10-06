@@ -12,11 +12,13 @@ export default async function OrderListingPage() {
   const fulfillmentStatus = searchParamsCache.get("fulfillmentStatus");
   const dateFrom = searchParamsCache.get("dateFrom");
   const dateTo = searchParamsCache.get("dateTo");
+  const sort = searchParamsCache.get("sort");
 
   const filters = {
     ...(page && { page: parseInt(page.toString()) }),
     ...(pageLimit && { limit: parseInt(pageLimit.toString()) }),
     ...(search && { search: search.toString() }),
+    ...(sort && { sort }),
     ...((status ||
       paymentStatus ||
       fulfillmentStatus ||

@@ -1,35 +1,32 @@
 import { searchParamsCache } from "@/lib/searchparams";
 import { DataTableWrapper } from "@/components/ui/table/data-table-wrapper";
-import { columns } from "./user-tables/columns";
-import { unifiedUserService } from "@/lib/api";
-import { UserRole } from "@/types/auth";
+import { columns } from "./course-tables/columns";
+import { unifiedCourseService } from "@/lib/api/services/unified";
 
-export default async function UserListingPage() {
+export default async function CourseListingPage() {
   const page = searchParamsCache.get("page");
-  const search = searchParamsCache.get("name");
+  const search = searchParamsCache.get("name"); // Use 'name' instead of 'search'
   const pageLimit = searchParamsCache.get("perPage");
-  const role = searchParamsCache.get("role") as UserRole | undefined;
   const isActive = searchParamsCache.get("isActive");
   const sort = searchParamsCache.get("sort");
 
   const filters = {
     page,
     limit: pageLimit,
-    ...(search && { search }),
-    ...(role && { role }),
+    ...(search && { search: search.toString() }),
     ...(isActive !== null && { isActive: isActive === "true" }),
     ...(sort && { sort }),
   };
 
-  // Fetch users from API using the same pattern
-  const data = await unifiedUserService.getUsers(filters);
-  const totalUsers = data.total;
-  const users = data.users;
+  // Fetch courses from API
+  const data = await unifiedCourseService.getCoursesMock(filters);
+  const totalCourses = data.total;
+  const courses = data.courses;
 
   return (
     <DataTableWrapper
-      data={users}
-      totalItems={totalUsers}
+      data={courses}
+      totalItems={totalCourses}
       columns={columns}
       debounceMs={500}
       shallow={false}

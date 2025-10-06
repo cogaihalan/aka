@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import CheckoutPage from "@/features/storefront/components/checkout-page";
+import CheckoutPage from "@/features/storefront/components/checkout/checkout-page";
 
 export const metadata: Metadata = {
   title: "Checkout - AKA Store",

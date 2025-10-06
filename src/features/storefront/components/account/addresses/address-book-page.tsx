@@ -85,7 +85,7 @@ export default function AddressBookPage() {
   const handleSetDefault = async (address: Address) => {
     try {
       await setDefaultAddress(address.id);
-      toast.success("Default address updated");
+      toast.success(`Default ${address.type} address updated`);
     } catch (error) {
       toast.error("Failed to set default address");
     }
@@ -186,7 +186,7 @@ export default function AddressBookPage() {
                 </CardTitle>
                 <div className="flex items-center gap-2">
                   {address.isDefault && (
-                    <Badge variant="default">Default</Badge>
+                    <Badge variant="default">Default {address.type}</Badge>
                   )}
                   <Badge variant="outline">{address.type}</Badge>
                 </div>
@@ -217,7 +217,7 @@ export default function AddressBookPage() {
                       size="sm"
                       onClick={() => handleSetDefault(address)}
                     >
-                      Set Default
+                      Set Default {address.type}
                     </Button>
                   )}
                   <Button

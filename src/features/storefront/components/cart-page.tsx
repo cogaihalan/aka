@@ -7,7 +7,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ShoppingBag, ArrowLeft, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useCart } from "@/hooks/use-cart";
-import { CartItem, CartSummary } from "@/components/cart";
+import { CartItem } from "@/components/cart";
+import { OrderSummary } from "@/components/order/order-summary";
 import { useAuth } from "@/hooks/use-auth";
 
 export default function CartPage() {
@@ -138,10 +139,12 @@ export default function CartPage() {
 
         {/* Order Summary */}
         <div>
-          <CartSummary
+          <OrderSummary
             showPromoCode={true}
             showShippingInfo={true}
             showSecurityBadges={true}
+            showActionButtons={true}
+            showClearCart={true}
             onCheckout={() => {
               // Navigate to checkout
               window.location.href = "/checkout";

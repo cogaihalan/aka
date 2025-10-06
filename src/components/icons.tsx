@@ -34,7 +34,6 @@ import {
   Users,
   UserX,
   X,
-  Kanban,
   type LucideProps,
 } from "lucide-react";
 
@@ -48,7 +47,6 @@ export const Icons = {
   product: ShoppingBag,
   folder: Folder,
   spinner: Loader2,
-  kanban: Kanban,
   chevronLeft: ChevronLeft,
   chevronRight: ChevronRight,
   chevronUp: ChevronUp,

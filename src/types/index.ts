@@ -9,6 +9,9 @@ export * from "./discount";
 // Re-export dashboard types
 export * from "./dashboard";
 
+// Re-export course types
+export * from "./course";
+
 export interface NavItem {
   title: string;
   url: string;

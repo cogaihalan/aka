@@ -8,6 +8,7 @@ export default async function ProductListingPage() {
   const search = searchParamsCache.get("name");
   const pageLimit = searchParamsCache.get("perPage");
   const categories = searchParamsCache.get("category");
+  const sort = searchParamsCache.get("sort");
 
   // Build query parameters
   const queryParams = new URLSearchParams();
@@ -15,6 +16,16 @@ export default async function ProductListingPage() {
   if (pageLimit) queryParams.append("limit", pageLimit.toString());
   if (search) queryParams.append("search", search);
   if (categories) queryParams.append("filters[categories]", categories);
+  if (sort) {
+    // Convert sort array to query string format
+    const sortParams = Array.isArray(sort) ? sort : [sort];
+    sortParams.forEach((sortItem, index) => {
+      if (sortItem.id) {
+        queryParams.append(`sort[${index}][id]`, sortItem.id);
+        queryParams.append(`sort[${index}][desc]`, sortItem.desc.toString());
+      }
+    });
+  }
 
   // Fetch products from API endpoint with query parameters
   const response = await fetch(

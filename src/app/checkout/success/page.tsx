@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import CheckoutSuccessPage from "@/features/storefront/components/checkout-success-page";
+import CheckoutSuccessPage from "@/features/storefront/components/checkout/checkout-success-page";
 
 export const metadata: Metadata = {
   title: "Order Confirmed - AKA Store",

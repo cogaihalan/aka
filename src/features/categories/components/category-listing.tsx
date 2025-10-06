@@ -12,6 +12,7 @@ export default async function CategoryListingPage({}: CategoryListingPage) {
   const pageLimit = searchParamsCache.get("perPage");
   const isActive = searchParamsCache.get("isActive");
   const parentId = searchParamsCache.get("parentId");
+  const sort = searchParamsCache.get("sort");
 
   const filters = {
     page,
@@ -21,6 +22,7 @@ export default async function CategoryListingPage({}: CategoryListingPage) {
       filters: { isActive: isActive === "true" },
     }),
     ...(parentId && { filters: { parentId: parseInt(parentId, 10) } }),
+    ...(sort && { sort }),
   };
 
   const data = await adminCategoryService.getCategories(filters);

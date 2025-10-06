@@ -61,9 +61,11 @@ export function useUserAddresses(): UseUserAddressesReturn {
   const addAddress = async (address: Omit<Address, "id">): Promise<void> => {
     try {
       setError(null);
+      // Ensure isDefault is explicitly false if not provided or undefined
       const newAddress: Address = {
         ...address,
         id: Date.now(), // Simple ID generation
+        isDefault: !!address.isDefault, // Convert to boolean
       };
 
       const updatedAddresses = [...addresses, newAddress];
@@ -113,10 +115,19 @@ export function useUserAddresses(): UseUserAddressesReturn {
   const setDefaultAddress = async (id: number): Promise<void> => {
     try {
       setError(null);
+      
+      // Find the address being set as default to get its type
+      const targetAddress = addresses.find(addr => addr.id === id);
+      if (!targetAddress) {
+        throw new Error("Address not found");
+      }
+      
+      // Update addresses: set the target as default for its type, and remove default from others of the same type
       const updatedAddresses = addresses.map((addr) => ({
         ...addr,
-        isDefault: addr.id === id,
+        isDefault: addr.id === id || (addr.type !== targetAddress.type && addr.isDefault),
       }));
+      
       await updateUserMetadata(updatedAddresses);
       setAddresses(updatedAddresses);
     } catch (err) {

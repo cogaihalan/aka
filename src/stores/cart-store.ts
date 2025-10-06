@@ -8,12 +8,12 @@ import { Product, ProductVariant } from "@/lib/api/types";
 import { unifiedDiscountService } from "@/lib/api/services/unified";
 import { DiscountCalculationContext } from "@/types/discount";
 
-// Default cart calculation options
+// Default cart calculation options for Vietnamese market
 const DEFAULT_CALCULATION_OPTIONS = {
-  shippingThreshold: 50,
-  shippingCost: 9.99,
-  taxRate: 0.08,
-  freeShippingThreshold: 50,
+  shippingThreshold: 1000000, // 1 million VND
+  shippingCost: 30000, // 30k VND for Hanoi
+  taxRate: 0.1, // 10% tax rate
+  freeShippingThreshold: 1000000, // 1 million VND
 };
 
 // Cart store implementation
