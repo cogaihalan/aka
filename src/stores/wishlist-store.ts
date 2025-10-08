@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { v4 as uuidv4 } from "uuid";
+import { toast } from "sonner";
 import { Product } from "@/lib/api/types";
 
 // Wishlist item interface
@@ -102,6 +103,12 @@ export const useWishlistStore = create<WishlistStore>()(
             lastUpdated: Date.now(),
             isLoading: false,
           });
+
+          // Show success toast
+          toast.success("Added to wishlist", {
+            description: `${product.name} has been added to your wishlist`,
+            duration: 3000,
+          });
         } catch (error) {
           set({
             error:
@@ -129,6 +136,11 @@ export const useWishlistStore = create<WishlistStore>()(
             return;
           }
 
+          // Find the product to get its name for the toast
+          const itemToRemove = state.items.find(
+            (item) => item.productId === productId
+          );
+
           const updatedItems = state.items.filter(
             (item) => item.productId !== productId
           );
@@ -138,6 +150,14 @@ export const useWishlistStore = create<WishlistStore>()(
             lastUpdated: Date.now(),
             isLoading: false,
           });
+
+          // Show success toast
+          if (itemToRemove) {
+            toast.success("Removed from wishlist", {
+              description: `${itemToRemove.product.name} has been removed from your wishlist`,
+              duration: 3000,
+            });
+          }
         } catch (error) {
           set({
             error:

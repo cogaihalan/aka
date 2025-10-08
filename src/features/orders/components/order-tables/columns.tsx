@@ -94,7 +94,9 @@ export const columns: ColumnDef<Order>[] = [
   {
     id: "customer",
     accessorKey: "customer",
-    header: "Customer",
+    header: ({ column }: { column: Column<Order, unknown> }) => (
+      <DataTableColumnHeader column={column} title="Customer" />
+    ),
     cell: ({ row }) => {
       const order = row.original;
       const customer = order.customer;
@@ -203,7 +205,9 @@ export const columns: ColumnDef<Order>[] = [
   {
     id: "items",
     accessorKey: "items",
-    header: "Items",
+    header: ({ column }: { column: Column<Order, unknown> }) => (
+      <DataTableColumnHeader column={column} title="Items" />
+    ),
     cell: ({ row }) => {
       const order = row.original;
       const itemCount = order.items?.length || 0;

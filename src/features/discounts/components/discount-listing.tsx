@@ -3,6 +3,7 @@ import { DataTableWrapper } from "@/components/ui/table/data-table-wrapper";
 import { discountColumns } from "./discount-tables/columns";
 import { unifiedDiscountService } from "@/lib/api/services/unified";
 import { DiscountRuleListParams } from "@/types/discount";
+import { convertSortToApiParams } from "@/lib/utils/sort-conversion";
 
 export default async function DiscountListingPage() {
   const page = searchParamsCache.get("page");
@@ -10,11 +11,15 @@ export default async function DiscountListingPage() {
   const pageLimit = searchParamsCache.get("perPage");
   const isActive = searchParamsCache.get("isActive");
   const couponType = searchParamsCache.get("couponType");
+  const sort = searchParamsCache.get("sort");
+
+  const sortParams = convertSortToApiParams(sort);
 
   const filters: DiscountRuleListParams = {
     ...(page && { page: parseInt(page.toString()) }),
     ...(pageLimit && { limit: parseInt(pageLimit.toString()) }),
     ...(search && { search }),
+    ...sortParams,
     ...((isActive !== null || couponType) && {
       filters: {
         ...(isActive !== null && { isActive: isActive === "true" }),

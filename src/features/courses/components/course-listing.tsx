@@ -2,6 +2,7 @@ import { searchParamsCache } from "@/lib/searchparams";
 import { DataTableWrapper } from "@/components/ui/table/data-table-wrapper";
 import { columns } from "./course-tables/columns";
 import { unifiedCourseService } from "@/lib/api/services/unified";
+import { convertSortToApiParams } from "@/lib/utils/sort-conversion";
 
 export default async function CourseListingPage() {
   const page = searchParamsCache.get("page");
@@ -10,12 +11,14 @@ export default async function CourseListingPage() {
   const isActive = searchParamsCache.get("isActive");
   const sort = searchParamsCache.get("sort");
 
+  const sortParams = convertSortToApiParams(sort);
+
   const filters = {
     page,
     limit: pageLimit,
     ...(search && { search: search.toString() }),
     ...(isActive !== null && { isActive: isActive === "true" }),
-    ...(sort && { sort }),
+    ...sortParams,
   };
 
   // Fetch courses from API

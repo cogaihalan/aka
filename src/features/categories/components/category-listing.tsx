@@ -2,6 +2,7 @@ import { adminCategoryService } from "@/lib/api";
 import { searchParamsCache } from "@/lib/searchparams";
 import { DataTableWrapper } from "@/components/ui/table/data-table-wrapper";
 import { columns } from "@/features/categories/components/category-tables/columns";
+import { convertSortToApiParams } from "@/lib/utils/sort-conversion";
 
 type CategoryListingPage = {};
 
@@ -14,19 +15,23 @@ export default async function CategoryListingPage({}: CategoryListingPage) {
   const parentId = searchParamsCache.get("parentId");
   const sort = searchParamsCache.get("sort");
 
+  const sortParams = convertSortToApiParams(sort);
+
   const filters = {
     page,
     limit: pageLimit,
     ...(search && { search }),
+    ...sortParams,
     ...(isActive !== undefined && {
       filters: { isActive: isActive === "true" },
     }),
     ...(parentId && { filters: { parentId: parseInt(parentId, 10) } }),
-    ...(sort && { sort }),
   };
 
   const data = await adminCategoryService.getCategories(filters);
-  const totalCategories = Array.isArray(data) ? data.length : data.pagination.total;
+  const totalCategories = Array.isArray(data)
+    ? data.length
+    : data.pagination.total;
   const categories = Array.isArray(data) ? data : data.categories;
 
   return (

@@ -67,12 +67,28 @@ export const columns: ColumnDef<Product>[] = [
   {
     id: "price",
     accessorKey: "price",
-    header: "PRICE",
+    header: ({ column }: { column: Column<Product, unknown> }) => (
+      <DataTableColumnHeader column={column} title="Price" />
+    ),
+    cell: ({ row }) => {
+      const price = row.getValue("price") as number;
+      return <div className="font-medium">${price?.toFixed(2) || "0.00"}</div>;
+    },
   },
   {
     id: "description",
     accessorKey: "description",
-    header: "DESCRIPTION",
+    header: ({ column }: { column: Column<Product, unknown> }) => (
+      <DataTableColumnHeader column={column} title="Description" />
+    ),
+    cell: ({ row }) => {
+      const description = row.getValue("description") as string;
+      return (
+        <div className="max-w-[200px] truncate text-sm text-muted-foreground">
+          {description || "No description"}
+        </div>
+      );
+    },
   },
 
   {

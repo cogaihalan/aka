@@ -12,7 +12,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DataTableColumnHeader } from "@/components/ui/table/data-table-column-header";
 import { AppUser, UserRole } from "@/types/auth";
 import {
   MoreHorizontal,
@@ -33,9 +32,7 @@ export const columns: ColumnDef<AppUser>[] = [
   {
     id: "name", // Change from "email" to "name" to match server parameter
     accessorKey: "email",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="User" />
-    ),
+    header: "User",
     cell: ({ row }) => {
       const user = row.original;
       return (
@@ -61,9 +58,7 @@ export const columns: ColumnDef<AppUser>[] = [
   {
     id: "role",
     accessorKey: "role",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Role" />
-    ),
+    header: "Role",
     cell: ({ row }) => {
       const role = row.getValue("role") as UserRole;
       return (
@@ -91,9 +86,7 @@ export const columns: ColumnDef<AppUser>[] = [
   {
     id: "isActive",
     accessorKey: "isActive",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
-    ),
+    header: "Status",
     cell: ({ row }) => {
       const isActive = row.getValue("isActive") as boolean;
       return (
@@ -116,9 +109,7 @@ export const columns: ColumnDef<AppUser>[] = [
   {
     id: "createdAt",
     accessorKey: "createdAt",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Created" />
-    ),
+    header: "Created",
     cell: ({ row }) => {
       const date = row.getValue("createdAt") as Date;
       return (
@@ -132,9 +123,7 @@ export const columns: ColumnDef<AppUser>[] = [
   {
     id: "lastSignInAt",
     accessorKey: "lastSignInAt",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Last Sign In" />
-    ),
+    header: "Last Sign In",
     cell: ({ row }) => {
       const lastSignIn = row.getValue("lastSignInAt") as Date | undefined;
       return (

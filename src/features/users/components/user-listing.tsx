@@ -10,7 +10,6 @@ export default async function UserListingPage() {
   const pageLimit = searchParamsCache.get("perPage");
   const role = searchParamsCache.get("role") as UserRole | undefined;
   const isActive = searchParamsCache.get("isActive");
-  const sort = searchParamsCache.get("sort");
 
   const filters = {
     page,
@@ -18,7 +17,6 @@ export default async function UserListingPage() {
     ...(search && { search }),
     ...(role && { role }),
     ...(isActive !== null && { isActive: isActive === "true" }),
-    ...(sort && { sort }),
   };
 
   // Fetch users from API using the same pattern

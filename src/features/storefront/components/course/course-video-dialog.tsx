@@ -35,7 +35,7 @@ export function CourseVideoDialog({
             </Badge>
           </DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-4">
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             {course.duration && (
@@ -46,12 +46,14 @@ export function CourseVideoDialog({
             )}
             <div className="flex items-center gap-1">
               <Calendar className="h-4 w-4" />
-              <span>Created {format(new Date(course.createdAt), "MMM dd, yyyy")}</span>
+              <span>
+                Created {format(new Date(course.createdAt), "MMM dd, yyyy")}
+              </span>
             </div>
           </div>
-          
+
           <p className="text-sm text-muted-foreground">{course.description}</p>
-          
+
           <div className="aspect-video w-full">
             <VideoPlayer
               src={course.videoUrl}

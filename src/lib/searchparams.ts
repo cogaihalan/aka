@@ -4,6 +4,7 @@ import {
   parseAsInteger,
   parseAsString,
 } from "nuqs/server";
+import { getSortingStateParser } from "./parsers";
 
 export const searchParams = {
   page: parseAsInteger.withDefault(1),
@@ -22,6 +23,8 @@ export const searchParams = {
   fulfillmentStatus: parseAsString,
   dateFrom: parseAsString,
   dateTo: parseAsString,
+  // Sorting parameter
+  sort: getSortingStateParser().withDefault([]),
   // advanced filter
   // filters: getFiltersStateParser().withDefault([]),
   // joinOperator: parseAsStringEnum(['and', 'or']).withDefault('and')

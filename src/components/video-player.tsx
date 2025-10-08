@@ -3,7 +3,14 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Volume2, VolumeX, Play, Pause, Maximize, RotateCcw } from "lucide-react";
+import {
+  Volume2,
+  VolumeX,
+  Play,
+  Pause,
+  Maximize,
+  RotateCcw,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { VideoPlayerProps } from "@/types/course";
 
@@ -30,7 +37,7 @@ export function VideoPlayer({
 
   const handlePlayPause = useCallback(() => {
     if (!videoRef.current) return;
-    
+
     if (isPlaying) {
       videoRef.current.pause();
     } else {
@@ -54,7 +61,7 @@ export function VideoPlayer({
 
   const handleMute = useCallback(() => {
     if (!videoRef.current) return;
-    
+
     if (isMuted) {
       videoRef.current.volume = volume;
       setIsMuted(false);
@@ -66,7 +73,7 @@ export function VideoPlayer({
 
   const handleFullscreen = useCallback(() => {
     if (!videoRef.current) return;
-    
+
     if (!isFullscreen) {
       if (videoRef.current.requestFullscreen) {
         videoRef.current.requestFullscreen();
@@ -167,6 +174,8 @@ export function VideoPlayer({
         "relative group h-full bg-black rounded-lg overflow-hidden",
         className
       )}
+      onClick={handlePlayPause}
+
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => setShowControls(false)}
     >
@@ -181,7 +190,7 @@ export function VideoPlayer({
         playsInline
         {...props}
       />
-      
+
       {controls && (
         <div
           className={cn(
@@ -201,7 +210,7 @@ export function VideoPlayer({
               className="w-full"
             />
           </div>
-          
+
           {/* Controls */}
           <div className="flex items-center justify-between px-4 pb-4">
             <div className="flex items-center gap-2">
@@ -209,7 +218,7 @@ export function VideoPlayer({
                 variant="ghost"
                 size="icon"
                 onClick={handlePlayPause}
-                className="text-white hover:bg-white/20"
+                className="text-white hover:bg-white/50"
               >
                 {isPlaying ? (
                   <Pause className="h-5 w-5" />
@@ -217,30 +226,30 @@ export function VideoPlayer({
                   <Play className="h-5 w-5" />
                 )}
               </Button>
-              
+
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={handleRestart}
-                className="text-white hover:bg-white/20"
+                className="text-white hover:bg-white/50"
               >
                 <RotateCcw className="h-4 w-4" />
               </Button>
-              
+
               <div className="flex items-center gap-2 text-white text-sm">
                 <span>{formatTime(currentTime)}</span>
                 <span>/</span>
                 <span>{formatTime(duration)}</span>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-2">
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={handleMute}
-                  className="text-white hover:bg-white/20"
+                  className="text-white hover:bg-white/50"
                 >
                   {isMuted ? (
                     <VolumeX className="h-4 w-4" />
@@ -248,7 +257,7 @@ export function VideoPlayer({
                     <Volume2 className="h-4 w-4" />
                   )}
                 </Button>
-                
+
                 <div className="w-20">
                   <Slider
                     value={[isMuted ? 0 : volume]}
@@ -259,12 +268,12 @@ export function VideoPlayer({
                   />
                 </div>
               </div>
-              
+
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={handleFullscreen}
-                className="text-white hover:bg-white/20"
+                className="text-white hover:bg-white/50"
               >
                 <Maximize className="h-4 w-4" />
               </Button>

@@ -14,6 +14,7 @@ import { useQuickView } from "@/components/providers/quick-view-provider";
 import {
   useWishlistActions,
   useWishlistAuthStatus,
+  useIsInWishlist,
 } from "@/stores/wishlist-store";
 import { Product } from "@/lib/api/types";
 import { cn, isProductOutOfStock, getStockStatusText } from "@/lib/utils";
@@ -44,16 +45,13 @@ export function ProductCard({
 
   const { isInCart, getItemQuantity } = useCart();
   const { openQuickView } = useQuickView();
-  const {
-    addItem: addToWishlist,
-    removeItem: removeFromWishlist,
-    isInWishlist,
-  } = useWishlistActions();
+  const { addItem: addToWishlist, removeItem: removeFromWishlist } =
+    useWishlistActions();
   const isAuthenticated = useWishlistAuthStatus();
+  const isInWishlistState = useIsInWishlist(product.id);
   const isInCartState = isInCart(product.id);
   const cartQuantity = getItemQuantity(product.id);
-  const isInWishlistState = isInWishlist(product.id);
-  
+
   // Stock status checks
   const isOutOfStock = isProductOutOfStock(product);
   const stockStatusText = getStockStatusText(product);
@@ -299,32 +297,32 @@ export function ProductCard({
 
           <div className="mt-auto space-y-2">
             <div className="flex items-center justify-between">
-            <Button
-              size="sm"
-              onClick={handleAddToCart}
-              disabled={isAdding || isOutOfStock}
-              className={cn(
-                "flex-1",
-                isOutOfStock && "opacity-50 cursor-not-allowed"
-              )}
-            >
-              {isOutOfStock ? (
-                <>
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  {stockStatusText}
-                </>
-              ) : isInCartState ? (
-                <>
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  In Cart ({cartQuantity})
-                </>
-              ) : (
-                <>
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Add to Cart
-                </>
-              )}
-            </Button>
+              <Button
+                size="sm"
+                onClick={handleAddToCart}
+                disabled={isAdding || isOutOfStock}
+                className={cn(
+                  "flex-1",
+                  isOutOfStock && "opacity-50 cursor-not-allowed"
+                )}
+              >
+                {isOutOfStock ? (
+                  <>
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    {stockStatusText}
+                  </>
+                ) : isInCartState ? (
+                  <>
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    In Cart ({cartQuantity})
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    Add to Cart
+                  </>
+                )}
+              </Button>
             </div>
 
             {error && <p className="text-xs text-destructive">{error}</p>}
@@ -408,7 +406,7 @@ export function ProductCard({
         </div>
       </div>
 
-      <CardContent className="px-4 pb-4 flex flex-col h-full">
+      <CardContent className="px-4 pb-4 flex flex-col gap-2 h-full">
         <div className="flex-1 space-y-3">
           <Badge variant="secondary" className="text-xs">
             {product.primaryCategory?.name || "Uncategorized"}

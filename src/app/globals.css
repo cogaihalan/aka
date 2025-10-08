@@ -4,6 +4,8 @@
 
 @import "glider-js/glider.min.css";
 
+@import "@fancyapps/ui/dist/fancybox/fancybox.css";
+
 @custom-variant dark (&:is(.dark *));
 
 @import "../styles/slider.css";

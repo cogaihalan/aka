@@ -86,7 +86,9 @@ export const columns: ColumnDef<Category>[] = [
   },
   {
     accessorKey: "description",
-    header: "Description",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Description" />
+    ),
     cell: ({ row }) => {
       const description = row.getValue("description") as string;
       return (
@@ -112,7 +114,9 @@ export const columns: ColumnDef<Category>[] = [
   },
   {
     accessorKey: "isActive",
-    header: "Status",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Status" />
+    ),
     cell: ({ row }) => {
       const isActive = row.getValue("isActive") as boolean;
       return (
@@ -124,7 +128,9 @@ export const columns: ColumnDef<Category>[] = [
   },
   {
     accessorKey: "includeInMenu",
-    header: "Menu",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Menu" />
+    ),
     cell: ({ row }) => {
       const includeInMenu = row.getValue("includeInMenu") as boolean;
       return (

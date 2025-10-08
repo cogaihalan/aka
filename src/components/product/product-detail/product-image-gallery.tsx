@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, memo, useCallback, useRef } from "react";
+import { useState, memo, useCallback, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Glider from "react-glider";
+import { Fancybox } from "@fancyapps/ui";
 
 interface ProductImage {
   id: number;
@@ -28,6 +29,36 @@ export const ProductImageGallery = memo(function ProductImageGallery({
 }: ProductImageGalleryProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const mainGliderRef = useRef<any>(null);
+  const galleryRef = useRef<HTMLDivElement>(null);
+
+  // Initialize Fancybox when component mounts
+  useEffect(() => {
+    if (galleryRef.current) {
+      Fancybox.bind(galleryRef.current, "[data-fancybox]", {
+        // Enable keyboard navigation
+        keyboard: {
+          Escape: "close",
+          Delete: "close",
+          Backspace: "close",
+          PageUp: "prev",
+          PageDown: "next",
+          ArrowRight: "next",
+          ArrowLeft: "prev",
+          ArrowUp: "prev",
+          ArrowDown: "next",
+        },
+        // Close on backdrop click
+        backdropClick: "close",
+        // Ensure Fancybox renders above Dialog
+        parentEl: document.body,
+      });
+    }
+
+    // Cleanup Fancybox when component unmounts
+    return () => {
+      Fancybox.destroy();
+    };
+  }, [images]);
 
   // Sort images by order and ensure primary image is first
   const sortedImages = [...images].sort((a, b) => {
@@ -35,6 +66,8 @@ export const ProductImageGallery = memo(function ProductImageGallery({
     if (b.isPrimary) return 1;
     return a.order - b.order;
   });
+
+  console.log(sortedImages);
 
   const handleSlideChange = useCallback((index: number) => {
     setCurrentSlide(index);
@@ -72,7 +105,10 @@ export const ProductImageGallery = memo(function ProductImageGallery({
   }
 
   return (
-    <div className={cn("space-y-4 product-image-gallery", className)}>
+    <div
+      ref={galleryRef}
+      className={cn("space-y-4 product-image-gallery", className)}
+    >
       {/* Main Image Slider */}
       <div className="relative group">
         <Glider
@@ -96,16 +132,48 @@ export const ProductImageGallery = memo(function ProductImageGallery({
         >
           {sortedImages.map((image, index) => (
             <div key={image.id} className="glider-slide">
-              <div className="aspect-square bg-muted rounded-lg overflow-hidden transform transition-all duration-300 ease-out">
-                <Image
-                  src={image.url}
-                  alt={image.alt || productName}
-                  width={600}
-                  height={600}
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 40vw"
-                  priority={index === 0}
-                />
+              <div className="aspect-square bg-muted rounded-lg overflow-hidden transform transition-all duration-300 ease-out relative group">
+                <a
+                  href={image.url}
+                  data-fancybox="product-gallery"
+                  data-caption={image.alt || productName}
+                  data-thumb={image.url}
+                  className="block w-full h-full"
+                >
+                  <Image
+                    src={image.url}
+                    alt={image.alt || productName}
+                    width={600}
+                    height={600}
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 40vw"
+                    priority={index === 0}
+                  />
+                </a>
+                {/* Zoom button overlay */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20">
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    className="h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-lg"
+                    aria-label="Open image in lightbox"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      // Trigger the Fancybox lightbox by clicking the anchor element
+                      const anchorElement = e.currentTarget
+                        .closest(".glider-slide")
+                        ?.querySelector(
+                          "a[data-fancybox]"
+                        ) as HTMLAnchorElement;
+                      if (anchorElement) {
+                        anchorElement.click();
+                      }
+                    }}
+                  >
+                    <ZoomIn className="h-5 w-5" />
+                  </Button>
+                </div>
               </div>
             </div>
           ))}

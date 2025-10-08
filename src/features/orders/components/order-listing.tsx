@@ -2,6 +2,7 @@ import { searchParamsCache } from "@/lib/searchparams";
 import { DataTableWrapper } from "@/components/ui/table/data-table-wrapper";
 import { columns } from "./order-tables/columns";
 import { unifiedOrderService } from "@/lib/api/services/unified";
+import { convertSortToApiParams } from "@/lib/utils/sort-conversion";
 
 export default async function OrderListingPage() {
   const page = searchParamsCache.get("page");
@@ -14,11 +15,13 @@ export default async function OrderListingPage() {
   const dateTo = searchParamsCache.get("dateTo");
   const sort = searchParamsCache.get("sort");
 
+  const sortParams = convertSortToApiParams(sort);
+
   const filters = {
     ...(page && { page: parseInt(page.toString()) }),
     ...(pageLimit && { limit: parseInt(pageLimit.toString()) }),
     ...(search && { search: search.toString() }),
-    ...(sort && { sort }),
+    ...sortParams,
     ...((status ||
       paymentStatus ||
       fulfillmentStatus ||

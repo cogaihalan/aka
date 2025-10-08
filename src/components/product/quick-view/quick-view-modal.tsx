@@ -1,16 +1,15 @@
 "use client";
 
-import { memo } from "react";
+import { memo, useCallback } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Truck, Shield, RotateCcw, X } from "lucide-react";
+import { X } from "lucide-react";
 import { Product } from "@/lib/api/types";
 import {
   ProductImageGallery,
@@ -29,6 +28,20 @@ export const QuickViewModal = memo(function QuickViewModal({
   onClose,
 }: QuickViewModalProps) {
   if (!product) return null;
+
+  // Handle dialog close with Fancybox check
+  const handleDialogClose = useCallback(
+    (open: boolean) => {
+      // Check if Fancybox is currently open
+      const fancyboxContainer = document.querySelector(".fancybox__container");
+      if (fancyboxContainer && !open) {
+        // If Fancybox is open, don't close the dialog
+        return;
+      }
+      onClose();
+    },
+    [onClose]
+  );
 
   // Transform product data to match the expected interface
   const enhancedProduct = {
@@ -61,7 +74,7 @@ export const QuickViewModal = memo(function QuickViewModal({
     })) || [];
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleDialogClose}>
       <DialogContent className="h-auto overflow-auto max-h-[90vh] p-0 sm:w-[90%] sm:max-w-7xl">
         <DialogHeader className="px-4 py-2 flex-shrink-0 sticky top-0 bg-background z-20 border-b">
           <div className="flex items-center justify-between">
