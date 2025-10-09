@@ -1,13 +1,11 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
 import { Plus, ExternalLink, RefreshCw } from "lucide-react";
-import Link from "next/link";
 
 import PageContainer from "@/components/layout/page-container";
 import { Heading } from "@/components/ui/heading";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -66,7 +64,7 @@ export default function PrismicPagesPage() {
   return (
     <PageContainer scrollable={false}>
       <div className="flex flex-1 flex-col space-y-4">
-        <div className="flex items-start justify-between">
+        {/* <div className="flex items-start justify-between">
           <Heading
             title="Content Pages"
             description="Manage static pages and content using Prismic CMS"
@@ -93,7 +91,7 @@ export default function PrismicPagesPage() {
               Create New Page
             </Button>
           </div>
-        </div>
+        </div> */}
         <Separator />
         
         <Suspense fallback={<PrismicDashboardSkeleton />}>

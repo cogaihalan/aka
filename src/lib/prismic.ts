@@ -1,18 +1,16 @@
-import { createClient } from '@prismicio/client'
-import { enableAutoPreviews } from '@prismicio/next'
+import { createClient } from "@prismicio/client";
+import { enableAutoPreviews } from "@prismicio/next";
 
 // Prismic repository configuration
-export const repositoryName = process.env.PRISMIC_REPOSITORY_NAME || 'your-repo-name'
+export const repositoryName =
+  process.env.PRISMIC_REPOSITORY_NAME || "your-repo-name";
 
 // Route configuration for Prismic content
 export const routes = [
-  { type: 'homepage', path: '/' },
-  { type: 'page', path: '/:uid' },
-  { type: 'category', path: '/categories/:uid' },
-  { type: 'product', path: '/products/:uid' },
-  { type: 'blog_post', path: '/blog/:uid' },
-  { type: 'static_page', path: '/:uid' }
-]
+  { type: "homepage", path: "/" },
+  { type: "page", path: "/pages/:uid" },
+  { type: "blog_post", path: "/blog/:uid" },
+];
 
 // Performance-optimized Prismic client
 export function createPrismicClient(config = {}) {
@@ -20,132 +18,134 @@ export function createPrismicClient(config = {}) {
     routes,
     fetchOptions: {
       // Production optimizations
-      next: process.env.NODE_ENV === 'production' 
-        ? { 
-            tags: ['prismic'], 
-            revalidate: 3600 // 1 hour cache
-          }
-        : { 
-            revalidate: 5 // 5 seconds in development
-          }
+      next:
+        process.env.NODE_ENV === "production"
+          ? {
+              tags: ["prismic"],
+              revalidate: 3600, // 1 hour cache
+            }
+          : {
+              revalidate: 5, // 5 seconds in development
+            },
     },
     ...config,
-  })
+  });
 
   // Enable auto-previews in development
-  if (process.env.NODE_ENV === 'development') {
-    enableAutoPreviews({ client })
+  if (process.env.NODE_ENV === "development") {
+    enableAutoPreviews({ client });
   }
 
-  return client
+  return client;
 }
 
 // Default client instance
-export const prismicClient = createPrismicClient()
+export const prismicClient = createPrismicClient();
 
 // Performance monitoring wrapper
 export class PrismicPerformanceMonitor {
-  private static cache = new Map<string, { data: any; timestamp: number }>()
-  private static CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+  private static cache = new Map<string, { data: any; timestamp: number }>();
+  private static CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
   static async measureFetch<T>(
-    operation: string, 
+    operation: string,
     fn: () => Promise<T>
   ): Promise<T> {
-    const start = performance.now()
-    
+    const start = performance.now();
+
     try {
-      const result = await fn()
-      const end = performance.now()
-      
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`🚀 Prismic ${operation}: ${(end - start).toFixed(2)}ms`)
+      const result = await fn();
+      const end = performance.now();
+
+      if (process.env.NODE_ENV === "development") {
+        console.log(`🚀 Prismic ${operation}: ${(end - start).toFixed(2)}ms`);
       }
-      
-      return result
+
+      return result;
     } catch (error) {
-      const end = performance.now()
-      console.error(`❌ Prismic ${operation} failed: ${(end - start).toFixed(2)}ms`, error)
-      throw error
+      const end = performance.now();
+      console.error(
+        `❌ Prismic ${operation} failed: ${(end - start).toFixed(2)}ms`,
+        error
+      );
+      throw error;
     }
   }
 
   static getCached(key: string) {
-    const cached = this.cache.get(key)
+    const cached = this.cache.get(key);
     if (cached && Date.now() - cached.timestamp < this.CACHE_TTL) {
-      return cached.data
+      return cached.data;
     }
-    return null
+    return null;
   }
 
   static setCached(key: string, data: any) {
-    this.cache.set(key, { data, timestamp: Date.now() })
+    this.cache.set(key, { data, timestamp: Date.now() });
   }
 
   static clearCache() {
-    this.cache.clear()
+    this.cache.clear();
   }
 }
 
 // Enhanced client with performance monitoring
 export class OptimizedPrismicClient {
-  private client = prismicClient
+  private client = prismicClient;
 
-  async getByUID<T = any>(type: string, uid: string, options = {}) {
-    const cacheKey = `${type}-${uid}`
-    const cached = PrismicPerformanceMonitor.getCached(cacheKey)
-    
+  async getByUID<T = any>(type: any, uid: string, options: any = {}) {
+    const cacheKey = `${type}-${uid}`;
+    const cached = PrismicPerformanceMonitor.getCached(cacheKey);
+
     if (cached) {
-      return cached
+      return cached;
     }
 
     return PrismicPerformanceMonitor.measureFetch(
       `getByUID(${type}, ${uid})`,
       async () => {
-        const result = await this.client.getByUID(type, uid, options)
-        PrismicPerformanceMonitor.setCached(cacheKey, result)
-        return result
+        const result = await this.client.getByUID(type, uid, options);
+        PrismicPerformanceMonitor.setCached(cacheKey, result);
+        return result;
       }
-    )
+    );
   }
 
-  async getAllByType<T = any>(type: string, options = {}) {
-    const cacheKey = `all-${type}`
-    const cached = PrismicPerformanceMonitor.getCached(cacheKey)
-    
+  async getAllByType<T = any>(type: any, options: any = {}) {
+    const cacheKey = `all-${type}`;
+    const cached = PrismicPerformanceMonitor.getCached(cacheKey);
+
     if (cached) {
-      return cached
+      return cached;
     }
 
     return PrismicPerformanceMonitor.measureFetch(
       `getAllByType(${type})`,
       async () => {
-        const result = await this.client.getAllByType(type, options)
-        PrismicPerformanceMonitor.setCached(cacheKey, result)
-        return result
+        const result = await this.client.getAllByType(type, options);
+        PrismicPerformanceMonitor.setCached(cacheKey, result);
+        return result;
       }
-    )
+    );
   }
 
-  async getByID<T = any>(id: string, options = {}) {
-    return PrismicPerformanceMonitor.measureFetch(
-      `getByID(${id})`,
-      () => this.client.getByID(id, options)
-    )
+  async getByID<T = any>(id: string, options: any = {}) {
+    return PrismicPerformanceMonitor.measureFetch(`getByID(${id})`, () =>
+      this.client.getByID(id, options)
+    );
   }
 
-  async getSingle<T = any>(type: string, options = {}) {
-    return PrismicPerformanceMonitor.measureFetch(
-      `getSingle(${type})`,
-      () => this.client.getSingle(type, options)
-    )
+  async getSingle<T = any>(type: string, options: any = {}) {
+    return PrismicPerformanceMonitor.measureFetch(`getSingle(${type})`, () =>
+      this.client.getSingle(type as any, options)
+    );
   }
 
   // Clear cache method
   clearCache() {
-    PrismicPerformanceMonitor.clearCache()
+    PrismicPerformanceMonitor.clearCache();
   }
 }
 
 // Export optimized client instance
-export const optimizedPrismicClient = new OptimizedPrismicClient()
+export const optimizedPrismicClient = new OptimizedPrismicClient();
