@@ -2,6 +2,8 @@ import React, { FC, useState } from "react";
 import { Content, isFilled } from "@prismicio/client";
 import { SliceComponentProps, PrismicRichText } from "@prismicio/react";
 import { PrismicNextLink, PrismicNextImage } from "@prismicio/next";
+import { cn } from "@/lib/utils";
+import { AnimatedContainer } from "@/components/ui/animated-container";
 
 export type ProductCarouselProps = SliceComponentProps<any>;
 
@@ -42,65 +44,99 @@ const ProductCarousel: FC<ProductCarouselProps> = ({ slice }) => {
     <section
       data-slice-type={slice.slice_type}
       data-slice-variation={slice.variation}
-      className="es-bounded es-product-carousel"
+      className="py-16 px-8 bg-white text-gray-900"
     >
-      <div className="es-bounded__content es-product-carousel__content">
+      <div className="mx-auto max-w-4xl sm:max-w-5xl lg:max-w-6xl xl:max-w-7xl">
         {/* Header */}
         {(isFilled.richText(slice.primary.title) || isFilled.richText(slice.primary.subtitle)) && (
-          <div className="es-product-carousel__header">
+          <AnimatedContainer animation="slideUp" delay={0} className="text-center mb-12">
             {isFilled.richText(slice.primary.title) && (
-              <div className="es-product-carousel__title">
-                <PrismicRichText field={slice.primary.title} />
+              <div className="text-4xl font-bold mb-4 text-gray-900">
+                <PrismicRichText 
+                  field={slice.primary.title}
+                  components={{
+                    heading1: ({ children }) => <h1 className="m-0">{children}</h1>,
+                    heading2: ({ children }) => <h2 className="m-0">{children}</h2>,
+                    heading3: ({ children }) => <h3 className="m-0">{children}</h3>,
+                    heading4: ({ children }) => <h4 className="m-0">{children}</h4>,
+                    heading5: ({ children }) => <h5 className="m-0">{children}</h5>,
+                    heading6: ({ children }) => <h6 className="m-0">{children}</h6>,
+                  }}
+                />
               </div>
             )}
             {isFilled.richText(slice.primary.subtitle) && (
-              <div className="es-product-carousel__subtitle">
-                <PrismicRichText field={slice.primary.subtitle} />
+              <div className="text-lg text-gray-600 max-w-2xl mx-auto">
+                <PrismicRichText 
+                  field={slice.primary.subtitle}
+                  components={{
+                    paragraph: ({ children }) => <p className="m-0">{children}</p>,
+                  }}
+                />
               </div>
             )}
-          </div>
+          </AnimatedContainer>
         )}
 
         {/* Carousel Container */}
-        <div className="es-product-carousel__container">
+        <div className="relative overflow-hidden rounded-lg">
           <div 
-            className="es-product-carousel__track"
+            className="flex transition-transform duration-500 ease-in-out gap-6"
             style={{
               transform: `translateX(-${(currentIndex * 100) / itemsPerView}%)`,
             }}
           >
             {products.map((product: any, index: number) => (
-              <div key={index} className="es-product-carousel__item">
-                <div className="es-product-carousel__product">
+              <AnimatedContainer
+                key={index}
+                animation="scaleIn"
+                delay={200 + (index * 100)}
+                className={cn(
+                  "flex-none min-w-0",
+                  itemsPerView === 1 && "w-full",
+                  itemsPerView === 2 && "w-1/2 md:w-1/2",
+                  itemsPerView === 3 && "w-full sm:w-1/2 lg:w-1/3",
+                  itemsPerView === 4 && "w-1/2 lg:w-1/4"
+                )}
+              >
+                <div className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 h-full flex flex-col group">
                   {isFilled.image(product.image) && (
-                    <div className="es-product-carousel__product-image">
+                    <div className="relative aspect-[4/3] overflow-hidden">
                       <PrismicNextLink field={product.link}>
                         <PrismicNextImage
                           field={product.image}
-                          className="es-product-carousel__image"
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                         />
                       </PrismicNextLink>
                     </div>
                   )}
                   
-                  <div className="es-product-carousel__product-content">
+                  <div className="p-6 flex-1 flex flex-col">
                     {isFilled.keyText(product.title) && (
-                      <h3 className="es-product-carousel__product-title">
-                        <PrismicNextLink field={product.link}>
+                      <h3 className="text-xl font-semibold mb-3 leading-tight">
+                        <PrismicNextLink 
+                          field={product.link}
+                          className="text-gray-900 no-underline transition-colors duration-300 hover:text-[#16745f]"
+                        >
                           {product.title}
                         </PrismicNextLink>
                       </h3>
                     )}
                     
                     {isFilled.richText(product.description) && (
-                      <div className="es-product-carousel__product-description">
-                        <PrismicRichText field={product.description} />
+                      <div className="text-sm text-gray-600 mb-4 flex-1">
+                        <PrismicRichText 
+                          field={product.description}
+                          components={{
+                            paragraph: ({ children }) => <p className="m-0">{children}</p>,
+                          }}
+                        />
                       </div>
                     )}
                     
-                    <div className="es-product-carousel__product-footer">
+                    <div className="flex justify-between items-center mt-auto">
                       {isFilled.keyText(product.price) && (
-                        <div className="es-product-carousel__product-price">
+                        <div className="text-xl font-bold text-[#16745f]">
                           {product.price}
                         </div>
                       )}
@@ -108,7 +144,7 @@ const ProductCarousel: FC<ProductCarouselProps> = ({ slice }) => {
                       {isFilled.link(product.link) && (
                         <PrismicNextLink
                           field={product.link}
-                          className="es-product-carousel__product-button"
+                          className="bg-[#16745f] text-white px-4 py-2 rounded-md text-sm font-medium no-underline transition-colors duration-300 hover:bg-[#0d5e4c]"
                         >
                           {product.buttonText || "View Product"}
                         </PrismicNextLink>
@@ -116,7 +152,7 @@ const ProductCarousel: FC<ProductCarouselProps> = ({ slice }) => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </AnimatedContainer>
             ))}
           </div>
 
@@ -124,7 +160,7 @@ const ProductCarousel: FC<ProductCarouselProps> = ({ slice }) => {
           {showNavigation && products.length > itemsPerView && (
             <>
               <button
-                className="es-product-carousel__nav es-product-carousel__nav--prev"
+                className="absolute top-1/2 -left-6 -translate-y-1/2 bg-white/90 border-none rounded-full w-12 h-12 flex items-center justify-center cursor-pointer transition-all duration-300 z-10 shadow-md hover:bg-white hover:scale-110"
                 onClick={prevSlide}
                 aria-label="Previous products"
               >
@@ -133,7 +169,7 @@ const ProductCarousel: FC<ProductCarouselProps> = ({ slice }) => {
                 </svg>
               </button>
               <button
-                className="es-product-carousel__nav es-product-carousel__nav--next"
+                className="absolute top-1/2 -right-6 -translate-y-1/2 bg-white/90 border-none rounded-full w-12 h-12 flex items-center justify-center cursor-pointer transition-all duration-300 z-10 shadow-md hover:bg-white hover:scale-110"
                 onClick={nextSlide}
                 aria-label="Next products"
               >
@@ -147,13 +183,16 @@ const ProductCarousel: FC<ProductCarouselProps> = ({ slice }) => {
 
         {/* Dots Navigation */}
         {showDots && products.length > itemsPerView && (
-          <div className="es-product-carousel__dots">
+          <div className="flex justify-center gap-2 mt-8">
             {Array.from({ length: Math.ceil(products.length / itemsPerView) }).map((_, index) => (
               <button
                 key={index}
-                className={`es-product-carousel__dot ${
-                  Math.floor(currentIndex / itemsPerView) === index ? 'es-product-carousel__dot--active' : ''
-                }`}
+                className={cn(
+                  "w-3 h-3 rounded-full border-none cursor-pointer transition-colors duration-300",
+                  Math.floor(currentIndex / itemsPerView) === index 
+                    ? "bg-[#16745f] hover:bg-[#0d5e4c]" 
+                    : "bg-gray-300 hover:bg-gray-400"
+                )}
                 onClick={() => goToSlide(index * itemsPerView)}
                 aria-label={`Go to slide ${index + 1}`}
               />
@@ -161,260 +200,6 @@ const ProductCarousel: FC<ProductCarouselProps> = ({ slice }) => {
           </div>
         )}
       </div>
-
-      <style>
-        {`
-          .es-bounded {
-            padding: 8vw 2rem;
-          }
-
-          .es-bounded__content {
-            margin-left: auto;
-            margin-right: auto;
-            max-width: 90%;
-          }
-
-          @media screen and (min-width: 640px) {
-            .es-bounded__content {
-              max-width: 85%;
-            }
-          }
-
-          @media screen and (min-width: 896px) {
-            .es-bounded__content {
-              max-width: 80%;
-            }
-          }
-
-          @media screen and (min-width: 1280px) {
-            .es-bounded__content {
-              max-width: 75%;
-            }
-          }
-
-          .es-product-carousel {
-            font-family: system-ui, sans-serif;
-            background-color: #fff;
-            color: #333;
-          }
-
-          .es-product-carousel__header {
-            text-align: center;
-            margin-bottom: 3rem;
-          }
-
-          .es-product-carousel__title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: #1a1a1a;
-          }
-
-          .es-product-carousel__title * {
-            margin: 0;
-          }
-
-          .es-product-carousel__subtitle {
-            font-size: 1.125rem;
-            color: #666;
-            max-width: 600px;
-            margin: 0 auto;
-          }
-
-          .es-product-carousel__subtitle * {
-            margin: 0;
-          }
-
-          .es-product-carousel__container {
-            position: relative;
-            overflow: hidden;
-            border-radius: 0.5rem;
-          }
-
-          .es-product-carousel__track {
-            display: flex;
-            transition: transform 0.5s ease-in-out;
-            gap: 1.5rem;
-          }
-
-          .es-product-carousel__item {
-            flex: 0 0 ${100 / itemsPerView}%;
-            min-width: 0;
-          }
-
-          .es-product-carousel__product {
-            background: #fff;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-          }
-
-          .es-product-carousel__product:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
-          }
-
-          .es-product-carousel__product-image {
-            position: relative;
-            aspect-ratio: 4/3;
-            overflow: hidden;
-          }
-
-          .es-product-carousel__image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-          }
-
-          .es-product-carousel__product:hover .es-product-carousel__image {
-            transform: scale(1.05);
-          }
-
-          .es-product-carousel__product-content {
-            padding: 1.5rem;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-          }
-
-          .es-product-carousel__product-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            line-height: 1.4;
-          }
-
-          .es-product-carousel__product-title a {
-            color: #1a1a1a;
-            text-decoration: none;
-            transition: color 0.3s ease;
-          }
-
-          .es-product-carousel__product-title a:hover {
-            color: #16745f;
-          }
-
-          .es-product-carousel__product-description {
-            font-size: 0.875rem;
-            color: #666;
-            margin-bottom: 1rem;
-            flex: 1;
-          }
-
-          .es-product-carousel__product-description * {
-            margin: 0;
-          }
-
-          .es-product-carousel__product-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: auto;
-          }
-
-          .es-product-carousel__product-price {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #16745f;
-          }
-
-          .es-product-carousel__product-button {
-            background-color: #16745f;
-            color: #fff;
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            text-decoration: none;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: background-color 0.3s ease;
-          }
-
-          .es-product-carousel__product-button:hover {
-            background-color: #0d5e4c;
-          }
-
-          .es-product-carousel__nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            border-radius: 50%;
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 10;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-          }
-
-          .es-product-carousel__nav:hover {
-            background: rgba(255, 255, 255, 1);
-            transform: translateY(-50%) scale(1.1);
-          }
-
-          .es-product-carousel__nav--prev {
-            left: -24px;
-          }
-
-          .es-product-carousel__nav--next {
-            right: -24px;
-          }
-
-          .es-product-carousel__dots {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-top: 2rem;
-          }
-
-          .es-product-carousel__dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            border: none;
-            background-color: #d1d5db;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-          }
-
-          .es-product-carousel__dot--active {
-            background-color: #16745f;
-          }
-
-          .es-product-carousel__dot:hover {
-            background-color: #9ca3af;
-          }
-
-          .es-product-carousel__dot--active:hover {
-            background-color: #0d5e4c;
-          }
-
-          @media (max-width: 768px) {
-            .es-product-carousel__item {
-              flex: 0 0 100%;
-            }
-            
-            .es-product-carousel__nav {
-              display: none;
-            }
-          }
-
-          @media (min-width: 769px) and (max-width: 1024px) {
-            .es-product-carousel__item {
-              flex: 0 0 50%;
-            }
-          }
-        `}
-      </style>
     </section>
   );
 };

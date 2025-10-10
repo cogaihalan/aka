@@ -2,70 +2,107 @@ import { FC } from "react";
 import { Content, isFilled } from "@prismicio/client";
 import { SliceComponentProps, PrismicRichText } from "@prismicio/react";
 import { PrismicNextImage } from "@prismicio/next";
+import { cn } from "@/lib/utils";
 
 export type AlternateGridProps =
   SliceComponentProps<Content.AlternateGridSlice>;
 
 const AlternateGrid: FC<AlternateGridProps> = ({ slice }) => {
+  const isImageRight = slice.variation === "imageRight";
+  const hasImage = isFilled.image(slice.primary.image);
+
   return (
     <section
       data-slice-type={slice.slice_type}
       data-slice-variation={slice.variation}
-      className="es-bounded es-alternate-grid"
+      className="py-16 px-5 bg-white text-gray-900"
     >
       <div
-        className={`
-					es-alternate-grid__content
-					${
-            isFilled.image(slice.primary.image)
-              ? "es-alternate-grid__content--with-image"
-              : ""
-          }
-        `}
-      >
-        {isFilled.image(slice.primary.image) && (
-          <PrismicNextImage
-            field={slice.primary.image}
-            className={`
-              				es-alternate-grid__image
-							${
-                slice.variation === "imageRight"
-                  ? "es-alternate-grid__image--right"
-                  : "es-alternate-grid__image--left"
-              }
-            			`}
-          />
+        className={cn(
+          "grid gap-6",
+          hasImage && "sm:grid-cols-2"
         )}
-        <div className="es-alternate-grid__primary-content">
-          <div className="es-alternate-grid__primary-content__intro">
+      >
+        {/* Image */}
+        {hasImage && (
+          <div className={cn(
+            "w-auto h-auto max-w-full self-center",
+            isImageRight ? "sm:order-2" : "sm:order-1"
+          )}>
+            <PrismicNextImage
+              field={slice.primary.image}
+              className="w-full h-auto"
+            />
+          </div>
+        )}
+
+        {/* Content */}
+        <div className={cn(
+          "grid gap-8",
+          hasImage && (isImageRight ? "sm:order-1" : "sm:order-2")
+        )}>
+          {/* Intro Section */}
+          <div className="grid gap-2">
             {isFilled.keyText(slice.primary.eyebrowHeadline) && (
-              <p className="es-alternate-grid__primary-content__intro__eyebrow">
+              <p className="text-[#8592e0] text-lg font-medium m-0">
                 {slice.primary.eyebrowHeadline}
               </p>
             )}
             {isFilled.richText(slice.primary.title) && (
-              <div className="es-alternate-grid__primary-content__intro__headline">
-                <PrismicRichText field={slice.primary.title} />
+              <div className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold">
+                <PrismicRichText 
+                  field={slice.primary.title}
+                  components={{
+                    heading1: ({ children }) => <h1 className="m-0">{children}</h1>,
+                    heading2: ({ children }) => <h2 className="m-0">{children}</h2>,
+                    heading3: ({ children }) => <h3 className="m-0">{children}</h3>,
+                    heading4: ({ children }) => <h4 className="m-0">{children}</h4>,
+                    heading5: ({ children }) => <h5 className="m-0">{children}</h5>,
+                    heading6: ({ children }) => <h6 className="m-0">{children}</h6>,
+                  }}
+                />
               </div>
             )}
             {isFilled.richText(slice.primary.description) && (
-              <div className="es-alternate-grid__primary-content__intro__description">
-                <PrismicRichText field={slice.primary.description} />
+              <div className="text-lg xl:text-xl max-w-2xl">
+                <PrismicRichText 
+                  field={slice.primary.description}
+                  components={{
+                    paragraph: ({ children }) => <p className="m-0">{children}</p>,
+                  }}
+                />
               </div>
             )}
           </div>
-          {slice.primary.items.length > 0 && (
-            <div className="es-alternate-grid__primary-content__items">
+
+          {/* Items Grid */}
+          {slice.primary.items && slice.primary.items.length > 0 && (
+            <div className="grid gap-8 sm:grid-cols-2">
               {slice.primary.items.map((item, i) => (
-                <div key={`item-${i + 1}`} className="es-alternate-grid__item">
+                <div key={`item-${i + 1}`} className="grid content-start">
                   {isFilled.richText(item.title) && (
-                    <div className="es-alternate-grid__item__heading">
-                      <PrismicRichText field={item.title} />
+                    <div className="font-bold text-lg mb-2 mt-0">
+                      <PrismicRichText 
+                        field={item.title}
+                        components={{
+                          heading1: ({ children }) => <h1 className="m-0">{children}</h1>,
+                          heading2: ({ children }) => <h2 className="m-0">{children}</h2>,
+                          heading3: ({ children }) => <h3 className="m-0">{children}</h3>,
+                          heading4: ({ children }) => <h4 className="m-0">{children}</h4>,
+                          heading5: ({ children }) => <h5 className="m-0">{children}</h5>,
+                          heading6: ({ children }) => <h6 className="m-0">{children}</h6>,
+                        }}
+                      />
                     </div>
                   )}
                   {isFilled.richText(item.description) && (
-                    <div className="es-alternate-grid__item__description">
-                      <PrismicRichText field={item.description} />
+                    <div className="text-sm">
+                      <PrismicRichText 
+                        field={item.description}
+                        components={{
+                          paragraph: ({ children }) => <p className="m-0">{children}</p>,
+                        }}
+                      />
                     </div>
                   )}
                 </div>
@@ -74,158 +111,6 @@ const AlternateGrid: FC<AlternateGridProps> = ({ slice }) => {
           )}
         </div>
       </div>
-
-      <style>
-        {`
-					.es-bounded {
-							margin: 0px;
-							min-width: 0px;
-							position: relative;
-							padding: 8vw 1.25rem;
-					}
-
-					.es-alternate-grid {
-							font-family: system-ui, sans-serif;
-							background-color: #fff;
-							color: #333;
-					}
-
-					.es-alternate-grid__content {
-							display: grid;
-							gap: 1.5rem;
-							grid-auto-flow: dense;
-					}
-
-					@media (min-width: 640px) {
-							.es-alternate-grid__content--with-image {
-									grid-template-columns: repeat(2, 1fr);
-							}
-					}
-
-					@media (min-width: 1200px) {
-							.es-alternate-grid__content--with-image {
-									grid-template-columns: repeat(2, 1fr);
-							}
-					}
-
-					.es-alternate-grid__image {
-							width: auto;
-							height: auto;
-							max-width: 100%;
-							align-self: center;
-					}
-
-					.es-alternate-grid__image--left {
-							order: 1;
-					}
-
-					.es-alternate-grid__image--left + div {
-							order: 2;
-					}
-
-					.es-alternate-grid__image--right{
-							order: 2;
-					}
-
-					.es-alternate-grid__image--right + div {
-							order: 1;
-					}
-
-					.es-alternate-grid__primary-content {
-							display: grid;
-							gap: 2rem;
-					}
-
-					.es-alternate-grid__primary-content__intro {
-							display: grid;
-							gap: 0.5rem;
-					}
-
-					.es-alternate-grid__primary-content__intro__eyebrow {
-							color: #8592e0;
-							font-size: 1.15rem;
-							font-weight: 500;
-							margin: 0;
-					}
-
-					.es-alternate-grid__primary-content__intro__headline {
-							font-size: 1.625rem;
-							font-weight: 700;
-					}
-
-					.es-alternate-grid__primary-content__intro__headline * {
-							margin: 0;
-					}
-
-					@media (min-width: 640px) {
-							.es-alternate-grid__primary-content__intro__headline {
-									font-size: 2rem;
-							}
-					}
-
-					@media (min-width: 1024px) {
-							.es-alternate-grid__primary-content__intro__headline {
-									font-size: 2.5rem;
-							}
-					}
-
-					@media (min-width: 1200px) {
-							.es-alternate-grid__primary-content__intro__headline {
-									font-size: 2.75rem;
-							}
-					}
-
-					.es-alternate-grid__primary-content__intro__description {
-							font-size: 1.15rem;
-							max-width: 38rem;
-					}
-
-					.es-alternate-grid__primary-content__intro__description > p {
-							margin: 0;
-					}
-
-					@media (min-width: 1200px) {
-							.es-alternate-grid__primary-content__intro__description {
-									font-size: 1.4rem;
-							}
-					}
-
-					.es-alternate-grid__primary-content__items {
-							display: grid;
-							gap: 2rem;
-					}
-
-					@media (min-width: 640px) {
-							.es-alternate-grid__primary-content__items {
-									grid-template-columns: repeat(2, 1fr);
-							}
-					}
-
-					.es-alternate-grid__item {
-							display: grid;
-							align-content: start;
-					}
-
-					.es-alternate-grid__item__heading {
-							font-weight: 700;
-							font-size: 1.17rem;
-							margin-top: 0;
-							margin-bottom: .5rem;
-					}
-
-					.es-alternate-grid__item__heading * {
-							margin: 0;
-					}
-
-					.es-alternate-grid__item__description {
-							font-size: 0.9rem;
-					}
-
-					.es-alternate-grid__item__description * {
-							margin: 0;
-					}
-			`}
-      </style>
     </section>
   );
 };

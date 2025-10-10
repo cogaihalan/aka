@@ -2,125 +2,84 @@ import { FC } from "react";
 import { Content, isFilled } from "@prismicio/client";
 import { SliceComponentProps, PrismicRichText } from "@prismicio/react";
 import { PrismicNextLink, PrismicNextImage } from "@prismicio/next";
+import { cn } from "@/lib/utils";
 
 export type CallToActionProps = SliceComponentProps<Content.CallToActionSlice>;
 
 const CallToAction: FC<CallToActionProps> = ({ slice }) => {
   const alignment = slice.variation === "alignLeft" ? "left" : "center";
+  const isLeftAligned = alignment === "left";
 
   return (
     <section
       data-slice-type={slice.slice_type}
       data-slice-variation={slice.variation}
-      className="es-bounded es-call-to-action"
+      className="py-16 px-8 bg-white text-gray-900"
     >
-      <div className="es-bounded__content es-call-to-action__content">
-        {isFilled.image(slice.primary.image) && (
-          <PrismicNextImage
-            className="es-call-to-action__image"
-            field={slice.primary.image}
-          />
-        )}
-        <div className="es-call-to-action__content">
-          {isFilled.richText(slice.primary.title) && (
-            <div className="es-call-to-action__content__heading">
-              <PrismicRichText field={slice.primary.title} />
-            </div>
+      <div className="mx-auto max-w-4xl sm:max-w-5xl lg:max-w-6xl xl:max-w-7xl">
+        <div className={cn(
+          "grid gap-4",
+          isLeftAligned ? "justify-items-start" : "justify-items-center"
+        )}>
+          {isFilled.image(slice.primary.image) && (
+            <PrismicNextImage
+              className={cn(
+                "max-w-56 h-auto w-auto",
+                isLeftAligned ? "justify-self-start" : "justify-self-center"
+              )}
+              field={slice.primary.image}
+            />
           )}
-          {isFilled.richText(slice.primary.paragraph) && (
-            <div className="es-call-to-action__content__paragraph">
-              <PrismicRichText field={slice.primary.paragraph} />
-            </div>
+          
+          <div className={cn(
+            "grid gap-4",
+            isLeftAligned ? "justify-items-start" : "justify-items-center"
+          )}>
+            {isFilled.richText(slice.primary.title) && (
+              <div className={cn(
+                "text-3xl font-bold",
+                isLeftAligned ? "text-left" : "text-center"
+              )}>
+                <PrismicRichText 
+                  field={slice.primary.title}
+                  components={{
+                    heading1: ({ children }) => <h1 className="m-0">{children}</h1>,
+                    heading2: ({ children }) => <h2 className="m-0">{children}</h2>,
+                    heading3: ({ children }) => <h3 className="m-0">{children}</h3>,
+                    heading4: ({ children }) => <h4 className="m-0">{children}</h4>,
+                    heading5: ({ children }) => <h5 className="m-0">{children}</h5>,
+                    heading6: ({ children }) => <h6 className="m-0">{children}</h6>,
+                  }}
+                />
+              </div>
+            )}
+            
+            {isFilled.richText(slice.primary.paragraph) && (
+              <div className={cn(
+                "text-lg max-w-2xl",
+                isLeftAligned ? "text-left" : "text-center"
+              )}>
+                <PrismicRichText 
+                  field={slice.primary.paragraph}
+                  components={{
+                    paragraph: ({ children }) => <p className="m-0">{children}</p>,
+                  }}
+                />
+              </div>
+            )}
+          </div>
+          
+          {isFilled.link(slice.primary.buttonLink) && (
+            <PrismicNextLink
+              field={slice.primary.buttonLink}
+              className={cn(
+                "inline-block rounded text-sm leading-tight px-10 py-4 transition-colors duration-100 bg-[#16745f] text-white hover:bg-[#0d5e4c]",
+                isLeftAligned ? "justify-self-start text-left" : "justify-self-center text-center"
+              )}
+            />
           )}
         </div>
-        <PrismicNextLink
-          className="es-call-to-action__button"
-          field={slice.primary.buttonLink}
-        />
       </div>
-
-      <style>
-        {`
-          .es-bounded {
-            padding: 8vw 2rem;
-          }
-
-          .es-bounded__content {
-            margin-left: auto;
-            margin-right: auto;
-          }
-
-          @media screen and (min-width: 640px) {
-            .es-bounded__content {
-              max-width: 90%;
-            }
-          }
-
-          @media screen and (min-width: 896px) {
-            .es-bounded__content {
-              max-width: 80%;
-            }
-          }
-
-          @media screen and (min-width: 1280px) {
-            .es-bounded__content {
-              max-width: 75%;
-            }
-          }
-
-          .es-call-to-action {
-            font-family: system-ui, sans-serif;
-            background-color: #fff;
-            color: #333;
-          }
-
-          .es-call-to-action__image {
-            max-width: 14rem;
-            height: auto;
-            width: auto;
-            justify-self: ${alignment};
-          }
-
-          .es-call-to-action__content {
-            display: grid;
-            gap: 1rem;
-            justify-items: ${alignment};
-          }
-
-          .es-call-to-action__content__heading {
-            font-size: 2rem;
-            font-weight: 700;
-            text-align: ${alignment};
-          }
-
-          .es-call-to-action__content__heading * {
-            margin: 0;
-          }
-
-          .es-call-to-action__content__paragraph {
-            font-size: 1.15rem;
-            max-width: 38rem;
-            text-align: ${alignment};
-          }
-
-          .es-call-to-action__button {
-            justify-self: ${alignment};
-            border-radius: 0.25rem;
-            display: inline-block;
-            font-size: 0.875rem;
-            line-height: 1.3;
-            padding: 1rem 2.625rem;
-            text-align: ${alignment};
-            transition: background-color 100ms linear;
-            background-color: #16745f;
-            color: #fff;
-          }
-
-          .es-call-to-action__button:hover {
-            background-color: #0d5e4c;
-          }
-        `}
-      </style>
     </section>
   );
 };

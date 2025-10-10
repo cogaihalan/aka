@@ -2,6 +2,7 @@ import React, { FC, useState } from "react";
 import { Content, isFilled } from "@prismicio/client";
 import { SliceComponentProps, PrismicRichText } from "@prismicio/react";
 import { PrismicNextImage } from "@prismicio/next";
+import { cn } from "@/lib/utils";
 
 export type TestimonialsProps = SliceComponentProps<any>;
 
@@ -80,80 +81,101 @@ const Testimonials: FC<TestimonialsProps> = ({ slice }) => {
     <section
       data-slice-type={slice.slice_type}
       data-slice-variation={slice.variation}
-      className="es-bounded es-testimonials"
+      className="py-16 px-8 bg-gray-50 text-gray-900"
     >
-      <div className="es-bounded__content es-testimonials__content">
+      <div className="mx-auto max-w-4xl sm:max-w-5xl lg:max-w-6xl xl:max-w-7xl">
         {/* Header */}
         {(isFilled.richText(slice.primary.title) || isFilled.richText(slice.primary.subtitle)) && (
-          <div className="es-testimonials__header">
+          <div className="text-center mb-12">
             {isFilled.richText(slice.primary.title) && (
-              <div className="es-testimonials__title">
-                <PrismicRichText field={slice.primary.title} />
+              <div className="text-4xl font-bold mb-4 text-gray-900">
+                <PrismicRichText 
+                  field={slice.primary.title}
+                  components={{
+                    heading1: ({ children }) => <h1 className="m-0">{children}</h1>,
+                    heading2: ({ children }) => <h2 className="m-0">{children}</h2>,
+                    heading3: ({ children }) => <h3 className="m-0">{children}</h3>,
+                    heading4: ({ children }) => <h4 className="m-0">{children}</h4>,
+                    heading5: ({ children }) => <h5 className="m-0">{children}</h5>,
+                    heading6: ({ children }) => <h6 className="m-0">{children}</h6>,
+                  }}
+                />
               </div>
             )}
             {isFilled.richText(slice.primary.subtitle) && (
-              <div className="es-testimonials__subtitle">
-                <PrismicRichText field={slice.primary.subtitle} />
+              <div className="text-lg text-gray-600 max-w-2xl mx-auto">
+                <PrismicRichText 
+                  field={slice.primary.subtitle}
+                  components={{
+                    paragraph: ({ children }) => <p className="m-0">{children}</p>,
+                  }}
+                />
               </div>
             )}
           </div>
         )}
 
         {/* Testimonials Container */}
-        <div className={`es-testimonials__container es-testimonials__container--${layout}`}>
+        <div className="relative">
           {layout === "carousel" ? (
             <>
               {/* Carousel Layout */}
-              <div className="es-testimonials__carousel">
+              <div className="relative overflow-hidden rounded-xl">
                 <div 
-                  className="es-testimonials__track"
+                  className="flex transition-transform duration-500 ease-in-out"
                   style={{
                     transform: `translateX(-${currentIndex * 100}%)`,
                   }}
                 >
                   {testimonials.map((testimonial: any, index: number) => (
-                    <div key={index} className="es-testimonials__slide">
-                      <div className="es-testimonials__testimonial">
+                    <div key={index} className="flex-none w-full min-w-0">
+                      <div className="bg-white p-12 rounded-xl shadow-md text-center h-full flex flex-col justify-between">
                         {/* Quote */}
                         {isFilled.richText(testimonial.quote) && (
-                          <div className="es-testimonials__quote">
-                            <PrismicRichText field={testimonial.quote} />
+                          <div className="text-xl leading-relaxed text-gray-600 mb-8 italic relative">
+                            <span className="absolute -top-4 -left-2 text-6xl text-[#16745f] font-serif">"</span>
+                            <PrismicRichText 
+                              field={testimonial.quote}
+                              components={{
+                                paragraph: ({ children }) => <p className="m-0">{children}</p>,
+                              }}
+                            />
                           </div>
                         )}
 
                         {/* Rating */}
                         {showRatings && testimonial.rating && (
-                          <div className="es-testimonials__rating">
+                          <div className="flex justify-center gap-1 mb-8">
                             {renderStars(testimonial.rating)}
                           </div>
                         )}
 
                         {/* Author */}
-                        <div className="es-testimonials__author">
+                        <div className="flex items-center justify-center gap-4 md:flex-row flex-col">
                           {isFilled.image(testimonial.avatar) && (
-                            <div className="es-testimonials__avatar">
+                            <div className="w-15 h-15 rounded-full overflow-hidden flex-shrink-0">
                               <PrismicNextImage
                                 field={testimonial.avatar}
-                                className="es-testimonials__avatar-image"
+                                className="w-full h-full object-cover"
                               />
                             </div>
                           )}
                           
-                          <div className="es-testimonials__author-info">
+                          <div className="text-left md:text-left text-center">
                             {isFilled.keyText(testimonial.name) && (
-                              <div className="es-testimonials__name">
+                              <div className="text-lg font-semibold text-gray-900 mb-1">
                                 {testimonial.name}
                               </div>
                             )}
                             
                             {isFilled.keyText(testimonial.title) && (
-                              <div className="es-testimonials__title">
+                              <div className="text-sm text-[#16745f] font-medium mb-1">
                                 {testimonial.title}
                               </div>
                             )}
                             
                             {isFilled.keyText(testimonial.company) && (
-                              <div className="es-testimonials__company">
+                              <div className="text-sm text-gray-500">
                                 {testimonial.company}
                               </div>
                             )}
@@ -168,7 +190,7 @@ const Testimonials: FC<TestimonialsProps> = ({ slice }) => {
                 {showNavigation && testimonials.length > 1 && (
                   <>
                     <button
-                      className="es-testimonials__nav es-testimonials__nav--prev"
+                      className="absolute top-1/2 -left-6 -translate-y-1/2 bg-white/90 border-none rounded-full w-12 h-12 flex items-center justify-center cursor-pointer transition-all duration-300 z-10 shadow-md hover:bg-white hover:scale-110"
                       onClick={prevSlide}
                       aria-label="Previous testimonial"
                     >
@@ -177,7 +199,7 @@ const Testimonials: FC<TestimonialsProps> = ({ slice }) => {
                       </svg>
                     </button>
                     <button
-                      className="es-testimonials__nav es-testimonials__nav--next"
+                      className="absolute top-1/2 -right-6 -translate-y-1/2 bg-white/90 border-none rounded-full w-12 h-12 flex items-center justify-center cursor-pointer transition-all duration-300 z-10 shadow-md hover:bg-white hover:scale-110"
                       onClick={nextSlide}
                       aria-label="Next testimonial"
                     >
@@ -191,13 +213,16 @@ const Testimonials: FC<TestimonialsProps> = ({ slice }) => {
 
               {/* Dots Navigation */}
               {showDots && testimonials.length > 1 && (
-                <div className="es-testimonials__dots">
+                <div className="flex justify-center gap-2 mt-8">
                   {testimonials.map((_: any, index: number) => (
                     <button
                       key={index}
-                      className={`es-testimonials__dot ${
-                        index === currentIndex ? 'es-testimonials__dot--active' : ''
-                      }`}
+                      className={cn(
+                        "w-3 h-3 rounded-full border-none cursor-pointer transition-colors duration-300",
+                        index === currentIndex 
+                          ? "bg-[#16745f] hover:bg-[#0d5e4c]" 
+                          : "bg-gray-300 hover:bg-gray-400"
+                      )}
                       onClick={() => goToSlide(index)}
                       aria-label={`Go to testimonial ${index + 1}`}
                     />
@@ -207,49 +232,55 @@ const Testimonials: FC<TestimonialsProps> = ({ slice }) => {
             </>
           ) : (
             /* Grid Layout */
-            <div className="es-testimonials__grid">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {testimonials.map((testimonial: any, index: number) => (
-                <div key={index} className="es-testimonials__testimonial">
+                <div key={index} className="bg-white p-8 rounded-xl shadow-md text-center h-full flex flex-col justify-between">
                   {/* Quote */}
                   {isFilled.richText(testimonial.quote) && (
-                    <div className="es-testimonials__quote">
-                      <PrismicRichText field={testimonial.quote} />
+                    <div className="text-lg leading-relaxed text-gray-600 mb-6 italic relative">
+                      <span className="absolute -top-4 -left-2 text-5xl text-[#16745f] font-serif">"</span>
+                      <PrismicRichText 
+                        field={testimonial.quote}
+                        components={{
+                          paragraph: ({ children }) => <p className="m-0">{children}</p>,
+                        }}
+                      />
                     </div>
                   )}
 
                   {/* Rating */}
                   {showRatings && testimonial.rating && (
-                    <div className="es-testimonials__rating">
+                    <div className="flex justify-center gap-1 mb-6">
                       {renderStars(testimonial.rating)}
                     </div>
                   )}
 
                   {/* Author */}
-                  <div className="es-testimonials__author">
+                  <div className="flex items-center justify-center gap-4 flex-col">
                     {isFilled.image(testimonial.avatar) && (
-                      <div className="es-testimonials__avatar">
+                      <div className="w-15 h-15 rounded-full overflow-hidden flex-shrink-0">
                         <PrismicNextImage
                           field={testimonial.avatar}
-                          className="es-testimonials__avatar-image"
+                          className="w-full h-full object-cover"
                         />
                       </div>
                     )}
                     
-                    <div className="es-testimonials__author-info">
+                    <div className="text-center">
                       {isFilled.keyText(testimonial.name) && (
-                        <div className="es-testimonials__name">
+                        <div className="text-lg font-semibold text-gray-900 mb-1">
                           {testimonial.name}
                         </div>
                       )}
                       
                       {isFilled.keyText(testimonial.title) && (
-                        <div className="es-testimonials__title">
+                        <div className="text-sm text-[#16745f] font-medium mb-1">
                           {testimonial.title}
                         </div>
                       )}
                       
                       {isFilled.keyText(testimonial.company) && (
-                        <div className="es-testimonials__company">
+                        <div className="text-sm text-gray-500">
                           {testimonial.company}
                         </div>
                       )}
@@ -261,266 +292,6 @@ const Testimonials: FC<TestimonialsProps> = ({ slice }) => {
           )}
         </div>
       </div>
-
-      <style>
-        {`
-          .es-bounded {
-            padding: 8vw 2rem;
-          }
-
-          .es-bounded__content {
-            margin-left: auto;
-            margin-right: auto;
-            max-width: 90%;
-          }
-
-          @media screen and (min-width: 640px) {
-            .es-bounded__content {
-              max-width: 85%;
-            }
-          }
-
-          @media screen and (min-width: 896px) {
-            .es-bounded__content {
-              max-width: 80%;
-            }
-          }
-
-          @media screen and (min-width: 1280px) {
-            .es-bounded__content {
-              max-width: 75%;
-            }
-          }
-
-          .es-testimonials {
-            font-family: system-ui, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-          }
-
-          .es-testimonials__header {
-            text-align: center;
-            margin-bottom: 3rem;
-          }
-
-          .es-testimonials__title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: #1a1a1a;
-          }
-
-          .es-testimonials__title * {
-            margin: 0;
-          }
-
-          .es-testimonials__subtitle {
-            font-size: 1.125rem;
-            color: #666;
-            max-width: 600px;
-            margin: 0 auto;
-          }
-
-          .es-testimonials__subtitle * {
-            margin: 0;
-          }
-
-          .es-testimonials__container {
-            position: relative;
-          }
-
-          .es-testimonials__carousel {
-            position: relative;
-            overflow: hidden;
-            border-radius: 0.75rem;
-          }
-
-          .es-testimonials__track {
-            display: flex;
-            transition: transform 0.5s ease-in-out;
-          }
-
-          .es-testimonials__slide {
-            flex: 0 0 100%;
-            min-width: 0;
-          }
-
-          .es-testimonials__testimonial {
-            background: #fff;
-            padding: 3rem 2rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-          }
-
-          .es-testimonials__quote {
-            font-size: 1.25rem;
-            line-height: 1.6;
-            color: #4b5563;
-            margin-bottom: 2rem;
-            font-style: italic;
-            position: relative;
-          }
-
-          .es-testimonials__quote::before {
-            content: '"';
-            font-size: 4rem;
-            color: #16745f;
-            position: absolute;
-            top: -1rem;
-            left: -0.5rem;
-            font-family: serif;
-          }
-
-          .es-testimonials__quote * {
-            margin: 0;
-          }
-
-          .es-testimonials__rating {
-            display: flex;
-            justify-content: center;
-            gap: 0.25rem;
-            margin-bottom: 2rem;
-          }
-
-          .es-testimonials__star {
-            color: #fbbf24;
-          }
-
-          .es-testimonials__star--empty {
-            color: #d1d5db;
-          }
-
-          .es-testimonials__author {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-          }
-
-          .es-testimonials__avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            overflow: hidden;
-            flex-shrink: 0;
-          }
-
-          .es-testimonials__avatar-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-          }
-
-          .es-testimonials__author-info {
-            text-align: left;
-          }
-
-          .es-testimonials__name {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: #1a1a1a;
-            margin-bottom: 0.25rem;
-          }
-
-          .es-testimonials__title {
-            font-size: 0.875rem;
-            color: #16745f;
-            font-weight: 500;
-            margin-bottom: 0.25rem;
-          }
-
-          .es-testimonials__company {
-            font-size: 0.875rem;
-            color: #6b7280;
-          }
-
-          .es-testimonials__nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            border-radius: 50%;
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 10;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-          }
-
-          .es-testimonials__nav:hover {
-            background: rgba(255, 255, 255, 1);
-            transform: translateY(-50%) scale(1.1);
-          }
-
-          .es-testimonials__nav--prev {
-            left: -24px;
-          }
-
-          .es-testimonials__nav--next {
-            right: -24px;
-          }
-
-          .es-testimonials__dots {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-top: 2rem;
-          }
-
-          .es-testimonials__dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            border: none;
-            background-color: #d1d5db;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-          }
-
-          .es-testimonials__dot--active {
-            background-color: #16745f;
-          }
-
-          .es-testimonials__dot:hover {
-            background-color: #9ca3af;
-          }
-
-          .es-testimonials__dot--active:hover {
-            background-color: #0d5e4c;
-          }
-
-          .es-testimonials__grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-          }
-
-          @media (max-width: 768px) {
-            .es-testimonials__nav {
-              display: none;
-            }
-            
-            .es-testimonials__author {
-              flex-direction: column;
-              text-align: center;
-            }
-            
-            .es-testimonials__author-info {
-              text-align: center;
-            }
-          }
-        `}
-      </style>
     </section>
   );
 };
