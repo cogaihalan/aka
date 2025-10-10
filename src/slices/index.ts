@@ -15,4 +15,14 @@ export const components = {
   hero: dynamic(() => import("./Hero")),
   hero_2: dynamic(() => import("./Hero2")),
   hero_3: dynamic(() => import("./Hero3")),
+  // New e-commerce and website sections
+  product_carousel: dynamic(() => import("./ProductCarousel")),
+  image_gallery: dynamic(() => import("./ImageGallery")),
+  multi_column_cards: dynamic(() => import("./MultiColumnCards")),
+  testimonials: dynamic(() => import("./Testimonials")),
+  feature_grid: dynamic(() => import("./FeatureGrid")),
+  newsletter_signup: dynamic(() => import("./NewsletterSignup")),
+  pricing_table: dynamic(() => import("./PricingTable")),
+  stats_counter: dynamic(() => import("./StatsCounter")),
+  faq_accordion: dynamic(() => import("./FAQAccordion")),
 };

@@ -7,9 +7,9 @@ export const repositoryName =
 
 // Route configuration for Prismic content
 export const routes = [
-  { type: "homepage", path: "/" },
+  // { type: "homepage", path: "/" },
   { type: "page", path: "/pages/:uid" },
-  { type: "blog_post", path: "/blog/:uid" },
+  // { type: "blog_post", path: "/blog/:uid" },
 ];
 
 // Performance-optimized Prismic client
@@ -93,7 +93,7 @@ export class PrismicPerformanceMonitor {
 export class OptimizedPrismicClient {
   private client = prismicClient;
 
-  async getByUID<T = any>(type: any, uid: string, options: any = {}) {
+  async getByUID<T = any>(type: string, uid: string, options: any = {}) {
     const cacheKey = `${type}-${uid}`;
     const cached = PrismicPerformanceMonitor.getCached(cacheKey);
 
@@ -104,14 +104,14 @@ export class OptimizedPrismicClient {
     return PrismicPerformanceMonitor.measureFetch(
       `getByUID(${type}, ${uid})`,
       async () => {
-        const result = await this.client.getByUID(type, uid, options);
+        const result = await this.client.getByUID(type as any, uid, options);
         PrismicPerformanceMonitor.setCached(cacheKey, result);
         return result;
       }
     );
   }
 
-  async getAllByType<T = any>(type: any, options: any = {}) {
+  async getAllByType<T = any>(type: string, options: any = {}) {
     const cacheKey = `all-${type}`;
     const cached = PrismicPerformanceMonitor.getCached(cacheKey);
 
@@ -122,7 +122,7 @@ export class OptimizedPrismicClient {
     return PrismicPerformanceMonitor.measureFetch(
       `getAllByType(${type})`,
       async () => {
-        const result = await this.client.getAllByType(type, options);
+        const result = await this.client.getAllByType(type as any, options);
         PrismicPerformanceMonitor.setCached(cacheKey, result);
         return result;
       }

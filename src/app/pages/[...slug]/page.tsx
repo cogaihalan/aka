@@ -13,7 +13,7 @@ interface DynamicPageProps {
 // Generate static params for better performance
 export async function generateStaticParams() {
   try {
-    const [pages] = await Promise.all([
+    const [ pages ] = await Promise.all([
       prismicApiService.getPages(1, 100),
       // prismicApiService.getStaticPages(),
       // prismicApiService.getBlogPosts(1, 100),
@@ -121,12 +121,9 @@ export default async function DynamicPage({ params }: DynamicPageProps) {
   const { slug } = await params;
   const slugPath = slug.join("/");
 
-  console.log("slugPath", slugPath);
-
   try {
     // Handle regular pages
     const page = await prismicApiService.getPageByUID(slugPath);
-    console.log("page", page);
     if (page) {
       return (
         <Suspense fallback={<PrismicPageSkeleton />}>
