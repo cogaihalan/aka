@@ -1,4 +1,6 @@
+import { Category as ProductCategory } from "@/types/product";
 import { Category } from "@/types/app";
+import { unifiedCategoryService } from "@/lib/api/services/unified";
 
 export interface CategoriesResponse {
   categories: Category[];
@@ -11,8 +13,25 @@ export interface CategoryFilters {
   search?: string;
 }
 
+// Helper function to convert ProductCategory to Category
+function mapProductCategoryToCategory(
+  productCategory: ProductCategory
+): Category {
+  return {
+    id: productCategory.id.toString(),
+    name: productCategory.name,
+    slug: productCategory.slug,
+    description: productCategory.description,
+    image: productCategory.image?.url,
+    productCount: 0, // This would need to be fetched separately or included in the API response
+    parentId: productCategory.parentId?.toString(),
+    children: productCategory.children?.map(mapProductCategoryToCategory),
+    isActive: productCategory.isActive,
+    sortOrder: 0, // This would need to be included in the API response
+  };
+}
+
 class CategoriesService {
-  private baseUrl = "/api/categories";
   private cache = new Map<string, { data: any; timestamp: number }>();
   private cacheTimeout = 5 * 60 * 1000; // 5 minutes
 
@@ -49,31 +68,43 @@ class CategoriesService {
     }
 
     try {
-      const params = new URLSearchParams();
+      // Convert filters to query params format
+      const queryParams: any = {};
       if (filters?.isActive !== undefined) {
-        params.append("isActive", filters.isActive.toString());
+        queryParams.isActive = filters.isActive;
       }
       if (filters?.parentId) {
-        params.append("parentId", filters.parentId);
+        queryParams.parentId = filters.parentId;
       }
       if (filters?.search) {
-        params.append("search", filters.search);
+        queryParams.search = filters.search;
       }
 
-      const response = await fetch(`${this.baseUrl}?${params.toString()}`);
+      const result = await unifiedCategoryService.getCategories(
+        queryParams,
+        false
+      );
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch categories: ${response.statusText}`);
-      }
+      // Convert result to expected format
+      const productCategories = Array.isArray(result)
+        ? result
+        : result.categories || [];
+      const mappedCategories = productCategories.map(
+        mapProductCategoryToCategory
+      );
 
-      const data = await response.json();
+      const data = {
+        categories: mappedCategories,
+        total: Array.isArray(result)
+          ? result.length
+          : (result as any).total || 0,
+      };
+
       this.setCachedData(cacheKey, data);
       return data;
     } catch (error) {
       console.error("Error fetching categories:", error);
-
-      // Return mock data as fallback
-      return this.getMockCategories(filters);
+      throw error;
     }
   }
 
@@ -89,24 +120,18 @@ class CategoriesService {
     }
 
     try {
-      const response = await fetch(`${this.baseUrl}/${id}`);
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          return null;
-        }
-        throw new Error(`Failed to fetch category: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      this.setCachedData(cacheKey, data);
-      return data;
+      const productCategory = await unifiedCategoryService.getCategory(
+        parseInt(id)
+      );
+      const category = mapProductCategoryToCategory(productCategory);
+      this.setCachedData(cacheKey, category);
+      return category;
     } catch (error) {
       console.error("Error fetching category:", error);
-
-      // Return mock data as fallback
-      const mockCategories = this.getMockCategories();
-      return mockCategories.categories.find((cat) => cat.id === id) || null;
+      if (error instanceof Error && error.message.includes("404")) {
+        return null;
+      }
+      throw error;
     }
   }
 
@@ -122,24 +147,17 @@ class CategoriesService {
     }
 
     try {
-      const response = await fetch(`${this.baseUrl}/slug/${slug}`);
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          return null;
-        }
-        throw new Error(`Failed to fetch category: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      this.setCachedData(cacheKey, data);
-      return data;
+      const productCategory =
+        await unifiedCategoryService.getCategoryBySlug(slug);
+      const category = mapProductCategoryToCategory(productCategory);
+      this.setCachedData(cacheKey, category);
+      return category;
     } catch (error) {
       console.error("Error fetching category:", error);
-
-      // Return mock data as fallback
-      const mockCategories = this.getMockCategories();
-      return mockCategories.categories.find((cat) => cat.slug === slug) || null;
+      if (error instanceof Error && error.message.includes("404")) {
+        return null;
+      }
+      throw error;
     }
   }
 
@@ -155,22 +173,13 @@ class CategoriesService {
     }
 
     try {
-      const response = await fetch(`${this.baseUrl}/tree`);
-
-      if (!response.ok) {
-        throw new Error(
-          `Failed to fetch categories tree: ${response.statusText}`
-        );
-      }
-
-      const data = await response.json();
-      this.setCachedData(cacheKey, data);
-      return data;
+      const productTree = await unifiedCategoryService.getCategoriesTree();
+      const tree = productTree.map(mapProductCategoryToCategory);
+      this.setCachedData(cacheKey, tree);
+      return tree;
     } catch (error) {
       console.error("Error fetching categories tree:", error);
-
-      // Return mock data as fallback
-      return this.getMockCategories().categories;
+      throw error;
     }
   }
 
@@ -189,96 +198,6 @@ class CategoriesService {
       (key) => key.includes(id) || key.includes("categories")
     );
     keysToDelete.forEach((key) => this.cache.delete(key));
-  }
-
-  /**
-   * Mock data fallback
-   */
-  getMockCategories(filters?: CategoryFilters): CategoriesResponse {
-    const mockCategories: Category[] = [
-      {
-        id: "electronics",
-        name: "Electronics",
-        slug: "electronics",
-        description: "Latest electronic devices and gadgets",
-        productCount: 45,
-        isActive: true,
-        sortOrder: 1,
-      },
-      {
-        id: "clothing",
-        name: "Clothing",
-        slug: "clothing",
-        description: "Fashion and apparel",
-        productCount: 32,
-        isActive: true,
-        sortOrder: 2,
-      },
-      {
-        id: "home",
-        name: "Home & Garden",
-        slug: "home",
-        description: "Home improvement and garden supplies",
-        productCount: 28,
-        isActive: true,
-        sortOrder: 3,
-      },
-      {
-        id: "sports",
-        name: "Sports & Outdoors",
-        slug: "sports",
-        description: "Sports equipment and outdoor gear",
-        productCount: 19,
-        isActive: true,
-        sortOrder: 4,
-      },
-      {
-        id: "books",
-        name: "Books",
-        slug: "books",
-        description: "Books and educational materials",
-        productCount: 15,
-        isActive: true,
-        sortOrder: 5,
-      },
-      {
-        id: "beauty",
-        name: "Beauty & Health",
-        slug: "beauty",
-        description: "Beauty and health products",
-        productCount: 12,
-        isActive: true,
-        sortOrder: 6,
-      },
-    ];
-
-    let filteredCategories = mockCategories;
-
-    if (filters) {
-      if (filters.isActive !== undefined) {
-        filteredCategories = filteredCategories.filter(
-          (cat) => cat.isActive === filters.isActive
-        );
-      }
-      if (filters.parentId) {
-        filteredCategories = filteredCategories.filter(
-          (cat) => cat.parentId === filters.parentId
-        );
-      }
-      if (filters.search) {
-        const searchLower = filters.search.toLowerCase();
-        filteredCategories = filteredCategories.filter(
-          (cat) =>
-            cat.name.toLowerCase().includes(searchLower) ||
-            cat.description?.toLowerCase().includes(searchLower)
-        );
-      }
-    }
-
-    return {
-      categories: filteredCategories,
-      total: filteredCategories.length,
-    };
   }
 }
 

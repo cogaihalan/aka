@@ -12,19 +12,78 @@ import {
 export class PrismicApiService {
   private client = optimizedPrismicClient;
 
-  // Get all pages with pagination
+  // Get all pages with pagination and filtering
   async getPages(
     page = 1,
-    pageSize = 10
+    pageSize = 10,
+    filters?: {
+      search?: string;
+      status?: string;
+      type?: string;
+      sort?: Array<{ id: string; desc: boolean }>;
+    },
+    forceRefresh = false
   ): Promise<PrismicApiResponse<PrismicPage>> {
     try {
-      const response = await this.client.getAllByType("page", {
+      // Clear cache if force refresh is requested
+      if (forceRefresh) {
+        this.client.clearCache();
+      }
+
+      const queryOptions: any = {
         page,
         pageSize,
         orderings: [
           { field: "document.last_publication_date", direction: "desc" },
         ],
-      });
+        // Force fresh data by adding cache-busting
+        ...(forceRefresh && {
+          fetchOptions: {
+            next: { revalidate: 0 },
+          },
+        }),
+      };
+
+      // Add search filter
+      if (filters?.search) {
+        queryOptions.q = `[fulltext(document, "${filters.search}")]`;
+      }
+
+      // Add status filter
+      if (filters?.status && filters.status !== "all") {
+        const statusQuery = `[at(document.data.status, "${filters.status}")]`;
+        queryOptions.q = queryOptions.q
+          ? `${queryOptions.q}${statusQuery}`
+          : statusQuery;
+      }
+
+      // Add type filter
+      if (filters?.type && filters.type !== "all") {
+        const typeQuery = `[at(document.type, "${filters.type}")]`;
+        queryOptions.q = queryOptions.q
+          ? `${queryOptions.q}${typeQuery}`
+          : typeQuery;
+      }
+
+      // Add sorting
+      if (filters?.sort && filters.sort.length > 0) {
+        const sortOrderings = filters.sort.map((sort) => ({
+          field:
+            sort.id === "title"
+              ? "document.data.title"
+              : sort.id === "status"
+                ? "document.data.status"
+                : sort.id === "type"
+                  ? "document.type"
+                  : sort.id === "last_publication_date"
+                    ? "document.last_publication_date"
+                    : "document.last_publication_date",
+          direction: sort.desc ? "desc" : "asc",
+        }));
+        queryOptions.orderings = sortOrderings;
+      }
+
+      const response = await this.client.getAllByType("page", queryOptions);
 
       return {
         results: response as unknown as PrismicPage[],
@@ -243,6 +302,20 @@ export class PrismicApiService {
   // Clear cache
   clearCache() {
     this.client.clearCache();
+  }
+
+  // Force refresh all data
+  async refreshAllData() {
+    this.client.clearCache();
+    // Force refresh all content types
+    await Promise.allSettled([
+      this.client.getAllByType("page", {
+        fetchOptions: { next: { revalidate: 0 } },
+      }),
+      this.client.getAllByType("category", {
+        fetchOptions: { next: { revalidate: 0 } },
+      }),
+    ]);
   }
 }
 

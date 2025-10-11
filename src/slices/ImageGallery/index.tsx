@@ -1,3 +1,4 @@
+"use client";
 import React, { FC, useState } from "react";
 import { Content, isFilled } from "@prismicio/client";
 import { SliceComponentProps, PrismicRichText } from "@prismicio/react";
@@ -54,7 +55,8 @@ const ImageGallery: FC<ImageGalleryProps> = ({ slice }) => {
     >
       <div className="es-bounded__content es-image-gallery__content">
         {/* Header */}
-        {(isFilled.richText(slice.primary.title) || isFilled.richText(slice.primary.subtitle)) && (
+        {(isFilled.richText(slice.primary.title) ||
+          isFilled.richText(slice.primary.subtitle)) && (
           <div className="es-image-gallery__header">
             {isFilled.richText(slice.primary.title) && (
               <div className="es-image-gallery__title">
@@ -70,7 +72,9 @@ const ImageGallery: FC<ImageGalleryProps> = ({ slice }) => {
         )}
 
         {/* Gallery Container */}
-        <div className={`es-image-gallery__container es-image-gallery__container--${layout}`}>
+        <div
+          className={`es-image-gallery__container es-image-gallery__container--${layout}`}
+        >
           {layout === "carousel" ? (
             <>
               {/* Main Carousel */}
@@ -80,11 +84,13 @@ const ImageGallery: FC<ImageGalleryProps> = ({ slice }) => {
                     <div
                       key={index}
                       className={`es-image-gallery__slide ${
-                        index === currentIndex ? 'es-image-gallery__slide--active' : ''
+                        index === currentIndex
+                          ? "es-image-gallery__slide--active"
+                          : ""
                       }`}
                     >
                       {isFilled.image(image.image) && (
-                        <div 
+                        <div
                           className="es-image-gallery__image-container"
                           onClick={() => openModal(index)}
                         >
@@ -111,8 +117,19 @@ const ImageGallery: FC<ImageGalleryProps> = ({ slice }) => {
                       onClick={prevSlide}
                       aria-label="Previous image"
                     >
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <path
+                          d="M15 18L9 12L15 6"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     </button>
                     <button
@@ -120,8 +137,19 @@ const ImageGallery: FC<ImageGalleryProps> = ({ slice }) => {
                       onClick={nextSlide}
                       aria-label="Next image"
                     >
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <path
+                          d="M9 18L15 12L9 6"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     </button>
                   </>
@@ -135,7 +163,9 @@ const ImageGallery: FC<ImageGalleryProps> = ({ slice }) => {
                     <button
                       key={index}
                       className={`es-image-gallery__thumbnail ${
-                        index === currentIndex ? 'es-image-gallery__thumbnail--active' : ''
+                        index === currentIndex
+                          ? "es-image-gallery__thumbnail--active"
+                          : ""
                       }`}
                       onClick={() => goToSlide(index)}
                       aria-label={`View image ${index + 1}`}
@@ -158,7 +188,9 @@ const ImageGallery: FC<ImageGalleryProps> = ({ slice }) => {
                     <button
                       key={index}
                       className={`es-image-gallery__dot ${
-                        index === currentIndex ? 'es-image-gallery__dot--active' : ''
+                        index === currentIndex
+                          ? "es-image-gallery__dot--active"
+                          : ""
                       }`}
                       onClick={() => goToSlide(index)}
                       aria-label={`Go to image ${index + 1}`}
@@ -173,7 +205,7 @@ const ImageGallery: FC<ImageGalleryProps> = ({ slice }) => {
               {images.map((image: any, index: number) => (
                 <div key={index} className="es-image-gallery__grid-item">
                   {isFilled.image(image.image) && (
-                    <div 
+                    <div
                       className="es-image-gallery__grid-image-container"
                       onClick={() => openModal(index)}
                     >
@@ -198,17 +230,26 @@ const ImageGallery: FC<ImageGalleryProps> = ({ slice }) => {
       {/* Modal */}
       {isModalOpen && (
         <div className="es-image-gallery__modal" onClick={closeModal}>
-          <div className="es-image-gallery__modal-content" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="es-image-gallery__modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               className="es-image-gallery__modal-close"
               onClick={closeModal}
               aria-label="Close modal"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path
+                  d="M18 6L6 18M6 6L18 18"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
-            
+
             {images.length > 1 && (
               <>
                 <button
@@ -217,7 +258,13 @@ const ImageGallery: FC<ImageGalleryProps> = ({ slice }) => {
                   aria-label="Previous image"
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path
+                      d="M15 18L9 12L15 6"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 </button>
                 <button
@@ -226,7 +273,13 @@ const ImageGallery: FC<ImageGalleryProps> = ({ slice }) => {
                   aria-label="Next image"
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path
+                      d="M9 18L15 12L9 6"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 </button>
               </>

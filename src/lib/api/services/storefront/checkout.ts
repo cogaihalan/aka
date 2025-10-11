@@ -1,10 +1,5 @@
-import { apiClient } from "@/lib/api/client-mock";
-import type {
-  Order,
-  Cart,
-  Address,
-  PaymentInfo,
-} from "@/lib/api/types";
+import { apiClient } from "@/lib/api/client";
+import type { Order, Cart, Address, PaymentInfo } from "@/lib/api/types";
 import type { ShippingInfo } from "@/types/product";
 
 export class StorefrontCheckoutService {

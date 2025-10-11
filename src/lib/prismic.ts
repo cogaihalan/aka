@@ -22,10 +22,10 @@ export function createPrismicClient(config = {}) {
         process.env.NODE_ENV === "production"
           ? {
               tags: ["prismic"],
-              revalidate: 3600, // 1 hour cache
+              revalidate: 300, // 5 minutes cache in production
             }
           : {
-              revalidate: 5, // 5 seconds in development
+              revalidate: 0, // No cache in development for real-time sync
             },
     },
     ...config,
@@ -45,7 +45,8 @@ export const prismicClient = createPrismicClient();
 // Performance monitoring wrapper
 export class PrismicPerformanceMonitor {
   private static cache = new Map<string, { data: any; timestamp: number }>();
-  private static CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+  private static CACHE_TTL =
+    process.env.NODE_ENV === "development" ? 30 * 1000 : 2 * 60 * 1000; // 30 seconds in dev, 2 minutes in production
 
   static async measureFetch<T>(
     operation: string,

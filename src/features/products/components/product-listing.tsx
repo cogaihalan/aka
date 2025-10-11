@@ -1,6 +1,7 @@
 import { searchParamsCache } from "@/lib/searchparams";
 import { DataTableWrapper } from "@/components/ui/table/data-table-wrapper";
 import { columns } from "./product-tables/columns";
+import { unifiedProductService } from "@/lib/api/services/unified";
 
 export default async function ProductListingPage() {
   // Get search parameters for filtering
@@ -10,46 +11,36 @@ export default async function ProductListingPage() {
   const categories = searchParamsCache.get("category");
   const sort = searchParamsCache.get("sort");
 
-  // Build query parameters
-  const queryParams = new URLSearchParams();
-  if (page) queryParams.append("page", page.toString());
-  if (pageLimit) queryParams.append("limit", pageLimit.toString());
-  if (search) queryParams.append("search", search);
-  if (categories) queryParams.append("filters[categories]", categories);
-  if (sort) {
-    // Convert sort array to query string format
-    const sortParams = Array.isArray(sort) ? sort : [sort];
-    sortParams.forEach((sortItem, index) => {
-      if (sortItem.id) {
-        queryParams.append(`sort[${index}][id]`, sortItem.id);
-        queryParams.append(`sort[${index}][desc]`, sortItem.desc.toString());
-      }
-    });
-  }
+  // Build query parameters for the service
+  const queryParams = {
+    page: page ? parseInt(page.toString()) : undefined,
+    limit: pageLimit ? parseInt(pageLimit.toString()) : undefined,
+    search: search?.toString(),
+    sortBy: sort
+      ? Array.isArray(sort)
+        ? sort[0]?.id
+        : (sort as any).id
+      : undefined,
+    sortOrder: sort
+      ? Array.isArray(sort)
+        ? sort[0]?.desc
+          ? ("desc" as const)
+          : ("asc" as const)
+        : (sort as any).desc
+          ? ("desc" as const)
+          : ("asc" as const)
+      : undefined,
+    filters: {
+      ...(categories && { categories: categories.toString() }),
+    },
+  };
 
-  // Fetch products from API endpoint with query parameters
-  const response = await fetch(
-    `http://localhost:3000/api/products?${queryParams.toString()}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      next: { revalidate: 300 }, // Revalidate every 5 minutes
-    }
-  );
+  // Fetch products using the unified service
+  const result = await unifiedProductService.getProducts(queryParams);
 
-  if (!response.ok) {
-    throw new Error(
-      `Failed to fetch products: ${response.status} ${response.statusText}`
-    );
-  }
-
-  const result = await response.json();
-
-  const data = result.data;
-  const totalProducts = data.pagination?.total || data.products?.length || 0;
-  const products = data.products || [];
+  const totalProducts =
+    result.pagination?.total || result.items?.length || 0;
+  const products = result.items || [];
 
   return (
     <DataTableWrapper

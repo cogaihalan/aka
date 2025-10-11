@@ -113,9 +113,13 @@ export const columns: ColumnDef<Course>[] = [
       const router = useRouter();
 
       const handleDeleteCourse = async () => {
-        if (window.confirm(`Are you sure you want to delete "${course.name}"? This action cannot be undone.`)) {
+        if (
+          window.confirm(
+            `Are you sure you want to delete "${course.name}"? This action cannot be undone.`
+          )
+        ) {
           try {
-            await unifiedCourseService.deleteCourseMock(course.id);
+            await unifiedCourseService.deleteCourse(course.id);
             toast.success("Course deleted successfully");
             router.refresh();
           } catch (error) {
@@ -144,14 +148,14 @@ export const columns: ColumnDef<Course>[] = [
                 Preview Video
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={() => setShowEditDialog(true)}
                 className="cursor-pointer"
               >
                 <Edit className="mr-2 h-4 w-4" />
                 Edit Course
               </DropdownMenuItem>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={handleDeleteCourse}
                 className="cursor-pointer text-destructive"
               >
@@ -166,7 +170,7 @@ export const columns: ColumnDef<Course>[] = [
             open={showVideoPreview}
             onOpenChange={setShowVideoPreview}
           />
-          
+
           <CourseDialog
             course={course}
             open={showEditDialog}

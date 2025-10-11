@@ -245,7 +245,6 @@ The `AppProvider` is integrated into the main layout at `src/components/layout/p
 
 ```typescript
 <ClerkProvider>
-  <AppProvider>  {/* ← New global provider */}
     <AuthSyncProvider>
       <WishlistAuthProvider>
         <CartProvider>

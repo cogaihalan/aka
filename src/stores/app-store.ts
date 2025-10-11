@@ -3,7 +3,11 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { categoriesService } from "@/lib/api/services/storefront/categories";
-import { AppStore, Category, SiteSettings, MegaMenuData } from "@/types/app";
+import {
+  unifiedSettingsService,
+  unifiedMegaMenuService,
+} from "@/lib/api/services/unified";
+import { AppStore, Category, SiteSettings } from "@/types/app";
 
 // Default site settings
 const DEFAULT_SETTINGS: SiteSettings = {
@@ -121,7 +125,7 @@ export const useAppStore = create<AppStore>()(
             setError(null);
 
             // Fetch categories from API service
-            const response = await categoriesService.getMockCategories({
+            const response = await categoriesService.getCategories({
               isActive: true,
             });
             setCategories(response.categories);
@@ -140,14 +144,8 @@ export const useAppStore = create<AppStore>()(
           const { setError, setSettings } = get();
 
           try {
-            const response = await fetch("/api/settings");
-            const data = await response.json();
-            
-            if (data.success) {
-              setSettings(data.data);
-            } else {
-              throw new Error(data.error);
-            }
+            const settings = await unifiedSettingsService.getSettings();
+            setSettings(settings);
           } catch (error) {
             setError(
               error instanceof Error
@@ -163,44 +161,14 @@ export const useAppStore = create<AppStore>()(
           const { setError, setMegaMenuData } = get();
 
           try {
-            const response = await fetch("/api/mega-menu");
-            const data = await response.json();
-            
-            if (data.success) {
-              setMegaMenuData(data.data);
-            } else {
-              throw new Error(data.error);
-            }
+            const megaMenuData = await unifiedMegaMenuService.getMegaMenuData();
+            setMegaMenuData(megaMenuData);
           } catch (error) {
             setError(
               error instanceof Error
                 ? error.message
                 : "Failed to fetch mega menu data"
             );
-            // Fallback to mock data
-            const mockMegaMenuData: MegaMenuData = {
-              items: [
-                {
-                  id: "products",
-                  title: "Products",
-                  href: "/products",
-                  categories: [],
-                },
-                {
-                  id: "services",
-                  title: "Services",
-                  href: "/services",
-                  categories: [],
-                },
-                {
-                  id: "company",
-                  title: "Company",
-                  href: "/company",
-                  categories: [],
-                },
-              ],
-            };
-            setMegaMenuData(mockMegaMenuData);
           }
         },
 

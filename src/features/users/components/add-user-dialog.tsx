@@ -22,6 +22,7 @@ import {
 import { UserPlus } from "lucide-react";
 import { UserRole, CreateUserPayload } from "@/types/auth";
 import { toast } from "sonner";
+import { unifiedUserService } from "@/lib/api/services/unified";
 
 export function AddUserDialog() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -38,29 +39,18 @@ export function AddUserDialog() {
   const handleCreateUser = async () => {
     try {
       setActionLoading(true);
-      const response = await fetch("/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(createForm),
-      });
+      const user = await unifiedUserService.createUser(createForm);
 
-      const data = await response.json();
-      if (data.success) {
-        toast.success("User created successfully");
-        setIsCreateDialogOpen(false);
-        setCreateForm({
-          email: "",
-          firstName: "",
-          lastName: "",
-          role: UserRole.USER,
-        });
-        // Refresh the page to show the new user
-        window.location.reload();
-      } else {
-        toast.error("Failed to create user: " + data.error);
-      }
+      toast.success("User created successfully");
+      setIsCreateDialogOpen(false);
+      setCreateForm({
+        email: "",
+        firstName: "",
+        lastName: "",
+        role: UserRole.USER,
+      });
+      // Refresh the page to show the new user
+      window.location.reload();
     } catch (error) {
       console.error("Error creating user:", error);
       toast.error("Failed to create user");

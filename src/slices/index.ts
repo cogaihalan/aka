@@ -25,4 +25,5 @@ export const components = {
   pricing_table: dynamic(() => import("./PricingTable")),
   stats_counter: dynamic(() => import("./StatsCounter")),
   faq_accordion: dynamic(() => import("./FAQAccordion")),
+  hero_animated: dynamic(() => import("./HeroAnimated")),
 };

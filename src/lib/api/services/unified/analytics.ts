@@ -1,4 +1,4 @@
-import { apiClient } from "@/lib/api/client-mock";
+import { apiClient } from "@/lib/api/client";
 import type {
   AnalyticsResponse,
   AnalyticsOverview,

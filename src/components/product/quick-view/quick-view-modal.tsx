@@ -43,26 +43,6 @@ export const QuickViewModal = memo(function QuickViewModal({
     [onClose]
   );
 
-  // Transform product data to match the expected interface
-  const enhancedProduct = {
-    ...product,
-    rating: 4.5, // Default rating for quick view
-    reviewCount: 128, // Default review count
-    features: [
-      "High-quality materials",
-      "Durable construction",
-      "Modern design",
-      "Easy to use",
-      "Long-lasting performance",
-    ],
-    inStock: product.inventory.available > 0,
-    stockCount: product.inventory.available,
-    sizes:
-      product.variants?.map((v) => v.attributes.size).filter(Boolean) || [],
-    colors:
-      product.variants?.map((v) => v.attributes.color).filter(Boolean) || [],
-  };
-
   // Prepare images for the gallery
   const galleryImages =
     product.images?.map((img) => ({
@@ -105,7 +85,7 @@ export const QuickViewModal = memo(function QuickViewModal({
 
           {/* Product Info - Scrollable */}
           <div className="lg:w-1/2 overflow-y-auto lg:pr-4 overflow-x-hidden">
-            <ProductInfo product={enhancedProduct} />
+            <ProductInfo product={product} />
 
             {/* Additional Quick View Features */}
             <div className="mt-6 space-y-4">

@@ -10,6 +10,9 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
+// Force dynamic rendering to avoid build-time API calls
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Dashboard: New Category",
   description: "Create a new product category",

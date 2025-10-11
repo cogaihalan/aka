@@ -17,6 +17,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 
+// Force dynamic rendering to avoid build-time API calls
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Dashboard: Category Details",
   description: "View category details and manage products",

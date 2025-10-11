@@ -1,4 +1,4 @@
-import { apiClient } from "@/lib/api/client-mock";
+import { apiClient } from "@/lib/api/client";
 import type {
   Product,
   ProductListResponse,
@@ -17,7 +17,7 @@ import type {
 import type { ProductComparison } from "@/types/product";
 
 class UnifiedProductService {
-  private basePath = "/api/products";
+  private basePath = "/products";
 
   // Legacy methods for backward compatibility
   async getProducts(params: QueryParams = {}): Promise<ProductListResponse> {
@@ -36,25 +36,15 @@ class UnifiedProductService {
       });
     }
 
-    const queryString = searchParams.toString();
+    // const queryString = searchParams.toString();
+    const queryString = "";
     const endpoint = queryString
       ? `${this.basePath}?${queryString}`
       : this.basePath;
 
-    // const response = await apiClient.get<ProductListResponse>(endpoint);
-    // return response.data!;
-    return {
-      products: [],
-      pagination: {
-        total: 0,
-        page: 0,
-        limit: 0,
-        totalPages: 0,
-        hasNext: false,
-        hasPrev: false,
-      },
-      filters: [],
-    };
+    const response = await apiClient.get<ProductListResponse>(endpoint);
+    console.log(response);
+    return response.data!;
   }
 
   // Enhanced product search with comprehensive filtering

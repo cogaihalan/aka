@@ -26,6 +26,8 @@ interface ProductCardProps {
   className?: string;
 }
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
 export function ProductCard({
   product,
   variant = "default",
@@ -98,7 +100,8 @@ export function ProductCard({
             <div className="w-20 h-20 bg-muted rounded-lg overflow-hidden">
               <Image
                 src={
-                  product.images?.[0]?.url || "/assets/placeholder-image.jpeg"
+                  `${BASE_URL}${product.images?.[0]?.url}` ||
+                  "/assets/placeholder-image.jpeg"
                 }
                 alt={product.images?.[0]?.alt || product.name}
                 width={80}
@@ -127,7 +130,7 @@ export function ProductCard({
 
               <div className="flex items-center justify-between mt-2">
                 <span className="text-sm font-bold">
-                  ${product.pricing.basePrice}
+                  ${product.variants[0].price}
                 </span>
                 <div className="flex items-center gap-1">
                   {showWishlist && (
@@ -192,7 +195,10 @@ export function ProductCard({
       >
         <div className="aspect-square bg-muted rounded-t-lg overflow-hidden relative">
           <Image
-            src={product.images?.[0]?.url || "/assets/placeholder-image.jpeg"}
+            src={
+              `${BASE_URL}${product.images?.[0]?.url}` ||
+              "/assets/placeholder-image.jpeg"
+            }
             alt={product.images?.[0]?.alt || product.name}
             width={300}
             height={300}
@@ -282,11 +288,11 @@ export function ProductCard({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="text-lg font-bold">
-                  ${product.pricing.basePrice}
+                  ${product.variants[0].price}
                 </span>
                 {product.pricing.compareAtPrice &&
                   product.pricing.compareAtPrice >
-                    product.pricing.basePrice && (
+                    product.variants[0].price && (
                     <span className="text-sm text-muted-foreground line-through">
                       ${product.pricing.compareAtPrice}
                     </span>
@@ -332,6 +338,7 @@ export function ProductCard({
     );
   }
 
+  console.log(product.images?.[0]?.url);
   // Default variant
   return (
     <Card
@@ -342,7 +349,10 @@ export function ProductCard({
     >
       <div className="flex-shrink-0 bg-muted rounded-t-lg overflow-hidden relative">
         <Image
-          src={product.images?.[0]?.url || "/assets/placeholder-image.jpeg"}
+          src={
+            `${BASE_URL}${product.images?.[0]?.url}` ||
+            "/assets/placeholder-image.jpeg"
+          }
           alt={product.images?.[0]?.alt || product.name}
           width={300}
           height={300}
@@ -425,10 +435,10 @@ export function ProductCard({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-lg font-bold">
-                ${product.pricing.basePrice}
+                ${product.variants[0].price}
               </span>
-              {product.pricing.compareAtPrice &&
-                product.pricing.compareAtPrice > product.pricing.basePrice && (
+              {product.pricing?.compareAtPrice &&
+                product.pricing?.compareAtPrice > product.variants[0].price && (
                   <span className="text-sm text-muted-foreground line-through">
                     ${product.pricing.compareAtPrice}
                   </span>

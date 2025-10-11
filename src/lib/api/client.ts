@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { useAuth } from "@clerk/nextjs";
 import type { ApiConfig, ApiResponse, RequestOptions } from "./shared-types";
 import { ApiError } from "./shared-types";
 
@@ -30,12 +30,33 @@ export class ApiClient {
   // Get authentication headers
   private async getAuthHeaders(): Promise<Record<string, string>> {
     try {
-      const { getToken } = await auth();
-      const token = await getToken();
+      // const { getToken } = await useAuth();
+      // const token = await getToken();
 
-      if (token) {
+      // if (token) {
+      //   return {
+      //     Authorization: `Bearer ${token}`,
+      //   };
+      // }
+
+      if (typeof window !== "undefined") {
+        // Client-side: try to get token from localStorage or cookies
+        const token =
+          localStorage.getItem("auth-token") ||
+          document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("auth-token="))
+            ?.split("=")[1];
+
+        if (token) {
+          return {
+            Authorization: `Bearer ${token}`,
+          };
+        }
+      } else {
+        // Server-side: get token from headers or session
         return {
-          Authorization: `Bearer ${token}`,
+          "X-API-Key": process.env.API_KEY || "",
         };
       }
     } catch (error) {
@@ -76,16 +97,60 @@ export class ApiClient {
           error.status < 500 &&
           error.status !== 429
         ) {
+          console.warn(
+            `API request failed with client error ${error.status}, not retrying:`,
+            error.message
+          );
+          throw error;
+        }
+
+        // Don't retry on authentication errors
+        if (error instanceof ApiError && error.status === 401) {
+          console.warn(
+            `API request failed with authentication error, not retrying:`,
+            error.message
+          );
+          throw error;
+        }
+
+        // Don't retry on forbidden errors
+        if (error instanceof ApiError && error.status === 403) {
+          console.warn(
+            `API request failed with forbidden error, not retrying:`,
+            error.message
+          );
+          throw error;
+        }
+
+        // Don't retry on not found errors
+        if (error instanceof ApiError && error.status === 404) {
+          console.warn(
+            `API request failed with not found error, not retrying:`,
+            error.message
+          );
           throw error;
         }
 
         // Don't retry on last attempt
-        if (attempt === retries) {
+        if (attempt >= retries) {
+          console.error(
+            `API request failed after ${attempt + 1} attempts:`,
+            error
+          );
           throw error;
         }
 
+        // Calculate delay with exponential backoff and cap
+        const baseDelay = this.config.retryDelay!;
+        const maxDelay = 30000; // 30 seconds max
+        const delay = Math.min(baseDelay * Math.pow(2, attempt), maxDelay);
+
+        console.warn(
+          `API request failed (attempt ${attempt + 1}/${retries + 1}), retrying in ${delay}ms:`,
+          error
+        );
+
         // Wait before retry
-        const delay = this.config.retryDelay! * Math.pow(2, attempt);
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
@@ -233,3 +298,6 @@ export class ApiClient {
 
 // Create default API client instance
 export const apiClient = new ApiClient();
+
+// Create API client with no retries for critical requests
+export const noRetryApiClient = new ApiClient({ retries: 0 });

@@ -16,6 +16,9 @@ import { ArrowLeft, Plus, TreePine } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
+// Force dynamic rendering to avoid build-time API calls
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Dashboard: Category Tree",
   description: "Hierarchical view of product categories",
@@ -82,26 +85,55 @@ export default async function Page() {
 }
 
 async function CategoryTreePage() {
-  const { categories } = await adminCategoryService.getCategoryTree();
+  try {
+    const { categories } = await adminCategoryService.getCategoryTree();
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <TreePine className="mr-2 h-5 w-5" />
-          Category Tree
-        </CardTitle>
-        <CardDescription>
-          Hierarchical view of all product categories
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <CategoryTreeView
-          categories={categories}
-          showActions={true}
-          showProductCount={true}
-        />
-      </CardContent>
-    </Card>
-  );
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <TreePine className="mr-2 h-5 w-5" />
+            Category Tree
+          </CardTitle>
+          <CardDescription>
+            Hierarchical view of all product categories
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <CategoryTreeView
+            categories={categories}
+            showActions={true}
+            showProductCount={true}
+          />
+        </CardContent>
+      </Card>
+    );
+  } catch (error) {
+    console.error("Error fetching category tree:", error);
+
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <TreePine className="mr-2 h-5 w-5" />
+            Category Tree
+          </CardTitle>
+          <CardDescription>
+            Hierarchical view of all product categories
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">
+            <p className="text-muted-foreground mb-4">
+              Unable to load category tree. Please check your authentication and
+              try again.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Error: {error instanceof Error ? error.message : "Unknown error"}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 }

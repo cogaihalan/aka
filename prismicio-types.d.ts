@@ -70,6 +70,7 @@ type ContentRelationshipFieldWithData<
 }[Exclude<TCustomType[number], string>["id"]];
 
 type PageDocumentDataSlicesSlice =
+  | TestimonialsSlice
   | CallToAction4Slice
   | AlternateGrid2Slice
   | CustomerLogos3Slice
@@ -1921,6 +1922,223 @@ type Hero3SliceVariation = Hero3SliceDefault | Hero3SliceImageRight;
  * - **Documentation**: https://prismic.io/docs/slices
  */
 export type Hero3Slice = prismic.SharedSlice<"hero_3", Hero3SliceVariation>;
+
+/**
+ * Default variation for HeroAnimated Slice
+ *
+ * - **API ID**: `default`
+ * - **Description**: Default
+ * - **Documentation**: https://prismic.io/docs/slices
+ */
+export type HeroAnimatedSliceDefault = prismic.SharedSliceVariation<
+  "default",
+  Record<string, never>,
+  never
+>;
+
+/**
+ * Slice variation for *HeroAnimated*
+ */
+type HeroAnimatedSliceVariation = HeroAnimatedSliceDefault;
+
+/**
+ * HeroAnimated Shared Slice
+ *
+ * - **API ID**: `hero_animated`
+ * - **Description**: HeroAnimated
+ * - **Documentation**: https://prismic.io/docs/slices
+ */
+export type HeroAnimatedSlice = prismic.SharedSlice<
+  "hero_animated",
+  HeroAnimatedSliceVariation
+>;
+
+/**
+ * Primary content in *Testimonials → Default → Primary*
+ */
+export interface TestimonialsSliceDefaultPrimary {
+  /**
+   * Title field in *Testimonials → Default → Primary*
+   *
+   * - **Field Type**: Rich Text
+   * - **Placeholder**: Enter section title
+   * - **API ID Path**: testimonials.default.primary.title
+   * - **Documentation**: https://prismic.io/docs/fields/rich-text
+   */
+  title: prismic.RichTextField;
+
+  /**
+   * Subtitle field in *Testimonials → Default → Primary*
+   *
+   * - **Field Type**: Rich Text
+   * - **Placeholder**: Enter section subtitle
+   * - **API ID Path**: testimonials.default.primary.subtitle
+   * - **Documentation**: https://prismic.io/docs/fields/rich-text
+   */
+  subtitle: prismic.RichTextField;
+
+  /**
+   * Layout field in *Testimonials → Default → Primary*
+   *
+   * - **Field Type**: Select
+   * - **Placeholder**: Choose layout style
+   * - **Default Value**: carousel
+   * - **API ID Path**: testimonials.default.primary.layout
+   * - **Documentation**: https://prismic.io/docs/fields/select
+   */
+  layout: prismic.SelectField<"carousel" | "grid", "filled">;
+
+  /**
+   * Show Navigation field in *Testimonials → Default → Primary*
+   *
+   * - **Field Type**: Boolean
+   * - **Placeholder**: *None*
+   * - **Default Value**: true
+   * - **API ID Path**: testimonials.default.primary.showNavigation
+   * - **Documentation**: https://prismic.io/docs/fields/boolean
+   */
+  showNavigation: prismic.BooleanField;
+
+  /**
+   * Show Dots field in *Testimonials → Default → Primary*
+   *
+   * - **Field Type**: Boolean
+   * - **Placeholder**: *None*
+   * - **Default Value**: true
+   * - **API ID Path**: testimonials.default.primary.showDots
+   * - **Documentation**: https://prismic.io/docs/fields/boolean
+   */
+  showDots: prismic.BooleanField;
+
+  /**
+   * Auto Play field in *Testimonials → Default → Primary*
+   *
+   * - **Field Type**: Boolean
+   * - **Placeholder**: *None*
+   * - **Default Value**: false
+   * - **API ID Path**: testimonials.default.primary.autoPlay
+   * - **Documentation**: https://prismic.io/docs/fields/boolean
+   */
+  autoPlay: prismic.BooleanField;
+
+  /**
+   * Auto Play Interval (ms) field in *Testimonials → Default → Primary*
+   *
+   * - **Field Type**: Number
+   * - **Placeholder**: Enter interval in milliseconds
+   * - **Default Value**: 5000
+   * - **API ID Path**: testimonials.default.primary.autoPlayInterval
+   * - **Documentation**: https://prismic.io/docs/fields/number
+   */
+  autoPlayInterval: prismic.NumberField;
+
+  /**
+   * Show Ratings field in *Testimonials → Default → Primary*
+   *
+   * - **Field Type**: Boolean
+   * - **Placeholder**: *None*
+   * - **Default Value**: true
+   * - **API ID Path**: testimonials.default.primary.showRatings
+   * - **Documentation**: https://prismic.io/docs/fields/boolean
+   */
+  showRatings: prismic.BooleanField;
+}
+
+/**
+ * Primary content in *Testimonials → Items*
+ */
+export interface TestimonialsSliceDefaultItem {
+  /**
+   * Quote field in *Testimonials → Items*
+   *
+   * - **Field Type**: Rich Text
+   * - **Placeholder**: Enter testimonial quote
+   * - **API ID Path**: testimonials.items[].quote
+   * - **Documentation**: https://prismic.io/docs/fields/rich-text
+   */
+  quote: prismic.RichTextField;
+
+  /**
+   * Name field in *Testimonials → Items*
+   *
+   * - **Field Type**: Text
+   * - **Placeholder**: Enter customer name
+   * - **API ID Path**: testimonials.items[].name
+   * - **Documentation**: https://prismic.io/docs/fields/text
+   */
+  name: prismic.KeyTextField;
+
+  /**
+   * Title/Position field in *Testimonials → Items*
+   *
+   * - **Field Type**: Text
+   * - **Placeholder**: Enter customer title or position
+   * - **API ID Path**: testimonials.items[].title
+   * - **Documentation**: https://prismic.io/docs/fields/text
+   */
+  title: prismic.KeyTextField;
+
+  /**
+   * Company field in *Testimonials → Items*
+   *
+   * - **Field Type**: Text
+   * - **Placeholder**: Enter company name
+   * - **API ID Path**: testimonials.items[].company
+   * - **Documentation**: https://prismic.io/docs/fields/text
+   */
+  company: prismic.KeyTextField;
+
+  /**
+   * Avatar field in *Testimonials → Items*
+   *
+   * - **Field Type**: Image
+   * - **Placeholder**: *None*
+   * - **API ID Path**: testimonials.items[].avatar
+   * - **Documentation**: https://prismic.io/docs/fields/image
+   */
+  avatar: prismic.ImageField<"thumbnail">;
+
+  /**
+   * Rating field in *Testimonials → Items*
+   *
+   * - **Field Type**: Number
+   * - **Placeholder**: Enter rating (1-5)
+   * - **Default Value**: 5
+   * - **API ID Path**: testimonials.items[].rating
+   * - **Documentation**: https://prismic.io/docs/fields/number
+   */
+  rating: prismic.NumberField;
+}
+
+/**
+ * Default variation for Testimonials Slice
+ *
+ * - **API ID**: `default`
+ * - **Description**: Default
+ * - **Documentation**: https://prismic.io/docs/slices
+ */
+export type TestimonialsSliceDefault = prismic.SharedSliceVariation<
+  "default",
+  Simplify<TestimonialsSliceDefaultPrimary>,
+  Simplify<TestimonialsSliceDefaultItem>
+>;
+
+/**
+ * Slice variation for *Testimonials*
+ */
+type TestimonialsSliceVariation = TestimonialsSliceDefault;
+
+/**
+ * Testimonials Shared Slice
+ *
+ * - **API ID**: `testimonials`
+ * - **Description**: Testimonials
+ * - **Documentation**: https://prismic.io/docs/slices
+ */
+export type TestimonialsSlice = prismic.SharedSlice<
+  "testimonials",
+  TestimonialsSliceVariation
+>;
 
 declare module "@prismicio/client" {
   interface CreateClient {

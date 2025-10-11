@@ -340,7 +340,7 @@ export interface FilterOption {
 
 // API Response types
 export interface ProductListResponse {
-  products: Product[];
+  items: Product[];
   pagination: PaginationResponse;
   filters: SearchFilter[];
 }

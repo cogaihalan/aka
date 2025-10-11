@@ -1,3 +1,4 @@
+"use client";
 import { FC, useState, useEffect } from "react";
 import { Content, isFilled } from "@prismicio/client";
 import { SliceComponentProps, PrismicRichText } from "@prismicio/react";
@@ -7,7 +8,7 @@ export type StatsCounterProps = SliceComponentProps<any>;
 const StatsCounter: FC<StatsCounterProps> = ({ slice }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [counters, setCounters] = useState<number[]>([]);
-  
+
   const stats = slice.items || [];
   const layout = slice.primary.layout || "grid";
   const animationDuration = slice.primary.animationDuration || 2000;
@@ -30,7 +31,9 @@ const StatsCounter: FC<StatsCounterProps> = ({ slice }) => {
       { threshold: 0.1 }
     );
 
-    const element = document.querySelector(`[data-slice-type="${slice.slice_type}"]`);
+    const element = document.querySelector(
+      `[data-slice-type="${slice.slice_type}"]`
+    );
     if (element) {
       observer.observe(element);
     }
@@ -45,16 +48,18 @@ const StatsCounter: FC<StatsCounterProps> = ({ slice }) => {
     const animateCounter = (index: number, target: number) => {
       const startTime = Date.now();
       const startValue = 0;
-      
+
       const animate = () => {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / animationDuration, 1);
-        
+
         // Easing function for smooth animation
         const easeOutCubic = 1 - Math.pow(1 - progress, 3);
-        const currentValue = Math.floor(startValue + (target - startValue) * easeOutCubic);
-        
-        setCounters(prev => {
+        const currentValue = Math.floor(
+          startValue + (target - startValue) * easeOutCubic
+        );
+
+        setCounters((prev) => {
           const newCounters = [...prev];
           newCounters[index] = currentValue;
           return newCounters;
@@ -74,7 +79,11 @@ const StatsCounter: FC<StatsCounterProps> = ({ slice }) => {
     });
   }, [isVisible, stats, animationDuration]);
 
-  const formatNumber = (value: number, suffix: string = "", prefix: string = "") => {
+  const formatNumber = (
+    value: number,
+    suffix: string = "",
+    prefix: string = ""
+  ) => {
     if (value >= 1000000) {
       return `${prefix}${(value / 1000000).toFixed(1)}M${suffix}`;
     } else if (value >= 1000) {
@@ -85,17 +94,23 @@ const StatsCounter: FC<StatsCounterProps> = ({ slice }) => {
 
   const getLayoutClass = () => {
     switch (layout) {
-      case "horizontal": return "es-stats-counter--horizontal";
-      case "vertical": return "es-stats-counter--vertical";
-      default: return "es-stats-counter--grid";
+      case "horizontal":
+        return "es-stats-counter--horizontal";
+      case "vertical":
+        return "es-stats-counter--vertical";
+      default:
+        return "es-stats-counter--grid";
     }
   };
 
   const getAlignmentClass = () => {
     switch (alignment) {
-      case "left": return "es-stats-counter--left";
-      case "right": return "es-stats-counter--right";
-      default: return "es-stats-counter--center";
+      case "left":
+        return "es-stats-counter--left";
+      case "right":
+        return "es-stats-counter--right";
+      default:
+        return "es-stats-counter--center";
     }
   };
 
@@ -107,8 +122,11 @@ const StatsCounter: FC<StatsCounterProps> = ({ slice }) => {
     >
       <div className="es-bounded__content es-stats-counter__content">
         {/* Header */}
-        {(isFilled.richText(slice.primary.title) || isFilled.richText(slice.primary.subtitle)) && (
-          <div className={`es-stats-counter__header es-stats-counter__header--${alignment}`}>
+        {(isFilled.richText(slice.primary.title) ||
+          isFilled.richText(slice.primary.subtitle)) && (
+          <div
+            className={`es-stats-counter__header es-stats-counter__header--${alignment}`}
+          >
             {isFilled.richText(slice.primary.title) && (
               <div className="es-stats-counter__title">
                 <PrismicRichText field={slice.primary.title} />
@@ -147,13 +165,11 @@ const StatsCounter: FC<StatsCounterProps> = ({ slice }) => {
                       stat.prefix || ""
                     )}
                   </div>
-                  
+
                   {isFilled.keyText(stat.label) && (
-                    <div className="es-stats-counter__label">
-                      {stat.label}
-                    </div>
+                    <div className="es-stats-counter__label">{stat.label}</div>
                   )}
-                  
+
                   {isFilled.richText(stat.description) && (
                     <div className="es-stats-counter__description">
                       <PrismicRichText field={stat.description} />
@@ -167,7 +183,9 @@ const StatsCounter: FC<StatsCounterProps> = ({ slice }) => {
 
         {/* Footer */}
         {isFilled.richText(slice.primary.footerText) && (
-          <div className={`es-stats-counter__footer es-stats-counter__footer--${alignment}`}>
+          <div
+            className={`es-stats-counter__footer es-stats-counter__footer--${alignment}`}
+          >
             <div className="es-stats-counter__footer-text">
               <PrismicRichText field={slice.primary.footerText} />
             </div>

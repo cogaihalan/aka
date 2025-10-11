@@ -1,199 +1,63 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Edit, ExternalLink, Eye, Search, Filter } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-
+import { searchParamsCache } from "@/lib/searchparams";
+import { DataTableWrapper } from "@/components/ui/table/data-table-wrapper";
+import { columns } from "./prismic-tables/columns";
 import { prismicApiService } from "@/lib/api/prismic-service";
-import { PrismicPage, PrismicContent } from "@/types/prismic";
 
-interface PrismicPagesListProps {}
+interface PrismicPagesListProps {
+  forceRefresh?: boolean;
+}
 
-export function PrismicPagesList({}: PrismicPagesListProps) {
-  const [pages, setPages] = useState<PrismicPage[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [typeFilter, setTypeFilter] = useState<string>("all");
+export async function PrismicPagesList({
+  forceRefresh = false,
+}: PrismicPagesListProps = {}) {
+  // Get search parameters for filtering
+  const page = searchParamsCache.get("page");
+  const search = searchParamsCache.get("name"); // Use 'name' instead of 'title' to match existing search params
+  const pageLimit = searchParamsCache.get("perPage");
+  const status = searchParamsCache.get("status");
+  const type = searchParamsCache.get("category"); // Use 'category' as a workaround for type
+  const sort = searchParamsCache.get("sort");
+  const timestamp = searchParamsCache.get("t"); // Get timestamp parameter for cache busting
 
-  useEffect(() => {
-    const fetchPages = async () => {
-      try {
-        setIsLoading(true);
-        const response = await prismicApiService.getPages(1, 50);
-        setPages(response.results);
-      } catch (err) {
-        setError("Failed to fetch pages");
-        console.error("Error fetching pages:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Build filters object with proper type casting
+  const filters: {
+    search?: string;
+    status?: string;
+    type?: string;
+    sort?: Array<{ id: string; desc: boolean }>;
+  } = {};
 
-    fetchPages();
-  }, []);
-
-  const filteredPages = pages.filter((page) => {
-    const matchesSearch = page.data?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         page.uid?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "all" || page.data?.status === statusFilter;
-    const matchesType = typeFilter === "all" || page.type === typeFilter;
-    
-    return matchesSearch && matchesStatus && matchesType;
-  });
-
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Pages</CardTitle>
-          <CardDescription>Loading pages...</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-12 bg-muted animate-pulse rounded" />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    );
+  if (search && typeof search === "string") {
+    filters.search = search;
+  }
+  if (status && status !== "all" && typeof status === "string") {
+    filters.status = status;
+  }
+  if (type && type !== "all" && typeof type === "string") {
+    filters.type = type;
+  }
+  if (sort) {
+    filters.sort = Array.isArray(sort) ? sort : [sort];
   }
 
-  if (error) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Pages</CardTitle>
-          <CardDescription>Error loading pages</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <p className="text-destructive mb-4">{error}</p>
-            <Button onClick={() => window.location.reload()}>
-              Try Again
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  // Force refresh if timestamp parameter is present or forceRefresh is true
+  const shouldForceRefresh = forceRefresh || !!timestamp;
+
+  // Fetch pages from Prismic API with filters
+  const data = await prismicApiService.getPages(
+    page || 1,
+    pageLimit || 10,
+    Object.keys(filters).length > 0 ? filters : undefined,
+    shouldForceRefresh
+  );
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>All Pages</CardTitle>
-        <CardDescription>
-          Manage your Prismic content pages
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Search pages..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-40">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="published">Published</SelectItem>
-              <SelectItem value="draft">Draft</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-full sm:w-40">
-              <SelectValue placeholder="Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="page">Pages</SelectItem>
-              <SelectItem value="static_page">Static Pages</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Pages Table */}
-        <div className="border rounded-lg">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Slug</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Last Modified</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredPages.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                    No pages found
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredPages.map((page) => (
-                  <TableRow key={page.id}>
-                    <TableCell className="font-medium">
-                      {page.data?.title || 'Untitled'}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      /{page.uid}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={page.data?.status === 'published' ? 'default' : 'secondary'}>
-                        {page.data?.status || 'draft'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {formatDistanceToNow(new Date(page.last_publication_date), { addSuffix: true })}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => window.open(`/${page.uid}`, '_blank')}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => window.open(`${process.env.NEXT_PUBLIC_PRISMIC_URL}/documents/${page.id}`, '_blank')}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-
-        {/* Summary */}
-        <div className="mt-4 text-sm text-muted-foreground">
-          Showing {filteredPages.length} of {pages.length} pages
-        </div>
-      </CardContent>
-    </Card>
+    <DataTableWrapper
+      data={data.results}
+      totalItems={data.total_results_size}
+      columns={columns}
+      debounceMs={500}
+      shallow={false}
+    />
   );
 }

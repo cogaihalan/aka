@@ -27,7 +27,6 @@ import { useProductFilters } from "@/hooks/use-product-filters";
 // Mock products removed - using API data only
 import {
   AnimatedGrid,
-  AnimatedList,
   LoadingOverlay,
 } from "@/components/ui/animated-container";
 
@@ -50,7 +49,6 @@ export default function ProductListingPage() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState<string | null>(null);
-  // Mock data removed - using API data only
 
   // Fetch products
   const fetchProducts = useCallback(async () => {
@@ -58,7 +56,7 @@ export default function ProductListingPage() {
       setIsLoading(true);
       setError(null);
 
-      const response = await storefrontCatalogService.mockGetProducts({
+      const response = await storefrontCatalogService.getProducts({
         page: state.page,
         limit: state.limit,
         search: state.filters.search || undefined,
@@ -73,7 +71,7 @@ export default function ProductListingPage() {
         },
       });
 
-      setProducts(response.products);
+      setProducts(response.items);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch products");
     } finally {
@@ -180,7 +178,6 @@ export default function ProductListingPage() {
         <p className="text-muted-foreground">
           Discover our complete collection of premium products
         </p>
-        {/* Mock data removed - using API data only */}
       </div>
 
       {/* Sort Controls */}

@@ -20,7 +20,7 @@ export function useProducts(params: QueryParams = {}) {
         limit,
       });
       return {
-        data: response.products,
+        data: response.items,
         pagination: response.pagination,
       };
     },
@@ -39,7 +39,7 @@ export function useProductSearch() {
         search: query,
         limit: 10,
       });
-      return response.products;
+      return response.items;
     },
     {
       debounceMs: 300,

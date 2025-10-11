@@ -1,4 +1,4 @@
-import { apiClient } from "@/lib/api/client-mock";
+import { apiClient } from "@/lib/api/client";
 import type {
   Order,
   OrderListResponse,
@@ -11,7 +11,7 @@ import type {
 } from "@/lib/api/types";
 
 class UnifiedOrderService {
-  private basePath = "/api/orders";
+  private basePath = "/orders";
 
   // Get all orders with filtering and pagination
   async getOrders(params: QueryParams = {}): Promise<OrderListResponse> {

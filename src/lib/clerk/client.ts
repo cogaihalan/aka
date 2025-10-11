@@ -1,13 +1,12 @@
 import { clerkClient } from "@clerk/nextjs/server";
-import { 
-  UserRole, 
-  UserPermission, 
-  ROLE_PERMISSIONS, 
-  AppUser, 
-  CreateUserPayload, 
+import {
+  UserRole,
+  ROLE_PERMISSIONS,
+  AppUser,
+  CreateUserPayload,
   UpdateUserPayload,
   UserListResponse,
-  ClerkUserMetadata
+  ClerkUserMetadata,
 } from "@/types/auth";
 
 /**
@@ -17,14 +16,16 @@ export class ClerkUserService {
   /**
    * Get all users with pagination and filtering
    */
-  static async getUsers(options: {
-    page?: number;
-    limit?: number;
-    role?: UserRole;
-    search?: string;
-  } = {}): Promise<UserListResponse> {
+  static async getUsers(
+    options: {
+      page?: number;
+      limit?: number;
+      role?: UserRole;
+      search?: string;
+    } = {}
+  ): Promise<UserListResponse> {
     const { page = 1, limit = 10, role, search } = options;
-    
+
     try {
       // Get users from Clerk
       const client = await clerkClient();
@@ -34,21 +35,24 @@ export class ClerkUserService {
       });
 
       // Filter users based on criteria
-      let filteredUsers = users.data.map(user => this.clerkUserToAppUser(user));
+      let filteredUsers = users.data.map((user) =>
+        this.clerkUserToAppUser(user)
+      );
 
       // Filter by role
       if (role) {
-        filteredUsers = filteredUsers.filter(user => user.role === role);
+        filteredUsers = filteredUsers.filter((user) => user.role === role);
       }
 
       // Filter by search term
       if (search) {
         const searchLower = search.toLowerCase();
-        filteredUsers = filteredUsers.filter(user => 
-          user.email.toLowerCase().includes(searchLower) ||
-          user.fullName?.toLowerCase().includes(searchLower) ||
-          user.firstName?.toLowerCase().includes(searchLower) ||
-          user.lastName?.toLowerCase().includes(searchLower)
+        filteredUsers = filteredUsers.filter(
+          (user) =>
+            user.email.toLowerCase().includes(searchLower) ||
+            user.fullName?.toLowerCase().includes(searchLower) ||
+            user.firstName?.toLowerCase().includes(searchLower) ||
+            user.lastName?.toLowerCase().includes(searchLower)
         );
       }
 
@@ -115,17 +119,25 @@ export class ClerkUserService {
   /**
    * Update user
    */
-  static async updateUser(userId: string, payload: UpdateUserPayload): Promise<AppUser> {
+  static async updateUser(
+    userId: string,
+    payload: UpdateUserPayload
+  ): Promise<AppUser> {
     try {
       const client = await clerkClient();
       const currentUser = await client.users.getUser(userId);
       const currentMetadata = currentUser.publicMetadata as ClerkUserMetadata;
-      
+
       const updatedMetadata: ClerkUserMetadata = {
         ...currentMetadata,
         role: payload.role || currentMetadata.role,
-        isActive: payload.isActive !== undefined ? payload.isActive : currentMetadata.isActive,
-        permissions: payload.role ? ROLE_PERMISSIONS[payload.role] : currentMetadata.permissions,
+        isActive:
+          payload.isActive !== undefined
+            ? payload.isActive
+            : currentMetadata.isActive,
+        permissions: payload.role
+          ? ROLE_PERMISSIONS[payload.role]
+          : currentMetadata.permissions,
         ...payload.metadata,
       };
 
@@ -145,12 +157,15 @@ export class ClerkUserService {
   /**
    * Update user role
    */
-  static async updateUserRole(userId: string, role: UserRole): Promise<AppUser> {
+  static async updateUserRole(
+    userId: string,
+    role: UserRole
+  ): Promise<AppUser> {
     try {
       const client = await clerkClient();
       const currentUser = await client.users.getUser(userId);
       const currentMetadata = currentUser.publicMetadata as ClerkUserMetadata;
-      
+
       const updatedMetadata: ClerkUserMetadata = {
         ...currentMetadata,
         role,
@@ -229,7 +244,9 @@ export class ClerkUserService {
       isActive: !clerkUser.banned && metadata?.isActive !== false,
       createdAt: new Date(clerkUser.createdAt),
       updatedAt: new Date(clerkUser.updatedAt),
-      lastSignInAt: clerkUser.lastSignInAt ? new Date(clerkUser.lastSignInAt) : undefined,
+      lastSignInAt: clerkUser.lastSignInAt
+        ? new Date(clerkUser.lastSignInAt)
+        : undefined,
       metadata: metadata || {},
     };
   }

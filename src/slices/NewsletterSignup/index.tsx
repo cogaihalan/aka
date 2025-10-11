@@ -1,3 +1,4 @@
+"use client";
 import { FC, useState } from "react";
 import { Content, isFilled } from "@prismicio/client";
 import { SliceComponentProps, PrismicRichText } from "@prismicio/react";
@@ -23,7 +24,7 @@ const NewsletterSignup: FC<NewsletterSignupProps> = ({ slice }) => {
     try {
       // Here you would typically integrate with your email service
       // For now, we'll simulate a successful submission
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       setIsSubmitted(true);
     } catch (err) {
       setError("Something went wrong. Please try again.");
@@ -34,10 +35,14 @@ const NewsletterSignup: FC<NewsletterSignupProps> = ({ slice }) => {
 
   const getLayoutClass = () => {
     switch (layout) {
-      case "left": return "es-newsletter-signup--left";
-      case "right": return "es-newsletter-signup--right";
-      case "split": return "es-newsletter-signup--split";
-      default: return "es-newsletter-signup--centered";
+      case "left":
+        return "es-newsletter-signup--left";
+      case "right":
+        return "es-newsletter-signup--right";
+      case "split":
+        return "es-newsletter-signup--split";
+      default:
+        return "es-newsletter-signup--centered";
     }
   };
 
@@ -64,7 +69,8 @@ const NewsletterSignup: FC<NewsletterSignupProps> = ({ slice }) => {
           {/* Content */}
           <div className="es-newsletter-signup__content-wrapper">
             {/* Header */}
-            {(isFilled.richText(slice.primary.title) || isFilled.richText(slice.primary.subtitle)) && (
+            {(isFilled.richText(slice.primary.title) ||
+              isFilled.richText(slice.primary.subtitle)) && (
               <div className="es-newsletter-signup__header">
                 {isFilled.richText(slice.primary.title) && (
                   <div className="es-newsletter-signup__title">
@@ -81,13 +87,18 @@ const NewsletterSignup: FC<NewsletterSignupProps> = ({ slice }) => {
 
             {/* Form */}
             {!isSubmitted ? (
-              <form onSubmit={handleSubmit} className="es-newsletter-signup__form">
+              <form
+                onSubmit={handleSubmit}
+                className="es-newsletter-signup__form"
+              >
                 <div className="es-newsletter-signup__form-group">
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder={slice.primary.placeholder || "Enter your email address"}
+                    placeholder={
+                      slice.primary.placeholder || "Enter your email address"
+                    }
                     className="es-newsletter-signup__input"
                     required
                     disabled={isSubmitting}
@@ -99,9 +110,24 @@ const NewsletterSignup: FC<NewsletterSignupProps> = ({ slice }) => {
                   >
                     {isSubmitting ? (
                       <div className="es-newsletter-signup__spinner">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity="0.25"/>
-                          <path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor"/>
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                        >
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                            opacity="0.25"
+                          />
+                          <path
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            fill="currentColor"
+                          />
                         </svg>
                       </div>
                     ) : (
@@ -111,9 +137,7 @@ const NewsletterSignup: FC<NewsletterSignupProps> = ({ slice }) => {
                 </div>
 
                 {error && (
-                  <div className="es-newsletter-signup__error">
-                    {error}
-                  </div>
+                  <div className="es-newsletter-signup__error">{error}</div>
                 )}
 
                 {/* Privacy Notice */}
@@ -128,14 +152,21 @@ const NewsletterSignup: FC<NewsletterSignupProps> = ({ slice }) => {
               <div className="es-newsletter-signup__success">
                 <div className="es-newsletter-signup__success-icon">
                   <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                    <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path
+                      d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 </div>
                 <div className="es-newsletter-signup__success-title">
                   {slice.primary.successTitle || "Thank you for subscribing!"}
                 </div>
                 <div className="es-newsletter-signup__success-message">
-                  {slice.primary.successMessage || "You'll receive our latest updates soon."}
+                  {slice.primary.successMessage ||
+                    "You'll receive our latest updates soon."}
                 </div>
               </div>
             )}
@@ -145,8 +176,20 @@ const NewsletterSignup: FC<NewsletterSignupProps> = ({ slice }) => {
               <div className="es-newsletter-signup__features">
                 {slice.primary.features.map((feature: any, index: number) => (
                   <div key={index} className="es-newsletter-signup__feature">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="es-newsletter-signup__feature-icon">
-                      <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      className="es-newsletter-signup__feature-icon"
+                    >
+                      <path
+                        d="M20 6L9 17L4 12"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                     <span>{feature}</span>
                   </div>

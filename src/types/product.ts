@@ -201,8 +201,9 @@ export interface ProductAttributeValue {
 export interface ProductVariant {
   id: number;
   name: string;
-  sku: string;
+  sku?: string;
   price: number;
+  discountPrice: number;
   compareAtPrice?: number;
   cost?: number;
   weight?: number;
@@ -217,7 +218,7 @@ export interface ProductVariant {
   images: MediaFile[];
   isDefault: boolean;
   position: number;
-  status: "active" | "inactive";
+  status?: "ACTIVE" | "INACTIVE" | "ARCHIVED" | "DRAFT" | "OUT_OF_STOCK";
   createdAt: string;
   updatedAt: string;
 }

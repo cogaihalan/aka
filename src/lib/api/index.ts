@@ -1,5 +1,5 @@
 // Main API exports - CLIENT SAFE (no server-only imports)
-export { apiClient, createApiClient } from "./client-mock";
+export { apiClient } from "./client";
 export * from "./types";
 
 // Unified services (recommended for most use cases)

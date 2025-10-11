@@ -11,30 +11,27 @@ import type {
 
 class UnifiedCategoryService extends BaseService {
   constructor() {
-    super({ basePath: "/api/categories" });
+    super({ basePath: "/categories" });
   }
 
   // Get all categories with filtering and pagination
-  async getCategories(params: QueryParams = {}, isAdmin: boolean = false): Promise<CategoryListResponse | Category[]> {
+  async getCategories(
+    params: QueryParams = {},
+    isAdmin: boolean = false
+  ): Promise<CategoryListResponse | Category[]> {
     const searchParams = this.buildQueryParams(params);
     const endpoint = this.buildEndpoint("", searchParams);
-    return {
-      categories: [],
-      pagination: {
-        total: 0,
-        page: 0,
-        limit: 0,
-        totalPages: 0,
-        hasNext: false,
-        hasPrev: false,
-      },
-    };
-    // return this.get<CategoryListResponse | Category[]>(endpoint, isAdmin);
+    return this.get<CategoryListResponse | Category[]>(endpoint, isAdmin);
   }
 
   // Get category tree (hierarchical structure) - admin only
   async getCategoryTree(): Promise<CategoryTreeResponse> {
     return this.get<CategoryTreeResponse>("/tree", true);
+  }
+
+  // Get categories tree for storefront (public)
+  async getCategoriesTree(): Promise<Category[]> {
+    return this.get<Category[]>("/tree", false);
   }
 
   // Get a single category by ID (admin)
@@ -102,7 +99,6 @@ class UnifiedCategoryService extends BaseService {
     const endpoint = `/validate-slug?slug=${encodeURIComponent(slug)}${excludeId ? `&excludeId=${excludeId}` : ""}`;
     return this.get<{ isValid: boolean; message?: string }>(endpoint, true);
   }
-
 }
 
 // Export singleton instance

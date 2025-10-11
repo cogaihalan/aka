@@ -25,6 +25,8 @@ export const searchParams = {
   dateTo: parseAsString,
   // Sorting parameter
   sort: getSortingStateParser().withDefault([]),
+  // Timestamp for cache busting
+  t: parseAsString,
   // advanced filter
   // filters: getFiltersStateParser().withDefault([]),
   // joinOperator: parseAsStringEnum(['and', 'or']).withDefault('and')

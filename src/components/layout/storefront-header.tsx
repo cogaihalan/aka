@@ -38,13 +38,6 @@ export default function StorefrontHeader() {
           <div className="flex flex-row-reverse items-center gap-2 md:flex-row md:gap-3">
             {/* Mega Menu */}
             <MegaMenu />
-            
-            {/* Courses Link */}
-            <Link href="/courses">
-              <Button variant="ghost" size="sm">
-                Courses
-              </Button>
-            </Link>
 
             {/* Search Bar */}
             <div className="hidden lg:flex items-center space-x-2 flex-1 mx-4">

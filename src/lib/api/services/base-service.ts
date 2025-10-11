@@ -1,4 +1,4 @@
-import { apiClient } from "@/lib/api/client-mock";
+import { apiClient } from "@/lib/api/client";
 import type { QueryParams, ProductQuery } from "@/lib/api/types";
 
 export interface BaseServiceConfig {
@@ -40,7 +40,9 @@ export abstract class BaseService {
   /**
    * Build query parameters from ProductQuery object
    */
-  protected buildProductQueryParams(params: ProductQuery = {}): URLSearchParams {
+  protected buildProductQueryParams(
+    params: ProductQuery = {}
+  ): URLSearchParams {
     const searchParams = new URLSearchParams();
 
     // Basic pagination and search
@@ -79,7 +81,8 @@ export abstract class BaseService {
     if (params.tags?.length) {
       params.tags.forEach((tag) => searchParams.append("tags[]", tag));
     }
-    if (params.createdFrom) searchParams.append("createdFrom", params.createdFrom);
+    if (params.createdFrom)
+      searchParams.append("createdFrom", params.createdFrom);
     if (params.createdTo) searchParams.append("createdTo", params.createdTo);
     if (params.attributes) {
       Object.entries(params.attributes).forEach(([key, value]) => {
@@ -111,10 +114,7 @@ export abstract class BaseService {
   /**
    * Make GET request with common error handling
    */
-  protected async get<T>(
-    endpoint: string,
-    isAdmin?: boolean
-  ): Promise<T> {
+  protected async get<T>(endpoint: string, isAdmin?: boolean): Promise<T> {
     const headers = this.getHeaders(isAdmin);
     const response = await apiClient.get<T>(endpoint, { headers });
     return response.data!;
@@ -162,10 +162,7 @@ export abstract class BaseService {
   /**
    * Make DELETE request with common error handling
    */
-  protected async delete(
-    endpoint: string,
-    isAdmin?: boolean
-  ): Promise<void> {
+  protected async delete(endpoint: string, isAdmin?: boolean): Promise<void> {
     const headers = this.getHeaders(isAdmin);
     await apiClient.delete(endpoint, { headers });
   }

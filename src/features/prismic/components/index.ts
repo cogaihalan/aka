@@ -1,2 +1,2 @@
-export { PrismicDashboard } from './prismic-dashboard';
-export { PrismicPagesList } from './prismic-pages-list';
+export { PrismicPagesList } from "./prismic-pages-list";
+export { PrismicDashboard } from "./prismic-dashboard";

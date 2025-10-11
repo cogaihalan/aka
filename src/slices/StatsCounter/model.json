@@ -1,0 +1,141 @@
+{
+  "id": "stats_counter",
+  "name": "Stats Counter",
+  "description": "An animated statistics counter with customizable layouts and scroll-triggered animations",
+  "imageUrl": "",
+  "display": "list",
+  "type": "SharedSlice",
+  "primary": {
+    "title": {
+      "type": "StructuredText",
+      "config": {
+        "label": "Title",
+        "placeholder": "Enter the stats section title",
+        "single": "heading1,heading2,heading3,heading4,heading5,heading6"
+      }
+    },
+    "subtitle": {
+      "type": "StructuredText",
+      "config": {
+        "label": "Subtitle",
+        "placeholder": "Enter a subtitle or description",
+        "single": "paragraph,preformatted,heading1,heading2,heading3,heading4,heading5,heading6,strong,em,hyperlink,image,embed,list-item,o-list-item,rtl"
+      }
+    },
+    "layout": {
+      "type": "Select",
+      "config": {
+        "label": "Layout",
+        "options": [
+          {
+            "value": "grid",
+            "label": "Grid"
+          },
+          {
+            "value": "horizontal",
+            "label": "Horizontal"
+          },
+          {
+            "value": "vertical",
+            "label": "Vertical"
+          }
+        ],
+        "default_value": "grid"
+      }
+    },
+    "animationDuration": {
+      "type": "Number",
+      "config": {
+        "label": "Animation Duration (ms)",
+        "placeholder": "2000"
+      }
+    },
+    "showIcons": {
+      "type": "Boolean",
+      "config": {
+        "label": "Show Icons",
+        "default_value": true,
+        "placeholder_false": "Hide icons",
+        "placeholder_true": "Show icons"
+      }
+    },
+    "alignment": {
+      "type": "Select",
+      "config": {
+        "label": "Text Alignment",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ],
+        "default_value": "center"
+      }
+    },
+    "footerText": {
+      "type": "StructuredText",
+      "config": {
+        "label": "Footer Text",
+        "placeholder": "Enter any additional footer text",
+        "single": "paragraph,preformatted,heading1,heading2,heading3,heading4,heading5,heading6,strong,em,hyperlink,image,embed,list-item,o-list-item,rtl"
+      }
+    }
+  },
+  "items": {
+    "value": {
+      "type": "Text",
+      "config": {
+        "label": "Statistic Value",
+        "placeholder": "Enter the numeric value"
+      }
+    },
+    "label": {
+      "type": "Text",
+      "config": {
+        "label": "Statistic Label",
+        "placeholder": "Enter the statistic label"
+      }
+    },
+    "description": {
+      "type": "StructuredText",
+      "config": {
+        "label": "Description",
+        "placeholder": "Enter a description for this statistic",
+        "single": "paragraph,preformatted,heading1,heading2,heading3,heading4,heading5,heading6,strong,em,hyperlink,image,embed,list-item,o-list-item,rtl"
+      }
+    },
+    "icon": {
+      "type": "Image",
+      "config": {
+        "label": "Icon",
+        "constraint": {
+          "width": 64,
+          "height": 64
+        },
+        "thumbnails": []
+      }
+    },
+    "prefix": {
+      "type": "Text",
+      "config": {
+        "label": "Prefix",
+        "placeholder": "Enter prefix (e.g., $, €)"
+      }
+    },
+    "suffix": {
+      "type": "Text",
+      "config": {
+        "label": "Suffix",
+        "placeholder": "Enter suffix (e.g., +, %, K, M)"
+      }
+    }
+  }
+}

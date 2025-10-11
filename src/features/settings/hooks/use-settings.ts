@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { SiteSettings } from "@/types/app";
+import { unifiedSettingsService } from "@/lib/api/services/unified";
 
 export function useSettings() {
   const [settings, setSettings] = useState<SiteSettings | null>(null);
@@ -10,14 +11,8 @@ export function useSettings() {
   const fetchSettings = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("/api/settings");
-      const data = await response.json();
-      
-      if (data.success) {
-        setSettings(data.data);
-      } else {
-        throw new Error(data.error);
-      }
+      const settings = await unifiedSettingsService.getSettings();
+      setSettings(settings);
     } catch (error) {
       toast.error("Failed to fetch settings");
     } finally {
@@ -28,23 +23,11 @@ export function useSettings() {
   const saveSettings = async (newSettings: SiteSettings) => {
     try {
       setIsSaving(true);
-      const response = await fetch("/api/settings", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ settings: newSettings }),
-      });
-
-      const data = await response.json();
-      
-      if (data.success) {
-        setSettings(newSettings);
-        toast.success("Settings saved successfully");
-        return true;
-      } else {
-        throw new Error(data.error);
-      }
+      const updatedSettings =
+        await unifiedSettingsService.updateSettings(newSettings);
+      setSettings(updatedSettings);
+      toast.success("Settings saved successfully");
+      return true;
     } catch (error) {
       toast.error("Failed to save settings");
       return false;
@@ -90,9 +73,9 @@ export function useSettings() {
     });
   };
 
-  useEffect(() => {
-    fetchSettings();
-  }, []);
+  // useEffect(() => {
+  //   fetchSettings();
+  // }, []);
 
   return {
     settings,

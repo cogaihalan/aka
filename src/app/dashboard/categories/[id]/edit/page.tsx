@@ -11,6 +11,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
+// Force dynamic rendering to avoid build-time API calls
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Dashboard: Edit Category",
   description: "Edit product category",
@@ -59,9 +62,9 @@ async function EditCategoryPage({ categoryId }: { categoryId: number }) {
       adminCategoryService.getCategory(categoryId),
       adminCategoryService.getCategories({ limit: 1000 }),
     ]);
-    
-    const categories = Array.isArray(categoriesResponse) 
-      ? categoriesResponse 
+
+    const categories = Array.isArray(categoriesResponse)
+      ? categoriesResponse
       : categoriesResponse.categories;
 
     return (

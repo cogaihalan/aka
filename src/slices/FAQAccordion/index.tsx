@@ -1,3 +1,4 @@
+"use client";
 import { FC, useState } from "react";
 import { Content, isFilled } from "@prismicio/client";
 import { SliceComponentProps, PrismicRichText } from "@prismicio/react";
@@ -13,9 +14,9 @@ const FAQAccordion: FC<FAQAccordionProps> = ({ slice }) => {
   const alignment = slice.primary.alignment || "center";
 
   const toggleItem = (index: number) => {
-    setOpenItems(prev => {
+    setOpenItems((prev) => {
       const newSet = new Set(prev);
-      
+
       if (allowMultiple) {
         // Toggle individual item
         if (newSet.has(index)) {
@@ -32,7 +33,7 @@ const FAQAccordion: FC<FAQAccordionProps> = ({ slice }) => {
           newSet.add(index);
         }
       }
-      
+
       return newSet;
     });
   };
@@ -41,23 +42,31 @@ const FAQAccordion: FC<FAQAccordionProps> = ({ slice }) => {
 
   const getLayoutClass = () => {
     switch (layout) {
-      case "split": return "es-faq-accordion--split";
-      case "grid": return "es-faq-accordion--grid";
-      default: return "es-faq-accordion--single";
+      case "split":
+        return "es-faq-accordion--split";
+      case "grid":
+        return "es-faq-accordion--grid";
+      default:
+        return "es-faq-accordion--single";
     }
   };
 
   const getAlignmentClass = () => {
     switch (alignment) {
-      case "left": return "es-faq-accordion--left";
-      case "right": return "es-faq-accordion--right";
-      default: return "es-faq-accordion--center";
+      case "left":
+        return "es-faq-accordion--left";
+      case "right":
+        return "es-faq-accordion--right";
+      default:
+        return "es-faq-accordion--center";
     }
   };
 
   const getGridColumns = () => {
     if (layout === "grid") {
-      return faqs.length <= 2 ? "repeat(2, 1fr)" : "repeat(auto-fit, minmax(300px, 1fr))";
+      return faqs.length <= 2
+        ? "repeat(2, 1fr)"
+        : "repeat(auto-fit, minmax(300px, 1fr))";
     }
     return "1fr";
   };
@@ -70,8 +79,11 @@ const FAQAccordion: FC<FAQAccordionProps> = ({ slice }) => {
     >
       <div className="es-bounded__content es-faq-accordion__content">
         {/* Header */}
-        {(isFilled.richText(slice.primary.title) || isFilled.richText(slice.primary.subtitle)) && (
-          <div className={`es-faq-accordion__header es-faq-accordion__header--${alignment}`}>
+        {(isFilled.richText(slice.primary.title) ||
+          isFilled.richText(slice.primary.subtitle)) && (
+          <div
+            className={`es-faq-accordion__header es-faq-accordion__header--${alignment}`}
+          >
             {isFilled.richText(slice.primary.title) && (
               <div className="es-faq-accordion__title">
                 <PrismicRichText field={slice.primary.title} />
@@ -87,14 +99,14 @@ const FAQAccordion: FC<FAQAccordionProps> = ({ slice }) => {
 
         {/* FAQ Items */}
         {faqs.length > 0 && (
-          <div 
+          <div
             className="es-faq-accordion__items"
             style={{ gridTemplateColumns: getGridColumns() }}
           >
             {faqs.map((faq: any, index: number) => (
               <div key={index} className="es-faq-accordion__item">
                 <button
-                  className={`es-faq-accordion__trigger ${isOpen(index) ? 'es-faq-accordion__trigger--open' : ''}`}
+                  className={`es-faq-accordion__trigger ${isOpen(index) ? "es-faq-accordion__trigger--open" : ""}`}
                   onClick={() => toggleItem(index)}
                   aria-expanded={isOpen(index)}
                   aria-controls={`faq-content-${index}`}
@@ -109,30 +121,36 @@ const FAQAccordion: FC<FAQAccordionProps> = ({ slice }) => {
                         />
                       </div>
                     )}
-                    
+
                     {isFilled.keyText(faq.question) && (
                       <span className="es-faq-accordion__question">
                         {faq.question}
                       </span>
                     )}
                   </div>
-                  
+
                   <div className="es-faq-accordion__chevron">
-                    <svg 
-                      width="20" 
-                      height="20" 
-                      viewBox="0 0 24 24" 
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
                       fill="none"
-                      className={`es-faq-accordion__chevron-icon ${isOpen(index) ? 'es-faq-accordion__chevron-icon--rotated' : ''}`}
+                      className={`es-faq-accordion__chevron-icon ${isOpen(index) ? "es-faq-accordion__chevron-icon--rotated" : ""}`}
                     >
-                      <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path
+                        d="M6 9L12 15L18 9"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                   </div>
                 </button>
-                
+
                 <div
                   id={`faq-content-${index}`}
-                  className={`es-faq-accordion__content ${isOpen(index) ? 'es-faq-accordion__content--open' : ''}`}
+                  className={`es-faq-accordion__content ${isOpen(index) ? "es-faq-accordion__content--open" : ""}`}
                   aria-hidden={!isOpen(index)}
                 >
                   <div className="es-faq-accordion__content-inner">
@@ -150,7 +168,9 @@ const FAQAccordion: FC<FAQAccordionProps> = ({ slice }) => {
 
         {/* Footer */}
         {isFilled.richText(slice.primary.footerText) && (
-          <div className={`es-faq-accordion__footer es-faq-accordion__footer--${alignment}`}>
+          <div
+            className={`es-faq-accordion__footer es-faq-accordion__footer--${alignment}`}
+          >
             <div className="es-faq-accordion__footer-text">
               <PrismicRichText field={slice.primary.footerText} />
             </div>

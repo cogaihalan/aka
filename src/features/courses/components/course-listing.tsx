@@ -22,7 +22,7 @@ export default async function CourseListingPage() {
   };
 
   // Fetch courses from API
-  const data = await unifiedCourseService.getCoursesMock(filters);
+  const data = await unifiedCourseService.getCourses(filters);
   const totalCourses = data.total;
   const courses = data.courses;
 

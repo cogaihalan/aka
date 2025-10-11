@@ -37,7 +37,7 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
     },
   };
 
-  const data = await unifiedCourseService.getCoursesMock(courseParams);
+  const data = await unifiedCourseService.getCourses(courseParams);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -54,7 +54,7 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
             <CourseFilters />
           </Suspense>
         </div>
-        
+
         <div className="lg:w-3/4">
           <Suspense fallback={<CourseGridSkeleton />}>
             <CourseGrid courses={data.courses} total={data.total} />
